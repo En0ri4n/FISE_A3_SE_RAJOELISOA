@@ -57,8 +57,6 @@ Each release requires full documentation, version control, and strict adherence 
 - 🔗 **Version Control**: Git (Azure DevOps)
 - 🎨 **UML**: ArgoUML (recommended)
 
-> 📢 Invite your manager (instructor) to your Git repository.
-
 ### 💬 Technical Stack
 - 🧠 **Language**: C#
 - 🛡️ **Framework**: .NET Core 3.X
