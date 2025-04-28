@@ -1,10 +1,10 @@
 # 🚀 EasySave Project
 
 ## 👥 Group Members
-👤 SCHNEPP Anthony
-👤 LEY Louise
-👤 HOOG Cédric
-👤 RAJOELISOA Enorian
+👤 [SCHNEPP Anthony](https://github.com/aschnepp)
+👤 [LEY Louise](https://github.com/hungrywwaffle)
+👤 [HOOG Cédric](https://github.com/CedricHoog)
+👤 [RAJOELISOA Enorian](https://github.com/En0ri4n)
 
 ## 🧩 Project Overview
 Welcome to **EasySave**, a backup software developed for the **ProSoft Suite**.  
