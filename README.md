@@ -1,7 +1,3 @@
-Bien sûr ! Voici la version du **README** avec des **emojis** pour rendre tout plus vivant et attractif :
-
----
-
 # 🚀 EasySave Project
 
 ## 🧩 Project Overview
