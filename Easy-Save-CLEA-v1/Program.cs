@@ -28,24 +28,24 @@ namespace CLEA
         {
             EasySave.Get().Logger.Log(LogLevel.Debug, "Starting EasySave-CLEA");
             EasySave.Get().Logger.Log(LogLevel.Information, "EasySave-CLEA started");
-            I18N i18N = I18N.Get();
+            L10N l10N = L10N.Get();
             
-            Console.WriteLine($"{i18N.GetTranslation("main.title")}");
+            Console.WriteLine($"{l10N.GetTranslation("main.title")}");
         }
     }
 
-    public class I18N
+    public class L10N
     {
         public static readonly Lang EN_US = new("en_us", "English");
         public static readonly Lang FR_FR = new("fr_fr", "Français");
         private static readonly List<Lang> SupportedLangs = [EN_US, FR_FR];
         
-        private static readonly I18N Instance = new();
+        private static readonly L10N Instance = new();
         
         private Lang _currentLang;
         private Dictionary<string, string> _translations = new();
         
-        private I18N()
+        private L10N()
         {
             _currentLang = FR_FR;
             LoadTranslations();
@@ -84,7 +84,7 @@ namespace CLEA
             return translation;
         }
         
-        public static I18N Get()
+        public static L10N Get()
         {
             return Instance;
         }
