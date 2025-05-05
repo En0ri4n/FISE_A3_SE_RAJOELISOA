@@ -8,7 +8,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <None Update="i18n\*.json">
+        <None Update="l10n\*.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />

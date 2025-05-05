@@ -64,7 +64,7 @@ namespace CLEA
         {
             _translations.Clear();
 
-            string filePath = Path.Combine("i18n", $"{_currentLang.LangId}.json");
+            string filePath = Path.Combine("l10n", $"{_currentLang.LangId}.json");
 
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Translation file not found", filePath);

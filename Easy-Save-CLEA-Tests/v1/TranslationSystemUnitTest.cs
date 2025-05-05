@@ -18,28 +18,28 @@ public class TranslationSystemUnitTest
     [Fact]
     public void SetLanguage_ShouldSwitchToEnglish()
     {
-        var i18N = L10N.Get();
-        i18N.SetLanguage(L10N.EN_US);
+        var l10N = L10N.Get();
+        l10N.SetLanguage(L10N.EN_US);
 
-        string result = i18N.GetTranslation("language");
+        string result = l10N.GetTranslation("language");
         Assert.Equal("English", result);
     }
 
     [Fact]
     public void SetLanguage_ShouldThrowIfUnsupported()
     {
-        var i18N = L10N.Get();
+        var l10N = L10N.Get();
 
-        var ex = Assert.Throws<ArgumentException>(() => i18N.SetLanguage(FakeLang));
+        var ex = Assert.Throws<ArgumentException>(() => l10N.SetLanguage(FakeLang));
         Assert.Equal("Translation lang not found", ex.Message);
     }
 
     [Fact]
     public void GetTranslation_ShouldThrowIfKeyNotFound()
     {
-        var i18N = L10N.Get();
-        i18N.SetLanguage(L10N.EN_US);
+        var l10N = L10N.Get();
+        l10N.SetLanguage(L10N.EN_US);
 
-        Assert.Throws<KeyNotFoundException>(() => i18N.GetTranslation("nonexistent.key"));
+        Assert.Throws<KeyNotFoundException>(() => l10N.GetTranslation("nonexistent.key"));
     }
 }
