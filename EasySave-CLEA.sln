@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave-CLEA", "EasySave-CLEA.csproj", "{DC3BF453-8D1D-4AAE-B329-F2EDB97E33EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy-Save-CLEA-v1", "Easy-Save-CLEA-v1\Easy-Save-CLEA-v1.csproj", "{59A57223-8E38-4A0F-B815-6C2BA7B385AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DC3BF453-8D1D-4AAE-B329-F2EDB97E33EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC3BF453-8D1D-4AAE-B329-F2EDB97E33EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC3BF453-8D1D-4AAE-B329-F2EDB97E33EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC3BF453-8D1D-4AAE-B329-F2EDB97E33EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59A57223-8E38-4A0F-B815-6C2BA7B385AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A57223-8E38-4A0F-B815-6C2BA7B385AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A57223-8E38-4A0F-B815-6C2BA7B385AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A57223-8E38-4A0F-B815-6C2BA7B385AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
