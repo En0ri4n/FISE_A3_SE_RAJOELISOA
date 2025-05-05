@@ -40,7 +40,7 @@ namespace CLEA
         public static readonly Lang FR_FR = new("fr_fr", "Français");
         private static readonly List<Lang> SupportedLangs = [EN_US, FR_FR];
         
-        private static I18N _instance = new();
+        private static readonly I18N Instance = new();
         
         private Lang _currentLang;
         private Dictionary<string, string> _translations = new();
@@ -54,7 +54,7 @@ namespace CLEA
         public void SetLanguage(Lang lang)
         {
             if(!SupportedLangs.Contains(lang))
-                throw new ArgumentException("Invalid language code");
+                throw new ArgumentException("Translation lang not found");
             
             _currentLang = lang;
             LoadTranslations();
@@ -86,7 +86,7 @@ namespace CLEA
         
         public static I18N Get()
         {
-            return _instance;
+            return Instance;
         }
 
         public class Lang

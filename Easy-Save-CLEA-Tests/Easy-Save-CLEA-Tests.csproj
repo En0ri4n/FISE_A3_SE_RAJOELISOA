@@ -23,4 +23,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Easy-Save-CLEA-v1\Easy-Save-CLEA-v1.csproj" />
+    </ItemGroup>
+
 </Project>
