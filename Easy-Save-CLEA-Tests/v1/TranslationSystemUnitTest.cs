@@ -6,18 +6,22 @@ public class TranslationSystemUnitTest
 {
     private static readonly L10N.Lang FakeLang = new("fake_lang", "FakeLang");
     
-    [Fact]
+    [SkippableFact]
     public void Get_ShouldReturnSingletonInstance()
     {
+        Skip.IfNot(EasySave.Version.Major == 1);
+        
         var instance1 = L10N.Get();
         var instance2 = L10N.Get();
 
         Assert.Same(instance1, instance2);
     }
 
-    [Fact]
+    [SkippableFact]
     public void SetLanguage_ShouldSwitchToEnglish()
     {
+        Skip.IfNot(EasySave.Version.Major == 1);
+        
         var l10N = L10N.Get();
         l10N.SetLanguage(L10N.EN_US);
 
@@ -25,18 +29,22 @@ public class TranslationSystemUnitTest
         Assert.Equal("English", result);
     }
 
-    [Fact]
+    [SkippableFact]
     public void SetLanguage_ShouldThrowIfUnsupported()
     {
+        Skip.IfNot(EasySave.Version.Major == 1);
+        
         var l10N = L10N.Get();
 
         var ex = Assert.Throws<ArgumentException>(() => l10N.SetLanguage(FakeLang));
         Assert.Equal("Translation lang not found", ex.Message);
     }
 
-    [Fact]
+    [SkippableFact]
     public void GetTranslation_ShouldThrowIfKeyNotFound()
     {
+        Skip.IfNot(EasySave.Version.Major == 1);
+        
         var l10N = L10N.Get();
         l10N.SetLanguage(L10N.EN_US);
 

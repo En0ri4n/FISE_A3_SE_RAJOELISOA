@@ -5,6 +5,7 @@ namespace CLEA
 {
     public class EasySave
     {
+        public static readonly Version Version = new(1, 0, 0);
         private static readonly EasySave Instance = new();
 
         public ILogger Logger { get; }
