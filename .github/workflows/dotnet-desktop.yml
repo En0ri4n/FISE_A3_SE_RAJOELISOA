@@ -57,7 +57,7 @@ jobs:
 
     env:
       Solution_Name: EasySave-CLEA.sln
-      Test_Project_Path: EasySave-CLEA.csproj
+      Test_Project_Path: Easy-Save-CLEA-Tests\Easy-Save-CLEA-Tests.csproj
       # Wap_Project_Directory: EasySave-CLEA.Package             # Replace this if your actual package directory is named differently
       # Wap_Project_Path: EasySave-CLEA.Package/EasySave-CLEA.Package.wapproj
 
