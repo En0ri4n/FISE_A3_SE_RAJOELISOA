@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <RootNamespace>Easy_Save_CLEA_v1</RootNamespace>
+        <RootNamespace>EasySaveCore</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -14,6 +14,15 @@
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.4" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Assets\" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Assets\l10n\en_us.json" />
+      <EmbeddedResource Include="Assets\Lang\en_us.json" />
+      <None Remove="Assets\l10n\fr_fr.json" />
+      <EmbeddedResource Include="Assets\Lang\fr_fr.json" />
     </ItemGroup>
 
 </Project>

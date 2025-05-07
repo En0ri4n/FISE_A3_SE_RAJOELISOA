@@ -1,15 +1,16 @@
-using CLEA;
+using CLEA.EasySaveCore;
+using CLEA.EasySaveCore.L10N;
 
 namespace CLEA_Tests;
 
 public class TranslationSystemUnitTest
 {
-    private static readonly L10N.Lang FakeLang = new("fake_lang", "FakeLang");
+    private static readonly LangIdentifier FakeLang = new("fake_lang", "FakeLang");
     
     [SkippableFact]
     public void Get_ShouldReturnSingletonInstance()
     {
-        Skip.IfNot(EasySave.Version.Major == 1);
+        Skip.IfNot(EasySaveCore.Version.Major == 1);
         
         var instance1 = L10N.Get();
         var instance2 = L10N.Get();
@@ -20,10 +21,10 @@ public class TranslationSystemUnitTest
     [SkippableFact]
     public void SetLanguage_ShouldSwitchToEnglish()
     {
-        Skip.IfNot(EasySave.Version.Major == 1);
+        Skip.IfNot(EasySaveCore.Version.Major == 1);
         
         var l10N = L10N.Get();
-        l10N.SetLanguage(L10N.EN_US);
+        l10N.SetLanguage(Languages.EnUs);
 
         string result = l10N.GetTranslation("language");
         Assert.Equal("English", result);
@@ -32,7 +33,7 @@ public class TranslationSystemUnitTest
     [SkippableFact]
     public void SetLanguage_ShouldThrowIfUnsupported()
     {
-        Skip.IfNot(EasySave.Version.Major == 1);
+        Skip.IfNot(EasySaveCore.Version.Major == 1);
         
         var l10N = L10N.Get();
 
@@ -43,10 +44,10 @@ public class TranslationSystemUnitTest
     [SkippableFact]
     public void GetTranslation_ShouldThrowIfKeyNotFound()
     {
-        Skip.IfNot(EasySave.Version.Major == 1);
+        Skip.IfNot(EasySaveCore.Version.Major == 1);
         
         var l10N = L10N.Get();
-        l10N.SetLanguage(L10N.EN_US);
+        l10N.SetLanguage(Languages.EnUs);
 
         Assert.Throws<KeyNotFoundException>(() => l10N.GetTranslation("nonexistent.key"));
     }
