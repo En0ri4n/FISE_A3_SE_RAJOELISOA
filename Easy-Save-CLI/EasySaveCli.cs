@@ -5,10 +5,15 @@ namespace CLEA.EasySaveCLI;
 
 public class EasySaveCli
 {
-    public static void Main(string[] args)
+    public EasySaveCli()
+    {
+        DisplayMainMenu();
+    }
+    
+    private void DisplayMainMenu()
     {
         AnsiConsole.Clear();
-        AnsiConsole.MarkupLine("[bold green]Welcome to Spectre.Console![/]");
+        AnsiConsole.Write(new Text(L10N.Get().GetTranslation("main.title")).Centered());
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -17,7 +22,7 @@ public class EasySaveCli
                     L10N.Get().GetTranslation("main_menu.jobs"),
                     L10N.Get().GetTranslation("main_menu.change_language"),
                     L10N.Get().GetTranslation("main_menu.exit")
-                    ));
+                ));
 
         if (choice == L10N.Get().GetTranslation("main_menu.jobs"))
         {
@@ -27,9 +32,18 @@ public class EasySaveCli
         {
             AnsiConsole.MarkupLine("[bold yellow]Change language menu not implemented yet[/]");
         }
-        else
+        else if(choice == L10N.Get().GetTranslation("main_menu.exit"))
         {
-            Environment.Exit(0);
+            Exit();
         }
     }
+    
+    private void Exit()
+    {
+        AnsiConsole.Write(L10N.Get().GetTranslation("main.exiting"));
+        Thread.Sleep(1000);
+        Environment.Exit(0);
+    }
+    
+    public static void Main(string[] args) { new EasySaveCli(); }
 }
