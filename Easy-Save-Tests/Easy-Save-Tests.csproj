@@ -21,10 +21,11 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Easy-Save-CLEA-v1\Easy-Save-CLEA-v1.csproj" />
+      <ProjectReference Include="..\Easy-Save-Core\Easy-Save-Core.csproj" />
     </ItemGroup>
 
 </Project>

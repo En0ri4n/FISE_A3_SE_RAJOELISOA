@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Easy_Save_CLEA_CLI</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Spectre.Console" Version="0.50.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Easy-Save-Core\Easy-Save-Core.csproj" />
+    </ItemGroup>
+
+</Project>

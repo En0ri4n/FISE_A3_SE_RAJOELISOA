@@ -40,9 +40,9 @@ name: .NET Core Desktop
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "v1", "v2", "v3", "dev" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "v1", "v2", "v3" ]
 
 jobs:
 
@@ -57,7 +57,7 @@ jobs:
 
     env:
       Solution_Name: EasySave-CLEA.sln
-      Test_Project_Path: Easy-Save-CLEA-Tests\Easy-Save-CLEA-Tests.csproj
+      Test_Project_Path: Easy-Save-Tests\Easy-Save-Tests.csproj
       # Wap_Project_Directory: EasySave-CLEA.Package             # Replace this if your actual package directory is named differently
       # Wap_Project_Path: EasySave-CLEA.Package/EasySave-CLEA.Package.wapproj
 
