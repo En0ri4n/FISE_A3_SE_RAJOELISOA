@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using CLEA.EasySaveCore.utilities;
+using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models;
 

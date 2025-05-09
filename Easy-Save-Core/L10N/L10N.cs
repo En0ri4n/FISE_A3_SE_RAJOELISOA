@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using CLEA.EasySaveCore.utilities;
+using CLEA.EasySaveCore.Utilities;
 using Newtonsoft.Json;
 
 namespace CLEA.EasySaveCore.L10N;

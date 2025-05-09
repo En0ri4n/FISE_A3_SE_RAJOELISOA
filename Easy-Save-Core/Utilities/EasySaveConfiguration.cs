@@ -1,27 +1,31 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.L10N;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonException = System.Text.Json.JsonException;
 
-namespace CLEA.EasySaveCore.utilities;
+namespace CLEA.EasySaveCore.Utilities;
 
 public class EasySaveConfiguration : IJsonSerializable
 {
     private static readonly EasySaveConfiguration Instance = new EasySaveConfiguration();
 
-    public JsonObject Serialize()
+    public JsonObject JsonSerialize()
     {
         JsonObject data = new JsonObject();
         
         data.Add("version", EasySaveCore.Version.ToString());
         data.Add("language", L10N.L10N.Get().GetLanguage().LangId);
+        data.Add("dailyLogPath", "logs\\dailyLogs\\");
+        data.Add("statusLogPath", "logs\\statusLogs\\");
         return data;
     }
 
-    public void Deserialize(JsonObject data)
+    public void JsonDeserialize(JsonObject data)
     {
         // Version
         data.TryGetPropertyValue("version", out JsonNode? version);
@@ -38,12 +42,63 @@ public class EasySaveConfiguration : IJsonSerializable
             L10N.L10N.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ?? Languages.EnUs);
         else
             throw new JsonException("Language not found in configuration file");
+
+        // Daily log path
+        data.TryGetPropertyValue("dailyLogPath", out JsonNode? dailyLogPath);
+        if (dailyLogPath == null)
+        {
+            string path = "logs\\dailyLogs\\";
+            Logger.Get().SetStatusLogPath(path);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+        if (Directory.Exists(dailyLogPath.ToString()))
+        {
+            string path = dailyLogPath.ToString() ?? "logs\\dailyLogs\\";
+            Logger.Get().SetDailyLogPath(path);
+        }
+        else {
+            string path = dailyLogPath.ToString() ?? "logs\\dailyLogs\\";
+            Directory.CreateDirectory(path);
+        }
+
+        // Status log path
+        data.TryGetPropertyValue("statusLogPath", out JsonNode? statusLogPath);
+        if (statusLogPath == null)
+        {
+            string path = "logs\\statusLogs\\";
+            Logger.Get().SetStatusLogPath(path);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
+        if (Directory.Exists(statusLogPath.ToString()))
+        {
+            Logger.Get().SetStatusLogPath(statusLogPath.ToString());
+        }
+        else
+        {
+            Directory.CreateDirectory(statusLogPath.ToString());
+        }
     }
     
     public static void SaveConfiguration()
     {
-        JsonObject data = Instance.Serialize();
-        File.WriteAllText("config.json", data.ToJsonString());
+        JsonObject data = Instance.JsonSerialize();
+
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        File.WriteAllText("config.json", data.ToJsonString(options));
+
         EasySaveCore.Logger.Log(LogLevel.Debug, "Configuration file saved");
     }
     
@@ -51,7 +106,7 @@ public class EasySaveConfiguration : IJsonSerializable
     {
         FileStream fileStream = new FileStream("config.json", FileMode.OpenOrCreate);
         StreamReader streamReader = new StreamReader(fileStream);
-        
+
         string json = streamReader.ReadToEnd();
         
         streamReader.Close();
@@ -62,7 +117,7 @@ public class EasySaveConfiguration : IJsonSerializable
 
         if (json == String.Empty)
         {
-            JsonObject data = Instance.Serialize();
+            JsonObject data = Instance.JsonSerialize();
             File.WriteAllText("config.json", data.ToJsonString());
             EasySaveCore.Logger.Log(LogLevel.Debug, "Configuration file created");
             return;
@@ -73,7 +128,7 @@ public class EasySaveConfiguration : IJsonSerializable
         if (jsonObject == null)
             throw new JsonException("Failed to parse configuration file");
         
-        Instance.Deserialize(jsonObject.AsObject());
+        Instance.JsonDeserialize(jsonObject.AsObject());
         EasySaveCore.Logger.Log(LogLevel.Debug, "Successfully loaded configuration file");
     }
     

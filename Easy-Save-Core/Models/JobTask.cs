@@ -1,12 +1,18 @@
 ﻿using System.Text.Json.Nodes;
-using CLEA.EasySaveCore.utilities;
+using System.Xml;
+using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models;
 
-public abstract class JobTask : IJsonSerializable
+public abstract class JobTask : IJsonSerializable, IXmlSerializable
 {
     private readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
     
+    public List<Property<dynamic>> GetProperties()
+    {
+        return _properties;
+    }
+
     protected JobTask(string name)
     {
         _properties.Add(new Property<dynamic>("name", name));
@@ -35,7 +41,10 @@ public abstract class JobTask : IJsonSerializable
     
     public abstract void ExecuteTask();
 
-    public abstract JsonObject Serialize();
+    public abstract JsonObject JsonSerialize();
 
-    public abstract void Deserialize(JsonObject data);
+    public abstract void JsonDeserialize(JsonObject data);
+
+    public abstract XmlElement XmlSerialize();
+    public abstract void XmlDeserialize(XmlElement data);
 }

@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using CLEA.EasySaveCore.utilities;
+using CLEA.EasySaveCore.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore;
