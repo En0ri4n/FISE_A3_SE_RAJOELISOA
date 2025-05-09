@@ -2,8 +2,8 @@
 
 public class LangIdentifier(string langId, string name)
 {
-    public string LangId { get; } = langId;
-    private string _name = name;
+    public readonly string LangId = langId;
+    public readonly string Name = name;
 }
 
 public static class Languages

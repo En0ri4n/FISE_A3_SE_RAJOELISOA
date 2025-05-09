@@ -1,23 +1,32 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using CLEA.EasySaveCore.utilities;
+using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore;
 
 public class EasySaveCore
 {
     public static readonly Version Version = new(1, 0, 0);
-    private static readonly EasySaveCore Instance = new();
+    public static readonly string Name = "EasySave-CLEA";
 
-    private ILogger Logger { get; }
+    public static ILogger Logger;
+    private static readonly EasySaveCore Instance = new EasySaveCore();
+
 
     private EasySaveCore()
     {
+        Console.OutputEncoding = Encoding.Unicode;
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddSimpleConsole(options =>
         {
             options.IncludeScopes = true;
             options.SingleLine = true;
             options.TimestampFormat = "[HH:mm:ss] ";
         }));
-        Logger = factory.CreateLogger("EasySave-CLEA");
+        Logger = factory.CreateLogger(Name);
+        Logger.LogInformation("EasySave-CLEA initialized");
+        
+        EasySaveConfiguration.LoadConfiguration();
+        
         Logger.LogInformation("EasySave-CLEA started");
     }
 

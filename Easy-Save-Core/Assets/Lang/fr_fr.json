@@ -7,5 +7,7 @@
   "main_menu.title": "Menu principal de EasySave",
   "main_menu.jobs": "Jobs",
   "main_menu.change_language": "Changer de langue",
-  "main_menu.exit": "Quitter"
+  "main_menu.exit": "Quitter",
+  
+  "language_menu.title": "Sélectionner la langue"
 }

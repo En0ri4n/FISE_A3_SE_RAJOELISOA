@@ -1,18 +1,19 @@
 ﻿using System.Reflection;
+using CLEA.EasySaveCore.utilities;
 using Newtonsoft.Json;
 
 namespace CLEA.EasySaveCore.L10N;
 
 public class L10N
 {
-    private static readonly L10N Instance = new();
+    private static readonly L10N Instance = new L10N();
 
     private LangIdentifier _currentLang;
-    private Dictionary<string, string> _translations = new();
+    private Dictionary<string, string> _translations = new Dictionary<string, string>();
 
     private L10N()
     {
-        _currentLang = Languages.FrFr;
+        _currentLang = Languages.EnUs;
         LoadTranslations();
     }
 
@@ -23,6 +24,12 @@ public class L10N
 
         _currentLang = lang;
         LoadTranslations();
+        EasySaveConfiguration.SaveConfiguration();
+    }
+    
+    public LangIdentifier GetLanguage()
+    {
+        return _currentLang;
     }
 
     private void LoadTranslations()
@@ -56,7 +63,7 @@ public class L10N
     }
 
 
-    public string GetTranslation(string key)
+    public string GetTranslation(string key, string[]? parameters = null)
     {
         if (!_translations.TryGetValue(key, out var translation))
             throw new KeyNotFoundException($"Translation key '{key}' not found for language '{_currentLang}'");
@@ -68,6 +75,4 @@ public class L10N
     {
         return Instance;
     }
-
-    
 }

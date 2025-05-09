@@ -19,10 +19,7 @@
       <Folder Include="Assets\" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="Assets\l10n\en_us.json" />
-      <EmbeddedResource Include="Assets\Lang\en_us.json" />
-      <None Remove="Assets\l10n\fr_fr.json" />
-      <EmbeddedResource Include="Assets\Lang\fr_fr.json" />
+      <EmbeddedResource Include="Assets\Lang\*.json" />
     </ItemGroup>
 
 </Project>
