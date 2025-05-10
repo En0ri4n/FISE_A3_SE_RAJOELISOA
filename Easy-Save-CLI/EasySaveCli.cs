@@ -1,13 +1,22 @@
 ﻿using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.View;
 using Spectre.Console;
+using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace CLEA.EasySaveCLI;
 
 public sealed class EasySaveCli : EasySaveView
 {
+    public List<string> menuStack = new List<string>();
+
+    private void AddMenuToStack(string menuName)
+    {
+        menuStack.Add(menuName);
+    }
     private EasySaveCli()
     {
+        AddMenuToStack("Main");
         DisplayMainMenu();
     }
     
@@ -27,14 +36,12 @@ public sealed class EasySaveCli : EasySaveView
 
         if (choice == L10N.GetTranslation("main_menu.jobs"))
         {
-            FileBrowser.Browser browser = new FileBrowser.Browser();
-            browser.GetFolderPath().RunSynchronously();
-            
-            
+            AddMenuToStack("Job");
             DisplayJobMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.change_language"))
         {
+            AddMenuToStack("Language"); 
             DisplayLanguageMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
@@ -66,17 +73,18 @@ public sealed class EasySaveCli : EasySaveView
         {
             L10N.Get().SetLanguage(selectedLang);
         }
-        
-        DisplayMainMenu();
+        GoBack();
     }
     
     protected override void DisplayJobResultMenu()
     {
+        AddMenuToStack("JobResult");
         throw new NotImplementedException();
     }
     
     protected override void DisplayJobSettingsMenu()
     {
+        AddMenuToStack("JobSetting");
         throw new NotImplementedException();
     }
     
@@ -87,6 +95,32 @@ public sealed class EasySaveCli : EasySaveView
         AnsiConsole.Clear();
         Environment.Exit(0);
     }
-    
+
+    private void GoBack()
+    /// <summary>
+    /// Remove current menu from the menu Stack and go to the one before
+    /// </summary>
+    {
+        menuStack.RemoveAt(menuStack.Count - 1);
+        string target = menuStack.Last();
+        switch (target)
+        {
+            case "Main":
+                DisplayMainMenu();
+                break;
+            case "Job":
+                DisplayJobMenu();
+                break;
+            case "JobResult":
+                DisplayJobResultMenu();
+                break;
+            case "JobSetting":
+                DisplayJobSettingsMenu();
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     public static void Main(string[] args) { new EasySaveCli(); }
 }
