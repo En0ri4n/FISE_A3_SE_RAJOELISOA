@@ -5,6 +5,8 @@ namespace CLEA.EasySaveCore.Models;
 
 public interface IJob : IJsonSerializable
 {
+    string Name { get; }
+    
     List<Property<dynamic>> Properties { get; }
     
     bool IsRunning { get; }
