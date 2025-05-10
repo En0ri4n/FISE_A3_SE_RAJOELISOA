@@ -24,7 +24,6 @@ public sealed class EasySaveCli : EasySaveView
     {
         AnsiConsole.Clear();
         AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
-
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("main_menu.title"))
@@ -52,9 +51,43 @@ public sealed class EasySaveCli : EasySaveView
     
     protected override void DisplayJobMenu()
     {
-        throw new NotImplementedException();
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(L10N.GetTranslation("job_menu.title"))
+                .AddChoices(
+                    L10N.GetTranslation("job_menu.list_job"),
+                    L10N.GetTranslation("job_menu.create_job"),
+                    L10N.GetTranslation("job_menu.modify_job"),
+                    L10N.GetTranslation("job_menu.delete_job"),
+                    L10N.GetTranslation("go_back")
+                ));
+        if (choice == L10N.GetTranslation("job_menu.list_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.create_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.modify_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.delete_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("go_back"))
+        {
+            GoBack();
+        }
+        //Add for selecting Directory
+        //TODO : Add exit option to file explorer (maybe in another branch)
+        /*FileBrowser.Browser browser = new FileBrowser.Browser();
+        browser.GetFolderPath().RunSynchronously();*/
+        //throw new NotImplementedException();
     }
-    
+
     protected override void DisplayLanguageMenu()
     {
         AnsiConsole.Clear();
