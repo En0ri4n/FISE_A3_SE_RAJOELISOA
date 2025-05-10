@@ -8,7 +8,7 @@ public abstract class EasySaveView
     protected abstract void DisplayMainMenu();
     protected abstract void DisplayJobMenu();
     protected abstract void DisplayLanguageMenu();
-    
+    protected abstract void DisplayLogTypeMenu();
     protected abstract void DisplayJobResultMenu();
     protected abstract void DisplayJobSettingsMenu();
 }

@@ -14,6 +14,7 @@ public sealed class EasySaveCli : EasySaveView
     {
         menuStack.Add(menuName);
     }
+
     private EasySaveCli()
     {
         AddMenuToStack("Main");
@@ -30,7 +31,9 @@ public sealed class EasySaveCli : EasySaveView
                 .AddChoices(
                     L10N.GetTranslation("main_menu.jobs"),
                     L10N.GetTranslation("main_menu.change_language"),
-                    L10N.GetTranslation("main_menu.exit")
+                    L10N.GetTranslation("main_menu.change_log_type"),
+                    L10N.GetTranslation("main_menu.exit"),
+                    "test_file_explorer" //TODO REMOVE
                 ));
 
         if (choice == L10N.GetTranslation("main_menu.jobs"))
@@ -43,9 +46,19 @@ public sealed class EasySaveCli : EasySaveView
             AddMenuToStack("Language"); 
             DisplayLanguageMenu();
         }
+        else if (choice == L10N.GetTranslation("main_menu.change_language"))
+        {
+            AddMenuToStack("LogType");
+            DisplayLogTypeMenu();
+        }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
         {
             Exit();
+        }
+        else if (choice == "test_file_explorer")
+        {
+            FileBrowser.Browser browser = new FileBrowser.Browser();
+            browser.GetFolderPath().RunSynchronously();
         }
     }
     
@@ -108,7 +121,32 @@ public sealed class EasySaveCli : EasySaveView
         }
         GoBack();
     }
-    
+    protected override void DisplayLogTypeMenu()
+    {
+        AnsiConsole.Clear();
+        AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(L10N.GetTranslation("logtype_menu.title"))
+                .AddChoices(
+                    L10N.GetTranslation("logtype_menu.xml_log"),
+                    L10N.GetTranslation("logtype_menu.json_log"),
+                    L10N.GetTranslation("go_back")
+                ));
+
+        if (choice == L10N.GetTranslation("logtype_menu.xml_log"))
+        {
+
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("logtype_menu.json_log"))
+        {
+            throw new NotImplementedException();
+        }
+        GoBack();
+    }
+
     protected override void DisplayJobResultMenu()
     {
         AddMenuToStack("JobResult");
