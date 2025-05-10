@@ -15,8 +15,6 @@
   "language_menu.title": "Select Language (current : English - United States)",
 
   "logtype_menu.title": "Select File Type for Daily Logs",
-  "logtype_menu.xml_log": ".xml",
-  "logtype_menu.json_log": ".json",
 
   "job_menu.title": "Jobs",
   "job_menu.list_job": "Jobs List",

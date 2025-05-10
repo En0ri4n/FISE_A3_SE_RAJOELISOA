@@ -14,9 +14,7 @@
 
   "language_menu.title": "Sélectionner la langue (actuel : Français - France)",
 
-  "logtype_menu.title": "Selectionnez un type pour les logs journaliers", //TODO Discuss on how to call these in french
-  "logtype_menu.xml_log": ".xml",
-  "logtype_menu.json_log": ".json",
+  "logtype_menu.title": "Selectionnez un type pour les logs journaliers",
 
   "job_menu.title": "Jobs",
   "job_menu.list_job": "Liste des Jobs",

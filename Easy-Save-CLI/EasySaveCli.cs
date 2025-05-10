@@ -3,6 +3,7 @@ using CLEA.EasySaveCore.View;
 using Spectre.Console;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using System.Xml.Schema;
 
 namespace CLEA.EasySaveCLI;
 
@@ -130,17 +131,14 @@ public sealed class EasySaveCli : EasySaveView
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("logtype_menu.title"))
                 .AddChoices(
-                    L10N.GetTranslation("logtype_menu.xml_log"), //TODO : Should file types be translated ? Same in fr_fr & en_us
-                    L10N.GetTranslation("logtype_menu.json_log"),
+                    "XML",
+                    "JSON",
                     L10N.GetTranslation("go_back")
                 ));
 
-        if (choice == L10N.GetTranslation("logtype_menu.xml_log"))
+        if (choice != L10N.GetTranslation("go_back"))
         {
-            throw new NotImplementedException();
-        }
-        else if (choice == L10N.GetTranslation("logtype_menu.json_log"))
-        {
+            //ChangeLogType(choice);
             throw new NotImplementedException();
         }
         GoBack();
