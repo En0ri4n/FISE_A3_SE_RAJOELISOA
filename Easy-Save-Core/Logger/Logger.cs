@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore.Utilities;
 public enum Format
@@ -11,14 +12,39 @@ public enum Format
 
 public class Logger
 {
-    private string _dailyLogOutputPath { get; set; }
-    private string _statusLogOutputPath { get; set; }
+    private string _dailyLogPath;
+    public string DailyLogPath { get => _dailyLogPath; set => _dailyLogPath = value; }
+    
+    private string _statusLogPath;
+    public string StatusLogPath { get => _statusLogPath; set => _statusLogPath = value; }
 
+    private readonly ILogger _internalLogger;
 
-    private List<JobTask> _jobTasks = new List<JobTask>();
-    private List<StatusLogEntry> _statusLogEntries = new List<StatusLogEntry>();
+    private readonly List<JobTask> _jobTasks;
 
-    public static readonly Logger Instance = new Logger();
+    private static readonly Logger Instance = new Logger();
+    
+    private Logger()
+    {
+        _dailyLogPath = @"logs\daily\";
+        _statusLogPath = @"logs\status\";
+        
+        using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddSimpleConsole(options =>
+        {
+            options.IncludeScopes = true;
+            options.SingleLine = true;
+            options.TimestampFormat = "[HH:mm:ss] ";
+        }));
+        _internalLogger = factory.CreateLogger(EasySaveCore.Name);
+
+        _jobTasks = [];
+    }
+
+    public void Log(LogLevel level, string message)
+    {
+        _internalLogger.Log(level, message);
+        LogToFile(new StatusLogEntry(message));
+    }
 
     public static Logger Get()
     {
@@ -29,37 +55,10 @@ public class Logger
     {
         _jobTasks.Add(task);
     }
-
-    public void AddLogEntry(StatusLogEntry logEntry)
+    
+    public void SaveDailyLog(Format format)
     {
-        _statusLogEntries.Add(logEntry);
-    }
-
-    public string GetDailyLogPath()
-    {
-        return _dailyLogOutputPath;
-    }
-
-    public void SetDailyLogPath(string path)
-    {
-        _dailyLogOutputPath = path;
-    }
-
-
-    public string GetStatusLogPath()
-    {
-        return _statusLogOutputPath;
-    }
-
-    public void SetStatusLogPath(string path)
-    {
-        _statusLogOutputPath = path;
-    }
-
-
-    public void DailyLogToFile(Format format)
-    {
-        using (StreamWriter writer = new StreamWriter(GetDailyLogPath(), true))
+        using (StreamWriter writer = new StreamWriter(DailyLogPath, true))
         {
             if (format == Format.Json)
             {
@@ -76,25 +75,32 @@ public class Logger
         _jobTasks.Clear();
     }
 
-    public void StatusLogToFile()
+    public void LogToFile(StatusLogEntry logEntry)
     {
-        using (StreamWriter writer = new StreamWriter(GetStatusLogPath(), true))
-        {
-            foreach(StatusLogEntry LogEntry in  _statusLogEntries)
-            {
-                writer.WriteLine($"[{LogEntry.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")}]: {LogEntry.Message}");
-            }
-        }
-        _statusLogEntries.Clear();
+        // Create the directory if it doesn't exist
+        if (!Directory.Exists(_statusLogPath))
+            Directory.CreateDirectory(_statusLogPath);
+        
+        File.AppendAllText(GetStatusLogFileName(), $"[{logEntry.Timestamp:HH:mm:ss}]: {logEntry.Message}" + Environment.NewLine);
+    }
+    
+    private string GetStatusLogFileName()
+    {
+        return Path.Combine(_statusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log");
+    }
+    
+    private string GetDailyLogFileName()
+    {
+        return Path.Combine(_dailyLogPath, $"dailyLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
 
     public JsonObject JsonSerialize()
     {
         JsonObject json = new JsonObject();
 
-        foreach (JobTask JobTask in _jobTasks)
+        foreach (JobTask jobTask in _jobTasks)
         {
-            foreach (Property<dynamic> property in JobTask.GetProperties())
+            foreach (Property<dynamic> property in jobTask.GetProperties())
             {
                 json[property.Name] = property.Value?.ToString();
             }
@@ -107,10 +113,10 @@ public class Logger
         XmlDocument doc = new XmlDocument();
         XmlElement root = doc.CreateElement("LogEntries");
 
-        foreach (JobTask JobTask in _jobTasks)
+        foreach (JobTask jobTask in _jobTasks)
         {
             XmlElement entry = doc.CreateElement("LogEntry");
-            foreach (Property<dynamic> property in JobTask.GetProperties())
+            foreach (Property<dynamic> property in jobTask.GetProperties())
             {
                 XmlElement propElement = doc.CreateElement(property.Name);
                 propElement.InnerText = property.Value?.ToString() ?? string.Empty;

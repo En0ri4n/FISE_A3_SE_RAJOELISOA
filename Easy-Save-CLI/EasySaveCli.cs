@@ -1,5 +1,7 @@
 ﻿using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace CLEA.EasySaveCLI;
@@ -84,6 +86,7 @@ public sealed class EasySaveCli : EasySaveView
     {
         AnsiConsole.Write(L10N.GetTranslation("main.exiting"));
         Thread.Sleep(1000);
+        Logger.Get().Log(LogLevel.Information, "Quitting EasySave-CLEA..." + Environment.NewLine);
         AnsiConsole.Clear();
         Environment.Exit(0);
     }
