@@ -46,7 +46,7 @@ public sealed class EasySaveCli : EasySaveView
             AddMenuToStack("Language"); 
             DisplayLanguageMenu();
         }
-        else if (choice == L10N.GetTranslation("main_menu.change_language"))
+        else if (choice == L10N.GetTranslation("main_menu.change_log_type"))
         {
             AddMenuToStack("LogType");
             DisplayLogTypeMenu();
@@ -130,14 +130,13 @@ public sealed class EasySaveCli : EasySaveView
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("logtype_menu.title"))
                 .AddChoices(
-                    L10N.GetTranslation("logtype_menu.xml_log"),
+                    L10N.GetTranslation("logtype_menu.xml_log"), //TODO : Should file types be translated ? Same in fr_fr & en_us
                     L10N.GetTranslation("logtype_menu.json_log"),
                     L10N.GetTranslation("go_back")
                 ));
 
         if (choice == L10N.GetTranslation("logtype_menu.xml_log"))
         {
-
             throw new NotImplementedException();
         }
         else if (choice == L10N.GetTranslation("logtype_menu.json_log"))

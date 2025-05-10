@@ -7,11 +7,16 @@
   "main_menu.title": "EasySave Main Menu",
   "main_menu.jobs": "Jobs",
   "main_menu.change_language": "Change Language",
+  "main_menu.change_log_type": "Change Log Type",
   "main_menu.exit": "Quit",
 
   "go_back": "Go Back",
 
   "language_menu.title": "Select Language (current : English - United States)",
+
+  "logtype_menu.title": "Select File Type for Daily Logs",
+  "logtype_menu.xml_log": ".xml",
+  "logtype_menu.json_log": ".json",
 
   "job_menu.title": "Jobs",
   "job_menu.list_job": "Jobs List",
