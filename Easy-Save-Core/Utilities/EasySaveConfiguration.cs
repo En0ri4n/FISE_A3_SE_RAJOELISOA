@@ -1,27 +1,46 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.L10N;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using JsonException = System.Text.Json.JsonException;
 
-namespace CLEA.EasySaveCore.utilities;
+namespace CLEA.EasySaveCore.Utilities;
 
+/// <summary>
+/// Represents the configuration settings for the EasySave application.
+/// It includes all the necessary settings for the application to run correctly.
+/// When the application starts, it loads the configuration from a JSON file.
+/// If the file does not exist or is empty, it creates a default configuration.
+/// </summary>
 public class EasySaveConfiguration : IJsonSerializable
 {
+    private const string ConfigPath = "config.json";
     private static readonly EasySaveConfiguration Instance = new EasySaveConfiguration();
 
-    public JsonObject Serialize()
+    /// <summary>
+    /// Serialize the configuration to a JSON object.
+    /// All properties have default values and are not null to avoid serialization issues.
+    /// </summary>
+    /// <returns></returns>
+    public JsonObject JsonSerialize()
     {
-        JsonObject data = new JsonObject();
-        
-        data.Add("version", EasySaveCore.Version.ToString());
-        data.Add("language", L10N.L10N.Get().GetLanguage().LangId);
+        JsonObject data = new JsonObject
+        {
+            { "version", EasySaveCore.Version.ToString() },
+            { "language", L10N.L10N.Get().GetLanguage().LangId },
+            { "dailyLogPath", Logger.Get().DailyLogPath },
+            { "statusLogPath", Logger.Get().StatusLogPath }
+        };
+
         return data;
     }
 
-    public void Deserialize(JsonObject data)
+    /// <summary>
+    /// This method deserializes the JSON object into the configuration properties.
+    /// All properties are validated to ensure they are not null and have valid values.
+    /// </summary>
+    /// <param name="data">The JSON object representing the configuration to deserialize.</param>
+    public void JsonDeserialize(JsonObject data)
     {
         // Version
         data.TryGetPropertyValue("version", out JsonNode? version);
@@ -29,6 +48,20 @@ public class EasySaveConfiguration : IJsonSerializable
             throw new JsonException("Version not found in configuration file");
         if (version.ToString() != EasySaveCore.Version.ToString())
             throw new JsonException("Version mismatch in configuration file");
+
+        // Daily log path
+        data.TryGetPropertyValue("dailyLogPath", out JsonNode? dailyLogPath);
+        if (dailyLogPath != null && dailyLogPath.ToString().IndexOfAny(Path.GetInvalidPathChars()) == -1)
+            Logger.Get().DailyLogPath = dailyLogPath.ToString();
+        if (!Directory.Exists(Logger.Get().DailyLogPath))
+            Directory.CreateDirectory(Logger.Get().DailyLogPath);
+
+        // Status log path
+        data.TryGetPropertyValue("statusLogPath", out JsonNode? statusLogPath);
+        if (statusLogPath != null && statusLogPath.ToString().IndexOfAny(Path.GetInvalidPathChars()) == -1)
+            Logger.Get().StatusLogPath = statusLogPath.ToString();
+        if (!Directory.Exists(Logger.Get().StatusLogPath))
+            Directory.CreateDirectory(Logger.Get().StatusLogPath);
         
         // Language
         data.TryGetPropertyValue("language", out JsonNode? lang);
@@ -40,45 +73,49 @@ public class EasySaveConfiguration : IJsonSerializable
             throw new JsonException("Language not found in configuration file");
     }
     
+    /// <summary>
+    /// Saves the current configuration to a JSON file.
+    /// As <see cref="EasySaveConfiguration"/> is a singleton, it can be a static method.
+    /// </summary>
     public static void SaveConfiguration()
     {
-        JsonObject data = Instance.Serialize();
-        File.WriteAllText("config.json", data.ToJsonString());
-        EasySaveCore.Logger.Log(LogLevel.Debug, "Configuration file saved");
+        JsonObject data = Instance.JsonSerialize();
+        File.WriteAllText(ConfigPath, data.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
     }
     
+    /// <summary>
+    /// Loads the configuration from a JSON file.
+    /// As soon as the application starts, it loads the configuration from a JSON file.
+    /// As <see cref="EasySaveConfiguration"/> is a singleton, it can be a static method.
+    /// </summary>
     public static void LoadConfiguration()
     {
-        FileStream fileStream = new FileStream("config.json", FileMode.OpenOrCreate);
+        FileStream fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
         StreamReader streamReader = new StreamReader(fileStream);
-        
+
         string json = streamReader.ReadToEnd();
         
         streamReader.Close();
         fileStream.Close();
         
         if (json == null)
-            throw new FileNotFoundException("Configuration file not found", "config.json");
+            throw new FileNotFoundException("Configuration file not found", ConfigPath);
 
-        if (json == String.Empty)
+        if (json.Length == 0)
         {
-            JsonObject data = Instance.Serialize();
-            File.WriteAllText("config.json", data.ToJsonString());
-            EasySaveCore.Logger.Log(LogLevel.Debug, "Configuration file created");
+            Instance.JsonDeserialize(Instance.JsonSerialize()); // Create default configuration
+            SaveConfiguration();
+            
+            Logger.Log(LogLevel.Debug, "Configuration file successfully created");
             return;
         }
 
-        JsonNode? jsonObject = JsonNode.Parse(json);
-        
-        if (jsonObject == null)
+        JsonNode? configurationJson = JsonNode.Parse(json);
+
+        if (configurationJson == null)
             throw new JsonException("Failed to parse configuration file");
         
-        Instance.Deserialize(jsonObject.AsObject());
-        EasySaveCore.Logger.Log(LogLevel.Debug, "Successfully loaded configuration file");
-    }
-    
-    public static EasySaveConfiguration Get()
-    {
-        return Instance;
+        Instance.JsonDeserialize(configurationJson.AsObject());
+        Logger.Log(LogLevel.Debug, "Successfully loaded configuration file");
     }
 }
