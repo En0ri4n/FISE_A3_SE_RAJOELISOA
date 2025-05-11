@@ -38,7 +38,7 @@ public class Logger
 
     public static void Log(LogLevel level, string message)
     {
-        Instance._internalLogger.Log(level, message);
+        // Instance._internalLogger.Log(level, message);
         Instance.LogToFile(new StatusLogEntry(level, message));
     }
 
