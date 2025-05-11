@@ -6,19 +6,27 @@ using System.Linq.Expressions;
 using System.Xml.Schema;
 
 namespace CLEA.EasySaveCLI;
-
 public sealed class EasySaveCli : EasySaveView
 {
-    public List<string> menuStack = new List<string>();
-
-    private void AddMenuToStack(string menuName)
+    enum Menu
     {
-        menuStack.Add(menuName);
+        Main,
+        Job,
+        JobResult,
+        JobSetting,
+        Language,
+        LogType
+    }
+    private readonly List<Menu> menuHistory = new List<Menu>();
+
+    private void AddToMenuHistory(Menu menuName)
+    {
+        menuHistory.Add(menuName);
     }
 
     private EasySaveCli()
     {
-        AddMenuToStack("Main");
+        AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
     }
     
@@ -39,17 +47,17 @@ public sealed class EasySaveCli : EasySaveView
 
         if (choice == L10N.GetTranslation("main_menu.jobs"))
         {
-            AddMenuToStack("Job");
+            AddToMenuHistory(Menu.Job);
             DisplayJobMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.change_language"))
         {
-            AddMenuToStack("Language"); 
+            AddToMenuHistory(Menu.Language); 
             DisplayLanguageMenu();
         }
         else if (choice == L10N.GetTranslation("main_menu.change_log_type"))
         {
-            AddMenuToStack("LogType");
+            AddToMenuHistory(Menu.LogType);
             DisplayLogTypeMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
@@ -146,13 +154,13 @@ public sealed class EasySaveCli : EasySaveView
 
     protected override void DisplayJobResultMenu()
     {
-        AddMenuToStack("JobResult");
+        AddToMenuHistory(Menu.JobResult);
         throw new NotImplementedException();
     }
     
     protected override void DisplayJobSettingsMenu()
     {
-        AddMenuToStack("JobSetting");
+        AddToMenuHistory(Menu.JobSetting);
         throw new NotImplementedException();
     }
     
@@ -164,25 +172,26 @@ public sealed class EasySaveCli : EasySaveView
         Environment.Exit(0);
     }
 
+
     private void GoBack()
     /// <summary>
-    /// Remove current menu from the menu Stack and go to the one before
+    /// Remove current menu from the menu History and go to the one before
     /// </summary>
     {
-        menuStack.RemoveAt(menuStack.Count - 1);
-        string target = menuStack.Last();
+        menuHistory.RemoveAt(menuHistory.Count - 1);
+        Menu target = menuHistory.Last();
         switch (target)
         {
-            case "Main":
+            case Menu.Main:
                 DisplayMainMenu();
                 break;
-            case "Job":
+            case Menu.Job:
                 DisplayJobMenu();
                 break;
-            case "JobResult":
+            case Menu.JobResult:
                 DisplayJobResultMenu();
                 break;
-            case "JobSetting":
+            case Menu.JobSetting:
                 DisplayJobSettingsMenu();
                 break;
             default:
