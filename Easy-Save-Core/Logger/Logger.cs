@@ -4,12 +4,18 @@ using CLEA.EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore.Utilities;
+
 public enum Format
 {
     Json,
     Xml
 }
 
+/// <summary>
+/// Represents a logger that handles logging messages to both daily and status log files.
+/// It provides methods to save logs in different formats (JSON or XML).
+/// It also implements the singleton pattern to ensure only one instance of the logger exists.
+/// </summary>
 public class Logger
 {
     private string _dailyLogPath;
@@ -22,6 +28,9 @@ public class Logger
     
     private static readonly Logger Instance = new Logger();
     
+    /// <summary>
+    /// Singleton instance of the Logger class.
+    /// </summary>
     private Logger()
     {
         _dailyLogPath = @"logs\daily\";
@@ -36,17 +45,29 @@ public class Logger
         _internalLogger = factory.CreateLogger(EasySaveCore.Name);
     }
 
+    /// <summary>
+    /// Logs a message to the status log file.
+    /// </summary>
     public static void Log(LogLevel level, string message)
     {
         // Instance._internalLogger.Log(level, message);
         Instance.LogToFile(new StatusLogEntry(level, message));
     }
 
+    /// <summary>
+    /// Gets the singleton instance of the Logger class.
+    /// </summary>
     public static Logger Get()
     {
         return Instance;
     }
     
+    /// <summary>
+    /// Saves a daily log for the specified job and its associated tasks in the given format (JSON or XML).
+    /// </summary>
+    /// <param name="job">The job whose properties are to be logged.</param>
+    /// <param name="tasks">The list of tasks associated with the job.</param>
+    /// <param name="format">The format in which the log should be saved (JSON or XML).</param>
     public void SaveDailyLog(IJob job, List<JobTask> tasks, Format format)
     {
         using StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true);
@@ -69,21 +90,34 @@ public class Logger
         writer.WriteLine();
     }
 
+    /// <summary>
+    /// Logs a message to the status log file.
+    /// </summary>
     private void LogToFile(StatusLogEntry logEntry)
     {
         File.AppendAllText(GetStatusLogFilePath(), $"[{logEntry.Timestamp:HH:mm:ss}][{logEntry.Level.ToString().ToUpper()}]: {logEntry.Message}" + Environment.NewLine);
     }
     
+    /// <summary>
+    /// Retrieves the path to the status log file.
+    /// </summary>
     private string GetStatusLogFilePath()
     {
         return Path.Combine(_statusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
     
+    /// <summary>
+    /// Retrieves the path to the daily log file.
+    /// </summary>
     private string GetDailyLogFilePath()
     {
         return Path.Combine(_dailyLogPath, $"dailyLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
 
+    /// <summary>
+    /// Serializes the job and its tasks to JSON format.
+    /// Creates a JSON object with job properties and an array of task objects.
+    /// </summary>
     private JsonObject JsonSerialize(IJob job, List<JobTask> tasks)
     {
         JsonObject json = new JsonObject();
@@ -107,6 +141,10 @@ public class Logger
         return json;
     }
 
+    /// <summary>
+    /// Serializes the job and its tasks to XML format.
+    /// Creates an XML document with job properties and a list of task elements.
+    /// </summary>
     private XmlElement XmlSerialize(IJob job, List<JobTask> tasks)
     {
         XmlDocument doc = new XmlDocument();
@@ -141,6 +179,9 @@ public class Logger
     }
 }
 
+/// <summary>
+/// Holds a log entry with its level, message, and timestamp.
+/// </summary>
 public class StatusLogEntry(LogLevel level, string message)
 {
     public LogLevel Level { get; } = level;

@@ -6,11 +6,22 @@ using JsonException = System.Text.Json.JsonException;
 
 namespace CLEA.EasySaveCore.Utilities;
 
+/// <summary>
+/// Represents the configuration settings for the EasySave application.
+/// It includes all the necessary settings for the application to run correctly.
+/// When the application starts, it loads the configuration from a JSON file.
+/// If the file does not exist or is empty, it creates a default configuration.
+/// </summary>
 public class EasySaveConfiguration : IJsonSerializable
 {
     private const string ConfigPath = "config.json";
     private static readonly EasySaveConfiguration Instance = new EasySaveConfiguration();
 
+    /// <summary>
+    /// Serialize the configuration to a JSON object.
+    /// All properties have default values and are not null to avoid serialization issues.
+    /// </summary>
+    /// <returns></returns>
     public JsonObject JsonSerialize()
     {
         JsonObject data = new JsonObject
@@ -24,6 +35,11 @@ public class EasySaveConfiguration : IJsonSerializable
         return data;
     }
 
+    /// <summary>
+    /// This method deserializes the JSON object into the configuration properties.
+    /// All properties are validated to ensure they are not null and have valid values.
+    /// </summary>
+    /// <param name="data">The JSON object representing the configuration to deserialize.</param>
     public void JsonDeserialize(JsonObject data)
     {
         // Version
@@ -57,12 +73,21 @@ public class EasySaveConfiguration : IJsonSerializable
             throw new JsonException("Language not found in configuration file");
     }
     
+    /// <summary>
+    /// Saves the current configuration to a JSON file.
+    /// As <see cref="EasySaveConfiguration"/> is a singleton, it can be a static method.
+    /// </summary>
     public static void SaveConfiguration()
     {
         JsonObject data = Instance.JsonSerialize();
         File.WriteAllText(ConfigPath, data.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
     }
     
+    /// <summary>
+    /// Loads the configuration from a JSON file.
+    /// As soon as the application starts, it loads the configuration from a JSON file.
+    /// As <see cref="EasySaveConfiguration"/> is a singleton, it can be a static method.
+    /// </summary>
     public static void LoadConfiguration()
     {
         FileStream fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
