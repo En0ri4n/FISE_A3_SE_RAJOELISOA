@@ -172,11 +172,10 @@ public sealed class EasySaveCli : EasySaveView
         Environment.Exit(0);
     }
 
-
-    private void GoBack()
     /// <summary>
     /// Remove current menu from the menu History and go to the one before
     /// </summary>
+    private void GoBack()
     {
         menuHistory.RemoveAt(menuHistory.Count - 1);
         Menu target = menuHistory.Last();
