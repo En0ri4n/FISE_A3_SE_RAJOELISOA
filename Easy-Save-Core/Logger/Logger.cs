@@ -40,10 +40,10 @@ public class Logger
         _jobTasks = [];
     }
 
-    public void Log(LogLevel level, string message)
+    public static void Log(LogLevel level, string message)
     {
-        _internalLogger.Log(level, message);
-        LogToFile(new StatusLogEntry(message));
+        Instance._internalLogger.Log(level, message);
+        Instance.LogToFile(new StatusLogEntry(level, message));
     }
 
     public static Logger Get()
@@ -58,43 +58,45 @@ public class Logger
     
     public void SaveDailyLog(Format format)
     {
-        using (StreamWriter writer = new StreamWriter(DailyLogPath, true))
+        using (StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true))
         {
-            if (format == Format.Json)
+            string fileContent;
+            switch (format)
             {
-                JsonObject json = JsonSerialize();
-                writer.WriteLine(json.ToString());
+                default:
+                case Format.Json:
+                    JsonObject json = JsonSerialize();
+                    fileContent = json.ToString();
+                    Log(LogLevel.Information, $"Saving daily log to file in JSON format at {GetDailyLogFilePath()}");
+                    break;
+                case Format.Xml:
+                    XmlElement xml = XmlSerialize();
+                    fileContent = xml.OuterXml;
+                    Log(LogLevel.Information, $"Saving daily log to file in XML format at {GetDailyLogFilePath()}");
+                    break;
             }
-            else if (format == Format.Xml)
-            {
-                XmlElement xml = XmlSerialize();
-                writer.WriteLine(xml.OuterXml);
-            }
+            writer.WriteLine(fileContent);
             writer.WriteLine();
         }
         _jobTasks.Clear();
     }
 
-    public void LogToFile(StatusLogEntry logEntry)
+    private void LogToFile(StatusLogEntry logEntry)
     {
-        // Create the directory if it doesn't exist
-        if (!Directory.Exists(_statusLogPath))
-            Directory.CreateDirectory(_statusLogPath);
-        
-        File.AppendAllText(GetStatusLogFileName(), $"[{logEntry.Timestamp:HH:mm:ss}]: {logEntry.Message}" + Environment.NewLine);
+        File.AppendAllText(GetStatusLogFilePath(), $"[{logEntry.Timestamp:HH:mm:ss}][{logEntry.Level.ToString().ToUpper()}]: {logEntry.Message}" + Environment.NewLine);
     }
     
-    private string GetStatusLogFileName()
+    private string GetStatusLogFilePath()
     {
         return Path.Combine(_statusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
     
-    private string GetDailyLogFileName()
+    private string GetDailyLogFilePath()
     {
         return Path.Combine(_dailyLogPath, $"dailyLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
 
-    public JsonObject JsonSerialize()
+    private JsonObject JsonSerialize()
     {
         JsonObject json = new JsonObject();
 
@@ -108,7 +110,7 @@ public class Logger
         return json;
     }
 
-    public XmlElement XmlSerialize()
+    private XmlElement XmlSerialize()
     {
         XmlDocument doc = new XmlDocument();
         XmlElement root = doc.CreateElement("LogEntries");
@@ -128,4 +130,11 @@ public class Logger
         doc.AppendChild(root);
         return root;
     }
+}
+
+public class StatusLogEntry(LogLevel level, string message)
+{
+    public LogLevel Level { get; private set; } = level;
+    public string Message { get; private set; } = message;
+    public DateTime Timestamp { get; private set; } = DateTime.Now;
 }

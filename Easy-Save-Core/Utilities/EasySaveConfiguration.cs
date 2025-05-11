@@ -81,7 +81,7 @@ public class EasySaveConfiguration : IJsonSerializable
             Instance.JsonDeserialize(Instance.JsonSerialize()); // Create default configuration
             SaveConfiguration();
             
-            Logger.Get().Log(LogLevel.Debug, "Configuration file successfully created");
+            Logger.Log(LogLevel.Debug, "Configuration file successfully created");
             return;
         }
 
@@ -91,6 +91,6 @@ public class EasySaveConfiguration : IJsonSerializable
             throw new JsonException("Failed to parse configuration file");
         
         Instance.JsonDeserialize(configurationJson.AsObject());
-        Logger.Get().Log(LogLevel.Debug, "Successfully loaded configuration file");
+        Logger.Log(LogLevel.Debug, "Successfully loaded configuration file");
     }
 }

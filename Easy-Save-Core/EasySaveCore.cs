@@ -23,7 +23,7 @@ public class EasySaveCore
         // like emojis or non-Latin scripts.
         Console.OutputEncoding = Encoding.Unicode;
 
-        Logger.Get().Log(LogLevel.Information, "EasySave-CLEA started");
+        Logger.Log(LogLevel.Information, "EasySave-CLEA started");
     }
 
     public static EasySaveCore Get()

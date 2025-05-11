@@ -25,7 +25,7 @@ public class L10N
 
         _currentLang = lang;
         LoadTranslations();
-        Logger.Get().Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
+        Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
         EasySaveConfiguration.SaveConfiguration();
     }
     
