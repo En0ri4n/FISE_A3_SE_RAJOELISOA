@@ -15,7 +15,6 @@ namespace CLEA.EasySaveCLI;
 
 public sealed class EasySaveCli : EasySaveView<BackupJob>
 {
-    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
     enum Menu
     {
         Main,
@@ -32,7 +31,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         menuHistory.Add(menuName);
     }
 
-    private EasySaveCli()
+    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
 
     {
         AddToMenuHistory(Menu.Main);
@@ -72,11 +71,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         {
             Exit();
         }
-        else if (choice == "test_file_explorer")
+        /*else if (choice == "test_file_explorer")
         {
             FileBrowser.Browser browser = new FileBrowser.Browser();
             browser.GetFolderPath().RunSynchronously();
-        }
+        }*/
     }
     
     protected override void DisplayJobMenu()
@@ -146,7 +145,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title(L10N.GetTranslation("logtype_menu.title"))
+                .Title(L10N.GetTranslation("logtype_menu.title")) //TODO Add the current file type in the menu (when implemented)
                 .AddChoices(
                     "XML",
                     "JSON",
