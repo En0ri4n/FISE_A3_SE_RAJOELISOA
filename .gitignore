@@ -1,4 +1,5 @@
 .idea/
+.run/
 build/
 bin/
 obj/
@@ -6,3 +7,4 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+EasySave-CLEA.sln.DotSettings.user

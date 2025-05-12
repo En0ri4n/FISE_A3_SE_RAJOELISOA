@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
-using CLEA.EasySaveCore.utilities;
+using CLEA.EasySaveCore.Utilities;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace CLEA.EasySaveCore.L10N;
@@ -24,6 +25,7 @@ public class L10N
 
         _currentLang = lang;
         LoadTranslations();
+        Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
         EasySaveConfiguration.SaveConfiguration();
     }
     

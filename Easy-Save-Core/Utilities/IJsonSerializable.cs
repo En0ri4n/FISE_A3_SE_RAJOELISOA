@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Nodes;
+using CLEA.EasySaveCore.Models;
 
-namespace CLEA.EasySaveCore.utilities;
+namespace CLEA.EasySaveCore.Utilities;
 
 public interface IJsonSerializable
 {
-    public JsonObject Serialize();
-    public void Deserialize(JsonObject data);
+    public JsonObject JsonSerialize();
+    public void JsonDeserialize(JsonObject data);
 }
