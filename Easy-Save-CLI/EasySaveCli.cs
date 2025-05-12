@@ -1,13 +1,21 @@
-﻿using CLEA.EasySaveCore.L10N;
+﻿using CLEA.EasySaveCore;
+using CLEA.EasySaveCore.Jobs.Backup;
+using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
+using EasySaveCore.Models;
+using FileBrowser;
+using Microsoft.Extensions.Logging;
 using Spectre.Console;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Xml.Schema;
 
 namespace CLEA.EasySaveCLI;
-public sealed class EasySaveCli : EasySaveView
+
+public sealed class EasySaveCli : EasySaveView<BackupJob>
 {
+    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
     enum Menu
     {
         Main,
@@ -25,6 +33,7 @@ public sealed class EasySaveCli : EasySaveView
     }
 
     private EasySaveCli()
+
     {
         AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
@@ -124,9 +133,9 @@ public sealed class EasySaveCli : EasySaveView
         
         LangIdentifier selectedLang = Languages.SupportedLangs.First(li => li.Name == choice);
         
-        if (selectedLang != L10N.Get().GetLanguage())
+        if (selectedLang != L10N.GetLanguage())
         {
-            L10N.Get().SetLanguage(selectedLang);
+            L10N.SetLanguage(selectedLang);
         }
         GoBack();
     }
@@ -168,6 +177,7 @@ public sealed class EasySaveCli : EasySaveView
     {
         AnsiConsole.Write(L10N.GetTranslation("main.exiting"));
         Thread.Sleep(1000);
+        EasySaveCore.Utilities.Logger<BackupJob>.Log(LogLevel.Information, "Quitting EasySave-CLEA..." + Environment.NewLine);
         AnsiConsole.Clear();
         Environment.Exit(0);
     }
@@ -198,5 +208,9 @@ public sealed class EasySaveCli : EasySaveView
         }
     }
 
+}
+
+public class Program
+{
     public static void Main(string[] args) { new EasySaveCli(); }
 }

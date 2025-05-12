@@ -1,10 +1,13 @@
-﻿namespace CLEA.EasySaveCore.View;
+﻿using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.Models;
 
-public abstract class EasySaveView
+namespace CLEA.EasySaveCore.View;
+
+public abstract class EasySaveView<TJob>(EasySaveCore<TJob> core) where TJob : IJob
 {
-    protected readonly L10N.L10N L10N = CLEA.EasySaveCore.L10N.L10N.Get();
-    protected readonly EasySaveCore Core = EasySaveCore.Get();
-    
+    protected readonly L10N<TJob> L10N = L10N<TJob>.Get();
+    public readonly EasySaveCore<TJob> Core = core;
+
     protected abstract void DisplayMainMenu();
     protected abstract void DisplayJobMenu();
     protected abstract void DisplayLanguageMenu();

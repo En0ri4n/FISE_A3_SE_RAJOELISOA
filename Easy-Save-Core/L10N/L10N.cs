@@ -1,12 +1,14 @@
 ﻿using System.Reflection;
-using CLEA.EasySaveCore.utilities;
+using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace CLEA.EasySaveCore.L10N;
 
-public class L10N
+public class L10N<TJob> where TJob : IJob
 {
-    private static readonly L10N Instance = new L10N();
+    private static readonly L10N<TJob> Instance = new L10N<TJob>();
 
     private LangIdentifier _currentLang;
     private Dictionary<string, string> _translations = new Dictionary<string, string>();
@@ -24,7 +26,8 @@ public class L10N
 
         _currentLang = lang;
         LoadTranslations();
-        EasySaveConfiguration.SaveConfiguration();
+        Utilities.Logger<TJob>.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
+        EasySaveConfiguration<TJob>.SaveConfiguration();
     }
     
     public LangIdentifier GetLanguage()
@@ -71,7 +74,7 @@ public class L10N
         return translation;
     }
 
-    public static L10N Get()
+    public static L10N<TJob> Get()
     {
         return Instance;
     }

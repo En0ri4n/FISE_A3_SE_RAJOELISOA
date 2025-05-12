@@ -6,7 +6,7 @@ public abstract class JobExecutionStrategy
 
     private StrategyType _type;
 
-    private JobStatus _status;
+    private ExecutionStatus _status;
     
     public IJob Job
     {
@@ -20,7 +20,7 @@ public abstract class JobExecutionStrategy
         set => _type = value;
     }
     
-    public JobStatus Status
+    public ExecutionStatus Status
     {
         get => _status;
         set => _status = value;
@@ -30,7 +30,7 @@ public abstract class JobExecutionStrategy
     {
         _job = job;
         _type = strategyType;
-        _status = JobStatus.NotStarted;
+        _status = ExecutionStatus.NotStarted;
     }
 
     public abstract void ExecuteJob();
@@ -41,11 +41,13 @@ public abstract class JobExecutionStrategy
         Differential
     }
     
-    public enum JobStatus
+    public enum ExecutionStatus
     {
         NotStarted,
+        CanNotStart,
         InProgress,
         Completed,
+        Skipped,
         Failed
     }
 }
