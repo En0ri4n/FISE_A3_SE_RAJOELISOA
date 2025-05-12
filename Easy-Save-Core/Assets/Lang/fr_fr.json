@@ -5,7 +5,7 @@
   "main.exiting": "Fermeture de l'application...",
 
   "main_menu.title": "Menu principal de EasySave",
-  "main_menu.jobs": "Jobs",
+  "main_menu.jobs": "Gérer les Jobs",
   "main_menu.change_language": "Changer de langue (actuel : fr_fr)",
   "main_menu.change_log_type": "Changer de type de Log (actuel : {LOGTYPE})",
   "main_menu.exit": "Quitter",
