@@ -3,7 +3,7 @@ using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models;
 
-public interface IJob : IJsonSerializable
+public interface IJob : IJsonSerializable, IXmlSerializable
 {
     string Name { get; }
     
@@ -12,5 +12,5 @@ public interface IJob : IJsonSerializable
     bool IsRunning { get; set; }
     
     bool CanRunJob();
-    bool RunJob(bool async);
+    JobExecutionStrategy.ExecutionStatus RunJob(JobExecutionStrategy.StrategyType strategyType);
 }

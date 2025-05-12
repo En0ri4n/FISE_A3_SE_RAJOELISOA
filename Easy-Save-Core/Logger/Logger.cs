@@ -16,7 +16,7 @@ public enum Format
 /// It provides methods to save logs in different formats (JSON or XML).
 /// It also implements the singleton pattern to ensure only one instance of the logger exists.
 /// </summary>
-public class Logger
+public class Logger<TJob> where TJob : IJob
 {
     private string _dailyLogPath;
     public string DailyLogPath { get => _dailyLogPath; set => _dailyLogPath = value; }
@@ -26,7 +26,7 @@ public class Logger
 
     private readonly ILogger _internalLogger;
     
-    private static readonly Logger Instance = new Logger();
+    private static readonly Logger<TJob> Instance = new Logger<TJob>();
     
     /// <summary>
     /// Singleton instance of the Logger class.
@@ -42,7 +42,7 @@ public class Logger
             options.SingleLine = true;
             options.TimestampFormat = "[HH:mm:ss] ";
         }));
-        _internalLogger = factory.CreateLogger(EasySaveCore.Name);
+        _internalLogger = factory.CreateLogger(EasySaveCore<TJob>.Name);
     }
 
     /// <summary>
@@ -50,14 +50,19 @@ public class Logger
     /// </summary>
     public static void Log(LogLevel level, string message)
     {
-        // Instance._internalLogger.Log(level, message);
-        Instance.LogToFile(new StatusLogEntry(level, message));
+        Instance.LogInternal(level, message);
+    }
+
+    public void LogInternal(LogLevel level, string message)
+    {
+        // _internalLogger.Log(level, message);
+        LogToFile(new StatusLogEntry(level, message));
     }
 
     /// <summary>
     /// Gets the singleton instance of the Logger class.
     /// </summary>
-    public static Logger Get()
+    public static Logger<TJob> Get()
     {
         return Instance;
     }

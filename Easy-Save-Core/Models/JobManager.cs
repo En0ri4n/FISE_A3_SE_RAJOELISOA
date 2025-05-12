@@ -1,23 +1,19 @@
-﻿using CLEA.EasySaveCore.utilities;
+﻿using System.Text.Json.Nodes;
 
 namespace CLEA.EasySaveCore.Models;
 
-public abstract class JobManager<T> where T : IJob
+public abstract class JobManager<TJob>(int size) where TJob : IJob
 {
-    protected List<T> Jobs { get; }
-    protected int Size { get; }
+    protected List<TJob> Jobs { get; } = new List<TJob>(size);
+    protected int Size { get; } = size;
 
-    protected JobManager(int size)
-    {
-        Jobs = new List<T>(size);
-        Size = size;
-    }
+    public abstract bool AddJob(TJob job);
 
-    protected abstract bool AddJob(T job);
+    public abstract bool AddJob(JsonObject? jobJson);
 
-    protected abstract bool RemoveJob(T job);
-    
-    protected bool RemoveJob(string name)
+    public abstract bool RemoveJob(TJob job);
+
+    public bool RemoveJob(string name)
     {
         var job = Jobs.FirstOrDefault(j => j.Name == name);
         if (job == null)
@@ -26,7 +22,7 @@ public abstract class JobManager<T> where T : IJob
         return RemoveJob(job);
     }
 
-    protected bool RemoveAllJobs()
+    public bool RemoveAllJobs()
     {
         if (Jobs.Count <= 0)
             return false;
@@ -36,18 +32,23 @@ public abstract class JobManager<T> where T : IJob
         
         return true;
     }
-    
-    protected T GetJob(string name)
+
+    public TJob GetJob(string name)
     {
         var job = Jobs.FirstOrDefault(j => j.Name == name);
         
         if (job == null)
-            throw new Exception($"IJob[{typeof(T)}] with name {name} not found");
+            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
         
         return job;
     }
     
-    protected abstract void DoAllJobs(ExecutionFlowType flowType);
+    public List<TJob> GetJobs()
+    {
+        return Jobs;
+    }
     
-    protected abstract void DoJob(string name);
+    protected abstract void DoAllJobs(ExecutionFlowType flowType, JobExecutionStrategy.StrategyType strategy);
+    
+    protected abstract void DoJob(string name, JobExecutionStrategy.StrategyType strategy);
 }
