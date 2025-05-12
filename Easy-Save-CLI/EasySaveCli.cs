@@ -127,14 +127,16 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("language_menu.title"))
                 .AddChoices(
-                    Languages.SupportedLangs.Select(li => li.Name).ToArray()
+                    Languages.SupportedLangs.Select(li => li.Name).ToArray().Append(L10N.GetTranslation("go_back"))
                 ));
-        
-        LangIdentifier selectedLang = Languages.SupportedLangs.First(li => li.Name == choice);
-        
-        if (selectedLang != L10N.GetLanguage())
+        if (choice != L10N.GetTranslation("go_back"))
         {
-            L10N.SetLanguage(selectedLang);
+            LangIdentifier selectedLang = Languages.SupportedLangs.First(li => li.Name == choice);
+
+            if (selectedLang != L10N.GetLanguage())
+            {
+                L10N.SetLanguage(selectedLang);
+            }
         }
         GoBack();
     }
