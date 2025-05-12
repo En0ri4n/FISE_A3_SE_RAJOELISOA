@@ -6,8 +6,11 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
 {
     protected List<TJob> Jobs { get; } = new List<TJob>(size);
     protected int Size { get; } = size;
+    
+    public ExecutionFlowType ExecutionFlowType { get; set; } = ExecutionFlowType.Sequential;
+    public JobExecutionStrategy.StrategyType Strategy { get; set; } = JobExecutionStrategy.StrategyType.Full;
 
-    public abstract bool AddJob(TJob job);
+    public abstract bool AddJob(TJob job, bool save);
 
     public abstract bool AddJob(JsonObject? jobJson);
 
@@ -68,7 +71,17 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
         return Jobs;
     }
     
-    protected abstract void DoAllJobs(ExecutionFlowType flowType, JobExecutionStrategy.StrategyType strategy);
-    
-    protected abstract void DoJob(string name, JobExecutionStrategy.StrategyType strategy);
+    protected abstract void DoAllJobs();
+
+    public void DoJob(string name)
+    {
+        var job = Jobs.FirstOrDefault(j => j.Name == name);
+        
+        if (job == null)
+            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
+        
+        DoJob(job);
+    }
+
+    public abstract void DoJob(TJob job);
 }
