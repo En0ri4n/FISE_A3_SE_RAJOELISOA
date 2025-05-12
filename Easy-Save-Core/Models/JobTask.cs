@@ -5,7 +5,7 @@ namespace CLEA.EasySaveCore.Models;
 
 public abstract class JobTask : IJsonSerializable
 {
-    private readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
+    protected readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
     
     protected JobTask(string name)
     {

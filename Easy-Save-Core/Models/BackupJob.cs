@@ -14,30 +14,35 @@ namespace EasySaveCore.Models
     internal class BackupJob : IJob
     {
 
-        public Property<string> Name;
-        public Property<DateTime> Timestamp;
-        public Property<string> Source;
-        public Property<string> Target;
-        public Property<long> Size;
-        public Property<long> TrasferTime;
+        public Property<dynamic> Name;
+        public Property<dynamic> Timestamp;
+        public Property<dynamic> Source;
+        public Property<dynamic> Target;
+        public Property<dynamic> Size;
+        public Property<dynamic> TransferTime;
 
-        public bool IsRunning => throw new NotImplementedException();
+        public bool IsRunning = false;
 
-        public List<Property<dynamic>> Properties => throw new NotImplementedException();
+        public List<Property<dynamic>> Properties => new List<Property<dynamic>>();
+
+        bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
+
+        public List<BackupJobTask> backupJobTasks = new List<BackupJobTask>();
 
         protected BackupJob(string name, string source, string target)
         {
 
-            Name = new Property<string>("name", name) ;
-            Timestamp = new Property<DateTime>("timestamp", new DateTime());
-            Source = new Property<string>("source", source);
-            Target = new Property<string>("target", target);
-            Size = new Property<long>("size", 0);
-            TrasferTime = new Property<long>("transferTime", 0);
+            Name = new Property<dynamic>("name", name);
+            Timestamp = new Property<dynamic>("timestamp", new DateTime());
+            Source = new Property<dynamic>("source", source);
+            Target = new Property<dynamic>("target", target);
+            Size = new Property<dynamic>("size", 0);
+            TransferTime = new Property<dynamic>("transferTime", 0);
+            Properties.AddRange([Name, Timestamp, Source, Target, Size, TransferTime]);
 
         }
 
-        public static JsonObject Serialize(BackupJobTask backupJobTask)
+        public JsonObject Serialize(BackupJobTask backupJobTask)
         {
             string jSonString = JsonSerializer.Serialize(backupJobTask);
             return (JsonObject)jSonString;
@@ -50,17 +55,42 @@ namespace EasySaveCore.Models
 
         public bool CanRunJob()
         {
-            throw new NotImplementedException();
+            return !IsRunning;
         }
 
-        public bool RunJob(bool async)
+        public bool RunJob(JobExecutionStrategy async)//TODO
         {
-            var watch = Stopwatch.StartNew();
-            BackupJob backupJob = new BackupJob("name", "source", "target");
-            BackupJobTask backupJobTask = new BackupJobTask(backupJob);
-            backupJobTask.ExecuteTask();
-            watch.Stop();
-            BackupJob transferTime = watch.ElapsedMilliseconds;
+            Timestamp.Value = DateTime.Now;
+
+            IsRunning = true;
+
+            string[] SourceDirectoriesArray = Directory.GetDirectories(this.Source.Value, "*", SearchOption.AllDirectories);
+
+            foreach (string directory in SourceDirectoriesArray)
+            {
+
+                string dirToCreate = directory.Replace(this.Source.Value, this.Target.Value);
+                Directory.CreateDirectory(dirToCreate);
+            }
+
+            string[] SourceFilesArray = Directory.GetFiles(this.Source.Value, "*.*", SearchOption.AllDirectories);
+
+            foreach (string path in SourceFilesArray)
+            {
+                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(this.Source.Value, this.Target.Value));
+                backupJobTasks.Add(jobTask);
+            }
+
+            foreach(JobTask jobTask in backupJobTasks)
+            {
+                jobTask.ExecuteTask();
+            }
+
+            this.TransferTime.Value = backupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
+            this.Size.Value = backupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
+
+            IsRunning = false;
+
             return true;
         }
 

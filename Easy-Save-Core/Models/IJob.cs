@@ -7,7 +7,7 @@ public interface IJob : IJsonSerializable
 {
     List<Property<dynamic>> Properties { get; }
     
-    bool IsRunning { get; }
+    bool IsRunning { get; set; }
     
     bool CanRunJob();
     bool RunJob(bool async);
