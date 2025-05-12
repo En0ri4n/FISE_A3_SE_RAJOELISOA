@@ -1,69 +1,37 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CLEA.EasySaveCore.Models;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
-public sealed class ViewModelJobBuilder : IViewModelObjectBuilder<BackupJob>
+public sealed class ViewModelJobBuilder : ViewModelObjectBuilder<BackupJob>
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private string _name = string.Empty;
-    private string _source = string.Empty;
-    private string _target = string.Empty;
-    
-    public string Name 
-    {
-        get => _name;
-        set => SetField(ref _name, value);
-    }
-    
-    public string Source 
-    {
-        get => _source;
-        set => SetField(ref _source, value);
-    }
-    
-    public string Target 
-    {
-        get => _target;
-        set => SetField(ref _target, value);
-    }
-
     public ViewModelJobBuilder()
     {
+        SetProperty("Name", string.Empty);
+        SetProperty("Source", string.Empty);
+        SetProperty("Target", string.Empty);
     }
 
-    public void Clear()
+    public override void Clear()
     {
-        Name = string.Empty;
-        Source = string.Empty;
-        Target = string.Empty;
+        SetProperty("Name", string.Empty);
+        SetProperty("Source", string.Empty);
+        SetProperty("Target", string.Empty);
     }
 
-    public void GetFrom(BackupJob job)
+    public override void GetFrom(BackupJob job)
     {
-        Name = job.Name;
-        Source = job.Source.Value;
-        Target = job.Target.Value;
+        SetProperty("Name", job.Name);
+        SetProperty("Source", job.Source.Value);
+        SetProperty("Target", job.Target.Value);
     }
 
-    public BackupJob Build()
+    public override BackupJob Build()
     {
-        BackupJob job = new BackupJob(Name, Source, Target);
+        BackupJob job = new BackupJob(GetProperty("Name"), GetProperty("Source"), GetProperty("Target"));
         Clear();
         return job;
-    }
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return;
-        field = value;
-        OnPropertyChanged(propertyName);
     }
 }

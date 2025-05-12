@@ -1,0 +1,63 @@
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using CLEA.EasySaveCore.Models;
+
+namespace CLEA.EasySaveCore.ViewModel;
+
+public abstract class ViewModelObjectBuilder<TJob> : INotifyPropertyChanged where TJob : IJob
+{
+    private List<Property<dynamic>> _properties = new List<Property<dynamic>>();
+    
+    public string GetProperty(string propertyName)
+    {
+        return _properties.Find(prop => prop.Name.Equals(propertyName))?.Value.ToString() ?? string.Empty;
+    }
+
+    public void SetProperty(string propertyName, string value)
+    {
+        Property<dynamic>? property = _properties.Find(prop => prop.Name.Equals(propertyName));
+        if (property != null)
+        {
+            property.Value = value;
+        }
+        else
+        {
+            Property<dynamic> newProperty = new Property<dynamic>(propertyName, value);
+            _properties.Add(newProperty);
+        }
+        OnPropertyChanged(propertyName);
+    }
+
+    /// <summary>
+    /// Clears the current state of the builder.
+    /// </summary>
+    public abstract void Clear();
+
+    /// <summary>
+    /// Copies the state of the given job into the builder.
+    /// This is useful for updating the builder with an existing job's properties.
+    /// </summary>
+    public abstract void GetFrom(TJob job);
+    
+    /// <summary>
+    /// Builds the job object from the current state of the builder.
+    /// Can be used to create a new job or update an existing one.
+    /// Clear() should be called after using this method to ensure a clean state.
+    /// </summary>
+    public abstract TJob Build();
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+}

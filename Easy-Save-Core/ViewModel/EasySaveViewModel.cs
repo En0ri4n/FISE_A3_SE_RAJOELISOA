@@ -4,6 +4,7 @@ using System.Windows.Input;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
+using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
@@ -11,15 +12,15 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
 {
     public readonly JobManager<TJob> JobManager;
     
-    public IViewModelObjectBuilder<TJob>? JobBuilder;
-    public ICommand BuildJobCommand;
+    public ViewModelObjectBuilder<TJob>? JobBuilder;
+    public readonly ICommand BuildJobCommand;
 
     // Languages
     public List<LangIdentifier> AvailableLanguages => Languages.SupportedLangs;
     public LangIdentifier CurrentApplicationLang
     {
         get => L10N<TJob>.Get().GetLanguage();
-        set { L10N<TJob>.Get().SetLanguage(value); OnPropertyChanged(); }
+        set { L10N<TJob>.Get().SetLanguage(value); EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
     }
 
     // Daily Logs Formats
@@ -40,12 +41,17 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         set { _selectedJob = value; OnPropertyChanged();}
     }
 
+    public RelayCommand LoadJobInBuilderCommand;
+
     private string _userInput;
     public string UserInput
     {
         get => _userInput;
         set { _userInput = value; OnPropertyChanged(); }
     }
+
+    public ICommand DeleteJobCommand;
+    public ICommand RunJobCommand;
 
     private static EasySaveViewModel<TJob> _instance;
     
@@ -58,7 +64,8 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
             if (JobBuilder == null)
                 throw new NullReferenceException($"Job Builder for <{typeof(TJob)}> is not defined !");
             
-            JobManager.AddJob(SelectedJob = JobBuilder.Build());
+            JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
+            EasySaveConfiguration<TJob>.SaveConfiguration();
         }, _ => true);
 
         SelectedJobCommand = new RelayCommand(jobName =>
@@ -66,9 +73,32 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
             if (jobName is string name)
                 SelectedJob = JobManager.GetJob(name);
         }, _ => true);
+        
+        LoadJobInBuilderCommand = new RelayCommand(jobName =>
+        {
+            if (jobName is string name)
+                JobBuilder?.GetFrom(JobManager.GetJob(name));
+        }, _ => true);
+        
+        DeleteJobCommand = new RelayCommand(jobName =>
+        {
+            if (jobName is string name)
+            {
+                JobManager.RemoveJob(name);
+                EasySaveConfiguration<TJob>.SaveConfiguration();
+            }
+        }, _ => true);
+        
+        RunJobCommand = new RelayCommand(jobName =>
+        {
+            if (jobName is string name)
+            {
+                JobManager.DoJob(name);
+            }
+        }, _ => true);
     }
-    
-    public void SetJobBuilder(IViewModelObjectBuilder<TJob> jobBuilder)
+
+    public void SetJobBuilder(ViewModelObjectBuilder<TJob> jobBuilder)
     {
         JobBuilder = jobBuilder;
     }
