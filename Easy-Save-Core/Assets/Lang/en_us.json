@@ -6,8 +6,8 @@
 
   "main_menu.title": "EasySave Main Menu",
   "main_menu.jobs": "Jobs",
-  "main_menu.change_language": "Change Language",
-  "main_menu.change_log_type": "Change Log Type",
+  "main_menu.change_language": "Change Language (current : en_us)",
+  "main_menu.change_log_type": "Change Log Type (current : {LOGTYPE})",
   "main_menu.exit": "Quit",
 
   "go_back": "Go Back",
