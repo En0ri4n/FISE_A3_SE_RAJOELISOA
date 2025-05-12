@@ -14,7 +14,7 @@
 
   "language_menu.title": "Sélectionner la langue (actuel : Français - France)",
 
-  "logtype_menu.title": "Selectionnez un type pour les logs journaliers",
+  "logtype_menu.title": "Selectionnez un type pour les logs journaliers (actuel : {LOGTYPE})",
 
   "job_menu.title": "Jobs",
   "job_menu.list_job": "Liste des Jobs",

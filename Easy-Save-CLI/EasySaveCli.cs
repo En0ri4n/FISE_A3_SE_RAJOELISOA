@@ -1,6 +1,8 @@
 ﻿using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
@@ -90,12 +92,20 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         {
             throw new NotImplementedException();
         }
+        /*job format in config.json
+        {
+            "jobName" = "myJobName",
+            "jobSource" = "path\\to\\base\\directory",
+            "jobDestination" = "path\\to\\target\\directory"
+        }*/
         else if (choice == L10N.GetTranslation("job_menu.create_job"))
         {
+            //TODO jobName should be unique, add a check for that
             throw new NotImplementedException();
         }
         else if (choice == L10N.GetTranslation("job_menu.modify_job"))
         {
+            //TODO JobName should be unique, add a check for that
             throw new NotImplementedException();
         }
         else if (choice == L10N.GetTranslation("job_menu.delete_job"))
@@ -144,17 +154,18 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title(L10N.GetTranslation("logtype_menu.title")) //TODO Add the current file type in the menu (when implemented)
+                .Title(L10N.GetTranslation("logtype_menu.title").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
                 .AddChoices(
-                    "XML",
-                    "JSON",
+                    Format.Xml.ToString(),
+                    Format.Json.ToString(),
                     L10N.GetTranslation("go_back")
                 ));
 
         if (choice != L10N.GetTranslation("go_back"))
         {
-            //ChangeLogType(choice);
-            throw new NotImplementedException();
+            //TODO Move to a view model (Inside a view it is so-so)
+            EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat = (Format)Enum.Parse(typeof(Format), choice);
+            EasySaveConfiguration<BackupJob>.SaveConfiguration();
         }
         GoBack();
     }

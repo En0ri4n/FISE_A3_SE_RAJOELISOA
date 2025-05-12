@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
@@ -40,6 +41,7 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
             { "language", L10N<TJob>.Get().GetLanguage().LangId },
             { "dailyLogPath", Logger.DailyLogPath },
             { "statusLogPath", Logger.StatusLogPath },
+            { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
             { "jobs", jobs }
         };
 
@@ -73,7 +75,12 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
             Logger.StatusLogPath = statusLogPath.ToString();
         if (!Directory.Exists(Logger.StatusLogPath))
             Directory.CreateDirectory(Logger.StatusLogPath);
-        
+
+        // Daily log Format
+        data.TryGetPropertyValue("dailyLogFormat", out JsonNode? dailyLogFormat);
+        if (dailyLogFormat != null)
+            Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
+
         // Language
         data.TryGetPropertyValue("language", out JsonNode? lang);
         if (lang == null)
