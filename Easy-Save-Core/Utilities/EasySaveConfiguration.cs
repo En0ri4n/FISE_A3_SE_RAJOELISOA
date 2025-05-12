@@ -77,11 +77,11 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
         // Language
         data.TryGetPropertyValue("language", out JsonNode? lang);
         if (lang == null)
-            throw new JsonException("Language not found in configuration file");
+            throw new JsonException("Language property not found in configuration file");
         if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
             L10N<TJob>.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ?? Languages.EnUs);
         else
-            throw new JsonException("Language not found in configuration file");
+            throw new JsonException($"Language '{lang}' is not supported");
         
         // Jobs
         data.TryGetPropertyValue("jobs", out JsonNode? jobs);
@@ -125,7 +125,7 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
 
         if (json.Length == 0)
         {
-            Instance.JsonDeserialize(Instance.JsonSerialize()); // Create default configuration
+            // Instance.JsonDeserialize(Instance.JsonSerialize()); // Create default configuration
             SaveConfiguration();
             
             Logger.LogInternal(LogLevel.Debug, "Configuration file successfully created");

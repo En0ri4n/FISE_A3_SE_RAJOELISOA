@@ -4,13 +4,21 @@ using CLEA.EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
-public class EasySaveViewModel<T> : INotifyPropertyChanged where T : IJob
+public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
 {
-    public readonly JobManager<T> JobManager;
+    public readonly JobManager<TJob> JobManager;
+    public IViewModelObjectBuilder<TJob>? JobBuilder;
     
-    private EasySaveViewModel(JobManager<T> jobManager)
+    private static EasySaveViewModel<TJob> _instance;
+    
+    private EasySaveViewModel(JobManager<TJob> jobManager)
     {
         JobManager = jobManager;
+    }
+    
+    public void SetJobBuilder(IViewModelObjectBuilder<TJob> jobBuilder)
+    {
+        JobBuilder = jobBuilder;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -19,9 +27,7 @@ public class EasySaveViewModel<T> : INotifyPropertyChanged where T : IJob
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     
-    private static EasySaveViewModel<T> _instance;
-    
-    public static EasySaveViewModel<T> Get()
+    public static EasySaveViewModel<TJob> Get()
     {
         if (_instance == null)
             throw new Exception("EasySaveViewModel not initialized");
@@ -29,11 +35,11 @@ public class EasySaveViewModel<T> : INotifyPropertyChanged where T : IJob
         return _instance;
     }
     
-    public static void Init(JobManager<T> jobManager)
+    public static void Init(JobManager<TJob> jobManager)
     {
         if (_instance != null)
             throw new Exception("EasySaveViewModel already initialized");
         
-        _instance = new EasySaveViewModel<T>(jobManager);
+        _instance = new EasySaveViewModel<TJob>(jobManager);
     }
 }

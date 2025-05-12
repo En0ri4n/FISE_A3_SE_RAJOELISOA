@@ -3,6 +3,7 @@ using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
+using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
 using FileBrowser;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
 {
     public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
     {
+        EasySaveViewModel<BackupJob>.Get().SetJobBuilder(new ViewModelJobBuilder());
         DisplayMainMenu();
     }
     
