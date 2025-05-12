@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Nodes;
-using System.Xml;
-using CLEA.EasySaveCore;
+﻿using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Models;
-using CLEA.EasySaveCore.Utilities;
+using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 
 namespace CLEA_Tests;
@@ -12,15 +10,15 @@ public class LoggerTests
     [SkippableFact]
     public void Log_ShouldWriteMessageToStatusLogFile()
     {
-        Skip.IfNot(EasySaveCore.Version.Major == 1);
+        Skip.IfNot(EasySaveCore<IJob>.Version.Major == 1);
         
         // Arrange
-        Logger logger = Logger.Get();
+        CLEA.EasySaveCore.Utilities.Logger<BackupJob> logger = CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Get();
         string testMessage = "Test log message";
         LogLevel testLevel = LogLevel.Information;
 
         // Act
-        Logger.Log(testLevel, testMessage);
+        CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(testLevel, testMessage);
 
         // Assert
         string logFilePath = Directory.GetFiles(logger.StatusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log")[0];

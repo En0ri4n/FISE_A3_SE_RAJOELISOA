@@ -50,7 +50,7 @@ public abstract class JobTask : IJsonSerializable, IXmlSerializable
         return true;
     }
     
-    public abstract void ExecuteTask();
+    public abstract JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
 
     public abstract JsonObject JsonSerialize();
 
