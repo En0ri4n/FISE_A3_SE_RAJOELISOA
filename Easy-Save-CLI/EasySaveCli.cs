@@ -137,7 +137,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         GoBack();
     }
     
-    protected void DisplayLogTypeMenu()
+    protected override void DisplayLogTypeMenu()
     {
         AnsiConsole.Clear();
         AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
