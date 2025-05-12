@@ -41,8 +41,7 @@ public sealed class EasySaveCli : EasySaveView
                     L10N.GetTranslation("main_menu.jobs"),
                     L10N.GetTranslation("main_menu.change_language"),
                     L10N.GetTranslation("main_menu.change_log_type"),
-                    L10N.GetTranslation("main_menu.exit"),
-                    "test_file_explorer" //TODO REMOVE
+                    L10N.GetTranslation("main_menu.exit")
                 ));
 
         if (choice == L10N.GetTranslation("main_menu.jobs"))
@@ -105,9 +104,10 @@ public sealed class EasySaveCli : EasySaveView
         }
         //Add for selecting Directory
         //TODO : Add exit option to file explorer (maybe in another branch)
+        
         /*FileBrowser.Browser browser = new FileBrowser.Browser();
-        browser.GetFolderPath().RunSynchronously();*/
-        //throw new NotImplementedException();
+        browser.GetFolderPath().RunSynchronously();
+        throw new NotImplementedException();*/
     }
 
     protected override void DisplayLanguageMenu()
