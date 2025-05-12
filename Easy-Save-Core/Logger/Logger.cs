@@ -23,6 +23,9 @@ public class Logger<TJob> where TJob : IJob
     
     private string _statusLogPath;
     public string StatusLogPath { get => _statusLogPath; set => _statusLogPath = value; }
+    
+    private Format _dailyLogFormat;
+    public Format DailyLogFormat { get => _dailyLogFormat; set => _dailyLogFormat = value; }
 
     private readonly ILogger _internalLogger;
     
@@ -35,6 +38,7 @@ public class Logger<TJob> where TJob : IJob
     {
         _dailyLogPath = @"logs\daily\";
         _statusLogPath = @"logs\status\";
+        _dailyLogFormat = Format.Json;
         
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddSimpleConsole(options =>
         {
@@ -73,11 +77,11 @@ public class Logger<TJob> where TJob : IJob
     /// <param name="job">The job whose properties are to be logged.</param>
     /// <param name="tasks">The list of tasks associated with the job.</param>
     /// <param name="format">The format in which the log should be saved (JSON or XML).</param>
-    public void SaveDailyLog(IJob job, List<JobTask> tasks, Format format)
+    public void SaveDailyLog(IJob job, List<JobTask> tasks)
     {
         using StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true);
         string fileContent;
-        switch (format)
+        switch (_dailyLogFormat)
         {
             default:
             case Format.Json:
