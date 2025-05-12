@@ -11,7 +11,7 @@ public abstract class EasySaveView<TJob>(EasySaveCore<TJob> core) where TJob : I
     protected abstract void DisplayMainMenu();
     protected abstract void DisplayJobMenu();
     protected abstract void DisplayLanguageMenu();
-    
+    protected abstract void DisplayLogTypeMenu();
     protected abstract void DisplayJobResultMenu();
     protected abstract void DisplayJobSettingsMenu();
 }

@@ -7,13 +7,35 @@ using EasySaveCore.Models;
 using FileBrowser;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Xml.Schema;
 
 namespace CLEA.EasySaveCLI;
 
 public sealed class EasySaveCli : EasySaveView<BackupJob>
 {
     public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
+    enum Menu
     {
+        Main,
+        Job,
+        JobResult,
+        JobSetting,
+        Language,
+        LogType
+    }
+    private readonly List<Menu> menuHistory = new List<Menu>();
+
+    private void AddToMenuHistory(Menu menuName)
+    {
+        menuHistory.Add(menuName);
+    }
+
+    private EasySaveCli()
+
+    {
+        AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
     }
     
@@ -21,39 +43,82 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
     {
         AnsiConsole.Clear();
         AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
-
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("main_menu.title"))
                 .AddChoices(
                     L10N.GetTranslation("main_menu.jobs"),
                     L10N.GetTranslation("main_menu.change_language"),
+                    L10N.GetTranslation("main_menu.change_log_type"),
                     L10N.GetTranslation("main_menu.exit")
                 ));
 
         if (choice == L10N.GetTranslation("main_menu.jobs"))
         {
-            Browser browser = new Browser();
-            browser.GetFolderPath().RunSynchronously();
-            
-            
+            AddToMenuHistory(Menu.Job);
             DisplayJobMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.change_language"))
         {
+            AddToMenuHistory(Menu.Language); 
             DisplayLanguageMenu();
+        }
+        else if (choice == L10N.GetTranslation("main_menu.change_log_type"))
+        {
+            AddToMenuHistory(Menu.LogType);
+            DisplayLogTypeMenu();
         }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
         {
             Exit();
         }
+        else if (choice == "test_file_explorer")
+        {
+            FileBrowser.Browser browser = new FileBrowser.Browser();
+            browser.GetFolderPath().RunSynchronously();
+        }
     }
     
     protected override void DisplayJobMenu()
     {
-        throw new NotImplementedException();
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(L10N.GetTranslation("job_menu.title"))
+                .AddChoices(
+                    L10N.GetTranslation("job_menu.list_job"),
+                    L10N.GetTranslation("job_menu.create_job"),
+                    L10N.GetTranslation("job_menu.modify_job"),
+                    L10N.GetTranslation("job_menu.delete_job"),
+                    L10N.GetTranslation("go_back")
+                ));
+        if (choice == L10N.GetTranslation("job_menu.list_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.create_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.modify_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("job_menu.delete_job"))
+        {
+            throw new NotImplementedException();
+        }
+        else if (choice == L10N.GetTranslation("go_back"))
+        {
+            GoBack();
+        }
+        //Add for selecting Directory
+        //TODO : Add exit option to file explorer (maybe in another branch)
+        
+        /*FileBrowser.Browser browser = new FileBrowser.Browser();
+        browser.GetFolderPath().RunSynchronously();
+        throw new NotImplementedException();*/
     }
-    
+
     protected override void DisplayLanguageMenu()
     {
         AnsiConsole.Clear();
@@ -72,17 +137,39 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         {
             L10N.SetLanguage(selectedLang);
         }
-        
-        DisplayMainMenu();
+        GoBack();
     }
-    
+    protected override void DisplayLogTypeMenu()
+    {
+        AnsiConsole.Clear();
+        AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(L10N.GetTranslation("logtype_menu.title"))
+                .AddChoices(
+                    "XML",
+                    "JSON",
+                    L10N.GetTranslation("go_back")
+                ));
+
+        if (choice != L10N.GetTranslation("go_back"))
+        {
+            //ChangeLogType(choice);
+            throw new NotImplementedException();
+        }
+        GoBack();
+    }
+
     protected override void DisplayJobResultMenu()
     {
+        AddToMenuHistory(Menu.JobResult);
         throw new NotImplementedException();
     }
     
     protected override void DisplayJobSettingsMenu()
     {
+        AddToMenuHistory(Menu.JobSetting);
         throw new NotImplementedException();
     }
     
@@ -94,6 +181,33 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         AnsiConsole.Clear();
         Environment.Exit(0);
     }
+
+    /// <summary>
+    /// Remove current menu from the menu History and go to the one before
+    /// </summary>
+    private void GoBack()
+    {
+        menuHistory.RemoveAt(menuHistory.Count - 1);
+        Menu target = menuHistory.Last();
+        switch (target)
+        {
+            case Menu.Main:
+                DisplayMainMenu();
+                break;
+            case Menu.Job:
+                DisplayJobMenu();
+                break;
+            case Menu.JobResult:
+                DisplayJobResultMenu();
+                break;
+            case Menu.JobSetting:
+                DisplayJobSettingsMenu();
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
 }
 
 public class Program

@@ -1,13 +1,25 @@
 ﻿{
   "language": "English",
-  
+
   "main.title": "Easy Save - CLEA",
   "main.exiting": "Exiting...",
 
   "main_menu.title": "EasySave Main Menu",
   "main_menu.jobs": "Jobs",
   "main_menu.change_language": "Change Language",
-  "main_menu.exit": "Quitter",
-  
-  "language_menu.title": "Select Language"
+  "main_menu.change_log_type": "Change Log Type",
+  "main_menu.exit": "Quit",
+
+  "go_back": "Go Back",
+
+  "language_menu.title": "Select Language (current : English - United States)",
+
+  "logtype_menu.title": "Select File Type for Daily Logs",
+
+  "job_menu.title": "Jobs",
+  "job_menu.list_job": "Jobs List",
+  "job_menu.create_job": "Create a Job",
+  "job_menu.modify_job": "Modify Jobs",
+  "job_menu.delete_job": "Delete Job",
+  "job_menu.error_excessive_jobs": "Error: Can't create a Job : More than 5 jobs"
 }
