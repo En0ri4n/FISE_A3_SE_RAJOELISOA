@@ -12,6 +12,26 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
     public abstract bool AddJob(JsonObject? jobJson);
 
     public abstract bool RemoveJob(TJob job);
+    
+    public void UpdateJob(string name, JsonObject? jobJson)
+    {
+        var job = Jobs.FirstOrDefault(j => j.Name == name);
+        if (job == null)
+            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
+
+        if (jobJson != null)
+            job.JsonDeserialize(jobJson);
+    }
+    
+    public void UpdateJob(string name, TJob? job)
+    {
+        var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
+        if (existingJob == null)
+            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
+
+        if (job != null)
+            existingJob.JsonDeserialize(job.JsonSerialize());
+    }
 
     public bool RemoveJob(string name)
     {

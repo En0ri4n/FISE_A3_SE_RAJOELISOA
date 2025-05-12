@@ -20,6 +20,26 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     {
         JobBuilder = jobBuilder;
     }
+    
+    public bool AddJob(TJob job)
+    {
+        return JobManager.AddJob(job);
+    }
+    
+    public bool RemoveJob(TJob job)
+    {
+        return JobManager.RemoveJob(job);
+    }
+    
+    public void UpdateJob(string name, TJob? job)
+    {
+        JobManager.UpdateJob(name, job);
+    }
+    
+    public List<TJob> GetJobs()
+    {
+        return JobManager.GetJobs();
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
