@@ -21,5 +21,7 @@
   "job_menu.create_job": "Create a Job",
   "job_menu.modify_job": "Modify Jobs",
   "job_menu.delete_job": "Delete Job",
-  "job_menu.error_excessive_jobs": "Error: Can't create a Job : More than 5 jobs"
+  "job_menu.error_excessive_jobs": "Error: Can't create a Job : More than 5 jobs",
+
+  "click_any": "Click any key to leave..."
 }

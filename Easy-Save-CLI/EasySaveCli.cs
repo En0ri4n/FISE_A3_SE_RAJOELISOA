@@ -75,7 +75,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     }
     
     protected override void DisplayJobMenu()
+    //TODO Check if directory exist and if name is duplicated
+    //Check if more than 5 jobs ?
+    //TODO Add specific function or rework go_back ? All these "go back" send you to the main menu
     {
+        AnsiConsole.Clear();
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("job_menu.title"))
@@ -88,6 +92,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 ));
         if (choice == L10N.GetTranslation("job_menu.list_job"))
         {
+            AnsiConsole.Write(new Text(L10N.GetTranslation("job_menu.list_job")).Centered());
             Table table = new Table();
             
             table.AddColumns(["Job Name", "Source", "Target"]);
@@ -95,6 +100,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             foreach (BackupJob job in ViewModel.JobManager.GetJobs())
                 table.AddRow([job.Name, job.Source.Value, job.Target.Value]);
             AnsiConsole.Write(table);
+            AnsiConsole.Write(L10N.GetTranslation("click_any"));
             Console.ReadKey();
             GoBack();
         }

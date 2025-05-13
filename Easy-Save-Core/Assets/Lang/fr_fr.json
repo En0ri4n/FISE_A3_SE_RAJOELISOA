@@ -21,5 +21,7 @@
   "job_menu.create_job": "Créer un Job",
   "job_menu.modify_job": "Modifier des Jobs",
   "job_menu.delete_job": "Supprimer un Job",
-  "job_menu.error_excessive_jobs": "Erreur: Impossible de créer un job : Plus de 5 jobs"
+  "job_menu.error_excessive_jobs": "Erreur: Impossible de créer un job : Plus de 5 jobs",
+
+  "click_any" : "Appuyez sur n'importe quelle touche pour quitter..."
 }
