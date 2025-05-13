@@ -278,12 +278,10 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("logtype_menu.title").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
                 .AddChoices(
-                    Format.Xml.ToString(),
-                    Format.Json.ToString(),
-                    L10N.GetTranslation("go_back")
+                    ViewModel.AvailableDailyLogFormats.Select(f=> f.ToString()).Append(L10N.GetTranslation("main.go_back"))
                 ));
 
-        if (choice != L10N.GetTranslation("go_back"))
+        if (choice != L10N.GetTranslation("main.go_back"))
         {
             //TODO Move to a view model (Inside a view it is so-so)
             EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat = (Format)Enum.Parse(typeof(Format), choice);
