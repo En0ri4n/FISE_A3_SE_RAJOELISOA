@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup;
@@ -10,12 +11,14 @@ public class BackupJobManager : JobManager<BackupJob>
     {
     }
 
-    public override bool AddJob(BackupJob? job)
+    public override bool AddJob(BackupJob job, bool save)
     {
         if (job == null || Jobs.Count >= Size || Jobs.Any(j => j.Name == job.Name))
             return false;
         
         Jobs.Add(job);
+        if (save)
+            EasySaveConfiguration<BackupJob>.SaveConfiguration();
         return true;
     }
 
@@ -25,14 +28,9 @@ public class BackupJobManager : JobManager<BackupJob>
             return false;
 
         var job = new BackupJob();
+        job.JsonDeserialize(jobJson);
         
-        if (AddJob(job))
-        {
-            job.JsonDeserialize(jobJson);
-            return true;
-        }
-
-        return false;
+        return AddJob(job, false);
     }
 
     public override bool RemoveJob(BackupJob? job)
@@ -41,27 +39,27 @@ public class BackupJobManager : JobManager<BackupJob>
             return false;
         
         Jobs.Remove(job);
+        EasySaveConfiguration<BackupJob>.SaveConfiguration();
         return true;
     }
 
-    protected override void DoAllJobs(ExecutionFlowType flowType, JobExecutionStrategy.StrategyType strategy)
+    protected override void DoAllJobs()
     {
         foreach (var job in Jobs)
         {
             if (job.CanRunJob())
             {
-                job.RunJob(strategy);
+                job.RunJob(Strategy);
             }
         }
     }
 
-    protected override void DoJob(string name, JobExecutionStrategy.StrategyType strategy)
+    public override void DoJob(BackupJob job)
     {
-        BackupJob job = GetJob(name);
+        if (!job.CanRunJob())
+            throw new Exception($"Job {job.Name} cannot be run");
         
-        if (job.CanRunJob())
-            job.RunJob(strategy);
-        else
-            throw new Exception($"Job {name} cannot be run");
+        job.RunJob(Strategy);
+        Logger<BackupJob>.Get().SaveDailyLog(job, new List<JobTask>(job.BackupJobTasks));
     }
 }

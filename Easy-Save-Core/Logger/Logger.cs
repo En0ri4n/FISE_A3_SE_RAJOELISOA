@@ -85,12 +85,12 @@ public class Logger<TJob> where TJob : IJob
         {
             default:
             case Format.Json:
-                JsonObject json = JsonSerialize(job, tasks);
+                JsonNode json = JsonSerialize(tasks);
                 fileContent = json.ToString();
                 Log(LogLevel.Information, $"Saving daily log to file in JSON format at {GetDailyLogFilePath()}");
                 break;
             case Format.Xml:
-                XmlElement xml = XmlSerialize(job, tasks);
+                XmlElement xml = XmlSerialize(tasks);
                 fileContent = xml.OuterXml;
                 Log(LogLevel.Information, $"Saving daily log to file in XML format at {GetDailyLogFilePath()}");
                 break;
@@ -124,65 +124,31 @@ public class Logger<TJob> where TJob : IJob
     }
 
     /// <summary>
-    /// Serializes the job and its tasks to JSON format.
+    /// Serializes Tasks to JSON format.
     /// Creates a JSON object with job properties and an array of task objects.
     /// </summary>
-    private JsonObject JsonSerialize(IJob job, List<JobTask> tasks)
+    private JsonNode JsonSerialize(List<JobTask> tasks)
     {
-        JsonObject json = new JsonObject();
-
-        // Add job properties to JSON
-        foreach (Property<dynamic> prop in job.Properties)
-            json.Add(prop.Name, prop.Value);
-        
         JsonArray array = new JsonArray();
         
         foreach (JobTask jobTask in tasks)
-        {
-            JsonObject jsonTask = new JsonObject();
-            foreach (Property<dynamic> property in jobTask.GetProperties())
-                jsonTask.Add(property.Name, property.Value);
-            array.Add(jsonTask);
-        }
+            array.Add(jobTask.JsonSerialize());
         
-        json.Add("tasks", array);
-        
-        return json;
+        return array;
     }
 
     /// <summary>
     /// Serializes the job and its tasks to XML format.
     /// Creates an XML document with job properties and a list of task elements.
     /// </summary>
-    private XmlElement XmlSerialize(IJob job, List<JobTask> tasks)
+    private XmlElement XmlSerialize(List<JobTask> tasks)
     {
         XmlDocument doc = new XmlDocument();
-        XmlElement root = doc.CreateElement("root");
-        
-        // Add job properties to XML
-        foreach (Property<dynamic> prop in job.Properties)
-        {
-            XmlElement propElement = doc.CreateElement(prop.Name);
-            propElement.InnerText = prop.Value.ToString() ?? string.Empty;
-            root.AppendChild(propElement);
-        }
-        
-        // Add tasks to XML
-        XmlElement tasksElement = doc.CreateElement("Tasks");
+        XmlElement root = doc.CreateElement("Tasks");
 
         foreach (JobTask jobTask in tasks)
-        {
-            XmlElement entry = doc.CreateElement("Task");
-            foreach (Property<dynamic> property in jobTask.GetProperties())
-            {
-                XmlElement propElement = doc.CreateElement(property.Name);
-                propElement.InnerText = property.Value.ToString() ?? string.Empty;
-                entry.AppendChild(propElement);
-            }
-            tasksElement.AppendChild(entry);
-        }
-        root.AppendChild(tasksElement);
-
+            root.AppendChild(jobTask.XmlSerialize());
+        
         doc.AppendChild(root);
         return root;
     }

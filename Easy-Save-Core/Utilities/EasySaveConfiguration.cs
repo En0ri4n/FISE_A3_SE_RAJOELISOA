@@ -28,8 +28,6 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
     /// <returns></returns>
     public JsonObject JsonSerialize()
     {
-        Console.WriteLine(EasySaveCore<TJob>.Get());
-        
         JsonArray jobs = new JsonArray();
         foreach (TJob job in EasySaveViewModel<TJob>.Get().JobManager.GetJobs())
             if (job is IJsonSerializable jsonSerializable)
@@ -37,7 +35,7 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
         
         JsonObject data = new JsonObject
         {
-            { "version", EasySaveCore<IJob>.Version.ToString() },
+            { "version", EasySaveCore<TJob>.Version.ToString() },
             { "language", L10N<TJob>.Get().GetLanguage().LangId },
             { "dailyLogPath", Logger.DailyLogPath },
             { "statusLogPath", Logger.StatusLogPath },
@@ -80,15 +78,6 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
         data.TryGetPropertyValue("dailyLogFormat", out JsonNode? dailyLogFormat);
         if (dailyLogFormat != null)
             Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
-
-        // Language
-        data.TryGetPropertyValue("language", out JsonNode? lang);
-        if (lang == null)
-            throw new JsonException("Language property not found in configuration file");
-        if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
-            L10N<TJob>.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ?? Languages.EnUs);
-        else
-            throw new JsonException($"Language '{lang}' is not supported");
         
         // Jobs
         data.TryGetPropertyValue("jobs", out JsonNode? jobs);
@@ -96,10 +85,20 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
         {
             foreach (JsonNode? job in jobs.AsArray())
                 if (job is JsonObject jobObject)
-                    EasySaveViewModel<IJob>.Get().JobManager.AddJob(jobObject);
+                    EasySaveViewModel<TJob>.Get().JobManager.AddJob(jobObject);
         }
         else
             throw new JsonException("Jobs not found in configuration file");
+
+        // Language
+        // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION
+        data.TryGetPropertyValue("language", out JsonNode? lang);
+        if (lang == null)
+            throw new JsonException("Language property not found in configuration file");
+        if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
+            L10N<TJob>.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ?? Languages.EnUs);
+        else
+            throw new JsonException($"Language '{lang}' is not supported");
     }
     
     /// <summary>

@@ -27,7 +27,6 @@ public class L10N<TJob> where TJob : IJob
         _currentLang = lang;
         LoadTranslations();
         Utilities.Logger<TJob>.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
-        EasySaveConfiguration<TJob>.SaveConfiguration();
     }
     
     public LangIdentifier GetLanguage()

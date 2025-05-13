@@ -52,9 +52,6 @@ public class BackupJob : IJob
         if (!Directory.Exists(Source.Value))
             throw new DirectoryNotFoundException($"Source directory '{Source.Value}' does not exist.");
 
-        if (!Directory.Exists(Target.Value))
-            throw new DirectoryNotFoundException($"Target directory '{Target.Value}' does not exist.");
-
         if (Source.Value == Target.Value)
             throw new Exception("Source and Target paths cannot be the same.");
         
@@ -62,6 +59,9 @@ public class BackupJob : IJob
         
         IsRunning = true;
         Timestamp.Value = DateTime.Now;
+        
+        if (!Directory.Exists(Target.Value))
+            Directory.CreateDirectory(Target.Value);
 
         string[] sourceDirectoriesArray = Directory.GetDirectories(Source.Value, "*", SearchOption.AllDirectories);
 
@@ -97,8 +97,8 @@ public class BackupJob : IJob
         jsonObject.Add("Name", Name);
         jsonObject.Add("Source", Source.Value);
         jsonObject.Add("Target", Target.Value);
-        jsonObject.Add("Size", Size.Value);
-        jsonObject.Add("TransferTime", TransferTime.Value);
+        jsonObject.Add("Size", (long) Size.Value);
+        jsonObject.Add("TransferTime", (long) TransferTime.Value);
         jsonObject.Add("Timestamp", Timestamp.Value);
         return jsonObject;
     }
@@ -119,19 +119,19 @@ public class BackupJob : IJob
             Target.Value = data["Target"]!.ToString();
         else
             throw new Exception("Invalid JSON data: Missing 'Target' property.");
-        
+
         if (data.ContainsKey("Size"))
-            Size.Value = data["Size"]!.ToString();
+            Size.Value = long.Parse(data["Size"]!.ToString());
         else
             throw new Exception("Invalid JSON data: Missing 'Size' property.");
         
         if (data.ContainsKey("TransferTime"))
-            TransferTime.Value = data["TransferTime"]!.ToString();
+            TransferTime.Value = long.Parse(data["TransferTime"]!.ToString());
         else
             throw new Exception("Invalid JSON data: Missing 'TransferTime' property.");
         
         if (data.ContainsKey("Timestamp"))
-            Timestamp.Value = data["Timestamp"]!.ToString();
+            Timestamp.Value = DateTime.Parse(data["Timestamp"]!.ToString());
         else
             throw new Exception("Invalid JSON data: Missing 'Timestamp' property.");
     }

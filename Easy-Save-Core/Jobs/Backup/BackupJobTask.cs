@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Xml;
@@ -40,7 +41,7 @@ namespace EasySaveCore.Models
 
             try
             {
-                File.Copy(Source.Value, Target.Value);
+                File.Copy(Source.Value, Target.Value, true);
             }
             catch (Exception e)
             {
@@ -57,11 +58,11 @@ namespace EasySaveCore.Models
             JsonObject json = new JsonObject
             {
                 ["Name"] = Name,
-                ["Timestamp"] = Timestamp.Value,
+                ["Timestamp"] = ((DateTime) Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss"),
                 ["Source"] = Source.Value,
                 ["Target"] = Target.Value,
-                ["Size"] = Size.Value,
-                ["TransferTime"] = TransferTime.Value
+                ["Size"] = (long) Size.Value,
+                ["FileTransferTime"] = (double) TransferTime.Value / 1000D
             };
             return json;
         }
@@ -80,8 +81,8 @@ namespace EasySaveCore.Models
             jobElement.SetAttribute("Source", Source.Value);
             jobElement.SetAttribute("Target", Target.Value);
             jobElement.SetAttribute("Size", Size.Value.ToString());
-            jobElement.SetAttribute("TransferTime", TransferTime.Value.ToString());
-            jobElement.SetAttribute("Timestamp", Timestamp.Value.ToString());
+            jobElement.SetAttribute("FileTransferTime", ((double) TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture));
+            jobElement.SetAttribute("Timestamp", ((DateTime) Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss"));
 
             return jobElement;
         }
@@ -93,8 +94,10 @@ namespace EasySaveCore.Models
 
         private static bool FilesAreEqual_Hash(FileInfo first, FileInfo second)
         {
-            byte[] firstHash = MD5.Create().ComputeHash(first.OpenRead());
-            byte[] secondHash = MD5.Create().ComputeHash(second.OpenRead());
+            using FileStream firstStream = first.OpenRead();
+            using FileStream secondStream = second.OpenRead();
+            byte[] firstHash = MD5.Create().ComputeHash(firstStream);
+            byte[] secondHash = MD5.Create().ComputeHash(secondStream);
 
             for (int i = 0; i < firstHash.Length; i++)
             {
