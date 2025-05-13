@@ -42,6 +42,29 @@ public class BackupJobManager : JobManager<BackupJob>
         EasySaveConfiguration<BackupJob>.SaveConfiguration();
         return true;
     }
+    public void UpdateJob(string name, JsonObject? jobJson)
+    {
+        var job = Jobs.FirstOrDefault(j => j.Name == name);
+        if (job == null)
+            throw new Exception($"BackupJob with name {name} not found");
+
+        if (jobJson != null)
+            job.JsonDeserialize(jobJson);
+
+        EasySaveConfiguration<BackupJob>.SaveConfiguration();
+    }
+
+    public void UpdateJob(string name, BackupJob? job)
+    {
+        var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
+        if (existingJob == null)
+            throw new Exception($"BackupJob with name {name} not found");
+
+        if (job != null)
+            existingJob.JsonDeserialize(job.JsonSerialize());
+
+        EasySaveConfiguration<BackupJob>.SaveConfiguration();
+    }
 
     protected override void DoAllJobs()
     {

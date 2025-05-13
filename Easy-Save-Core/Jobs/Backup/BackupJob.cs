@@ -97,9 +97,6 @@ public class BackupJob : IJob
         jsonObject.Add("Name", Name);
         jsonObject.Add("Source", Source.Value);
         jsonObject.Add("Target", Target.Value);
-        jsonObject.Add("Size", (long) Size.Value);
-        jsonObject.Add("TransferTime", (long) TransferTime.Value);
-        jsonObject.Add("Timestamp", Timestamp.Value);
         return jsonObject;
     }
 
@@ -119,21 +116,6 @@ public class BackupJob : IJob
             Target.Value = data["Target"]!.ToString();
         else
             throw new Exception("Invalid JSON data: Missing 'Target' property.");
-
-        if (data.ContainsKey("Size"))
-            Size.Value = long.Parse(data["Size"]!.ToString());
-        else
-            throw new Exception("Invalid JSON data: Missing 'Size' property.");
-        
-        if (data.ContainsKey("TransferTime"))
-            TransferTime.Value = long.Parse(data["TransferTime"]!.ToString());
-        else
-            throw new Exception("Invalid JSON data: Missing 'TransferTime' property.");
-        
-        if (data.ContainsKey("Timestamp"))
-            Timestamp.Value = DateTime.Parse(data["Timestamp"]!.ToString());
-        else
-            throw new Exception("Invalid JSON data: Missing 'Timestamp' property.");
     }
 
     public XmlElement XmlSerialize()
@@ -144,9 +126,6 @@ public class BackupJob : IJob
         jobElement.SetAttribute("Name", Name);
         jobElement.SetAttribute("Source", Source.Value.ToString());
         jobElement.SetAttribute("Target", Target.Value.ToString());
-        jobElement.SetAttribute("Size", Size.Value.ToString());
-        jobElement.SetAttribute("TransferTime", TransferTime.Value.ToString());
-        jobElement.SetAttribute("Timestamp", Timestamp.Value.ToString());
 
         return jobElement;
     }
@@ -167,20 +146,5 @@ public class BackupJob : IJob
             Target.Value = data.GetAttribute("Target");
         else
             throw new Exception("Invalid XML data: Missing 'Target' attribute.");
-        
-        if (data.HasAttribute("Size"))
-            Size.Value = data.GetAttribute("Size");
-        else
-            throw new Exception("Invalid XML data: Missing 'Size' attribute.");
-        
-        if (data.HasAttribute("TransferTime"))
-            TransferTime.Value = data.GetAttribute("TransferTime");
-        else
-            throw new Exception("Invalid XML data: Missing 'TransferTime' attribute.");
-        
-        if (data.HasAttribute("Timestamp"))
-            Timestamp.Value = data.GetAttribute("Timestamp");
-        else
-            throw new Exception("Invalid XML data: Missing 'Timestamp' attribute.");
     }
 }
