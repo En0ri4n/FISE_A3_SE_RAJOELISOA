@@ -43,8 +43,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 .Title(L10N.GetTranslation("main_menu.title"))
                 .AddChoices(
                     L10N.GetTranslation("main_menu.jobs"),
-                    L10N.GetTranslation("main_menu.change_language"),
-                    L10N.GetTranslation("main_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()),
+                    L10N.GetTranslation("main_menu.settings"),
                     L10N.GetTranslation("main_menu.exit")
                 ));
 
@@ -53,7 +52,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             AddToMenuHistory(Menu.Job);
             DisplayJobMenu();
         }
-        else if(choice == L10N.GetTranslation("main_menu.change_language"))
+        /*else if(choice == L10N.GetTranslation("main_menu.change_language"))
         {
             AddToMenuHistory(Menu.Language); 
             DisplayLanguageMenu();
@@ -62,6 +61,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         {
             AddToMenuHistory(Menu.LogType);
             DisplayLogTypeMenu();
+        }*/
+        else if (choice == L10N.GetTranslation("main_menu.settings"))
+        {
+            AddToMenuHistory(Menu.Option);
+            DisplaySettingsMenu(); 
         }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
         {
@@ -193,18 +197,40 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
+
+
     protected override void DisplayJobResultMenu()
     {
         AddToMenuHistory(Menu.JobResult);
         throw new NotImplementedException();
     }
-    
-    protected override void DisplayJobSettingsMenu()
+
+    protected override void DisplaySettingsMenu()
     {
-        AddToMenuHistory(Menu.JobSetting);
-        throw new NotImplementedException();
+        AnsiConsole.Clear();
+        AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
+        string choice = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title(L10N.GetTranslation("settings_menu.title"))
+            .AddChoices(
+                L10N.GetTranslation("main_menu.change_language"), //TODO Rename main_menu -> option_menu
+                L10N.GetTranslation("main_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()),
+                L10N.GetTranslation("main.go_back")
+            ));
+
+        if (choice == L10N.GetTranslation("main_menu.change_language"))
+        {
+            AddToMenuHistory(Menu.Language);
+            DisplayLanguageMenu();
+        }
+        else if (choice == L10N.GetTranslation("main_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
+        {
+            AddToMenuHistory(Menu.LogType);
+            DisplayLogTypeMenu();
+        }
+        GoBack();
     }
-    
+
     private void Exit()
     {
         AnsiConsole.Write(L10N.GetTranslation("main.exiting"));
@@ -232,8 +258,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             case Menu.JobResult:
                 DisplayJobResultMenu();
                 break;
-            case Menu.JobSetting:
-                DisplayJobSettingsMenu();
+            case Menu.Option:
+                DisplaySettingsMenu();
                 break;
             default:
                 throw new NotImplementedException();
