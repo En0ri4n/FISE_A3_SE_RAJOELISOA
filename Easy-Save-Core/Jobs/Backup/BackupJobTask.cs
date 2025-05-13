@@ -72,10 +72,9 @@ namespace EasySaveCore.Models
             throw new NotImplementedException("This method should not be called.");
         }
 
-        public override XmlElement XmlSerialize()
+        public override XmlElement XmlSerialize(XmlDocument document)
         {
-            XmlDocument doc = new XmlDocument();
-            XmlElement jobElement = doc.CreateElement("BackupJobTask");
+            XmlElement jobElement = document.CreateElement("BackupJobTask");
 
             jobElement.SetAttribute("Name", Name);
             jobElement.SetAttribute("Source", Source.Value);

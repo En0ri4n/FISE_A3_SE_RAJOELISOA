@@ -71,7 +71,7 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
         return Jobs;
     }
     
-    protected abstract void DoAllJobs();
+    public abstract void DoAllJobs();
 
     public void DoJob(string name)
     {
@@ -84,4 +84,11 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
     }
 
     public abstract void DoJob(TJob job);
+
+    public void DoMultipleJob(List<string> jobs)
+    {
+        DoMultipleJob(jobs.Select(jobName => GetJob(jobName)).ToList());
+    }
+
+    public abstract void DoMultipleJob(List<TJob> jobs);
 }

@@ -136,10 +136,9 @@ public class BackupJob : IJob
             throw new Exception("Invalid JSON data: Missing 'Timestamp' property.");
     }
 
-    public XmlElement XmlSerialize()
+    public XmlElement XmlSerialize(XmlDocument parent)
     {
-        XmlDocument doc = new XmlDocument();
-        XmlElement jobElement = doc.CreateElement("BackupJob");
+        XmlElement jobElement = parent.CreateElement("BackupJob");
 
         jobElement.SetAttribute("Name", Name);
         jobElement.SetAttribute("Source", Source.Value.ToString());

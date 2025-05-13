@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Xml.Linq;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
@@ -30,6 +31,11 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         get => Logger<TJob>.Get().DailyLogFormat;
         set { Logger<TJob>.Get().DailyLogFormat = value; OnPropertyChanged(); }
     }
+    public string DailyLogPath
+    {
+        get => Logger<TJob>.Get().DailyLogPath;
+        set { Logger<TJob>.Get().DailyLogPath = value; OnPropertyChanged(); }
+    }
 
     public List<TJob> AvailableJobs => JobManager.GetJobs();
 
@@ -52,6 +58,8 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
 
     public ICommand DeleteJobCommand;
     public ICommand RunJobCommand;
+    public ICommand RunMultipleJobsCommand;
+    public ICommand RunAllJobsCommand;
 
     private static EasySaveViewModel<TJob> _instance;
     
@@ -95,6 +103,19 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
             {
                 JobManager.DoJob(name);
             }
+        }, _ => true);
+
+        RunMultipleJobsCommand = new RelayCommand(jobNameList =>
+        {
+            if (jobNameList is List<string> jobNames)
+            {
+                JobManager.DoMultipleJob(jobNames);
+            }
+        }, _ => true);
+
+        RunAllJobsCommand = new RelayCommand(_ =>
+        {
+            JobManager.DoAllJobs();
         }, _ => true);
     }
 
