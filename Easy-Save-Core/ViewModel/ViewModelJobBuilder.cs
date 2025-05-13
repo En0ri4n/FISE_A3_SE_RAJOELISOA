@@ -4,30 +4,8 @@ using CLEA.EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
-public abstract class ViewModelObjectBuilder<TJob> : INotifyPropertyChanged where TJob : IJob
+public abstract class ViewModelJobBuilder<TJob> : INotifyPropertyChanged where TJob : IJob
 {
-    private List<Property<dynamic>> _properties = new List<Property<dynamic>>();
-    
-    public string GetProperty(string propertyName)
-    {
-        return _properties.Find(prop => prop.Name.Equals(propertyName))?.Value.ToString() ?? string.Empty;
-    }
-
-    public void SetProperty(string propertyName, string value)
-    {
-        Property<dynamic>? property = _properties.Find(prop => prop.Name.Equals(propertyName));
-        if (property != null)
-        {
-            property.Value = value;
-        }
-        else
-        {
-            Property<dynamic> newProperty = new Property<dynamic>(propertyName, value);
-            _properties.Add(newProperty);
-        }
-        OnPropertyChanged(propertyName);
-    }
-
     /// <summary>
     /// Clears the current state of the builder.
     /// </summary>

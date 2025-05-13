@@ -12,7 +12,7 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
 {
     public readonly JobManager<TJob> JobManager;
     
-    public ViewModelObjectBuilder<TJob>? JobBuilder;
+    public ViewModelJobBuilder<TJob> JobBuilder;
     public readonly ICommand BuildJobCommand;
 
     // Languages
@@ -98,13 +98,13 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         }, _ => true);
     }
 
-    public void SetJobBuilder(ViewModelObjectBuilder<TJob> jobBuilder)
+    public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
     {
         JobBuilder = jobBuilder;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

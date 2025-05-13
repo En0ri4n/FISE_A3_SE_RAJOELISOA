@@ -4,11 +4,22 @@ using CLEA.EasySaveCore.ViewModel;
 
 namespace CLEA.EasySaveCore.View;
 
-public abstract class EasySaveView<TJob>(EasySaveCore<TJob> core) where TJob : IJob
+public abstract class EasySaveView<TJob, TViewModelObjectBuilder> where TJob : IJob where TViewModelObjectBuilder : ViewModelJobBuilder<TJob>
 {
     protected readonly L10N<TJob> L10N = L10N<TJob>.Get();
-    public readonly EasySaveCore<TJob> Core = core;
+    public readonly EasySaveCore<TJob> Core;
     protected EasySaveViewModel<TJob> ViewModel => EasySaveViewModel<TJob>.Get();
+    
+    protected EasySaveView(EasySaveCore<TJob> core, TViewModelObjectBuilder viewModelObjectBuilder)
+    {
+        Core = core;
+        ViewModel.SetJobBuilder(viewModelObjectBuilder);
+    }
+    
+    public TViewModelObjectBuilder GetJobBuilder()
+    {
+        return (TViewModelObjectBuilder) ViewModel.JobBuilder;
+    }
 
     protected abstract void DisplayMainMenu();
     protected abstract void DisplayJobMenu();

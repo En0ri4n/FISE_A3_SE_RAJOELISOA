@@ -1,7 +1,6 @@
 ﻿using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
@@ -11,7 +10,7 @@ using Spectre.Console;
 
 namespace CLEA.EasySaveCLI;
 
-public sealed class EasySaveCli : EasySaveView<BackupJob>
+public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuilder>
 {
     enum Menu
     {
@@ -29,9 +28,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         menuHistory.Add(menuName);
     }
 
-    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()))
+    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()), new ViewModelBackupJobBuilder())
     {
-        EasySaveViewModel<BackupJob>.Get().SetJobBuilder(new ViewModelJobBuilder());
         AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
     }
@@ -39,7 +37,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
     protected override void DisplayMainMenu()
     {
         AnsiConsole.Clear();
-        AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
+        AnsiConsole.Write(new FigletText(L10N.GetTranslation("main.title")).Color(Color.Green3).Centered());
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(L10N.GetTranslation("main_menu.title"))
@@ -90,7 +88,15 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
                 ));
         if (choice == L10N.GetTranslation("job_menu.list_job"))
         {
-            throw new NotImplementedException();
+            Table table = new Table();
+            
+            table.AddColumns(["Job Name", "Source", "Target"]);
+            
+            foreach (BackupJob job in ViewModel.JobManager.GetJobs())
+                table.AddRow([job.Name, job.Source.Value, job.Target.Value]);
+            AnsiConsole.Write(table);
+            Console.ReadKey();
+            GoBack();
         }
         /*job format in config.json
         {
@@ -100,8 +106,12 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         }*/
         else if (choice == L10N.GetTranslation("job_menu.create_job"))
         {
-            //TODO jobName should be unique, add a check for that
-            throw new NotImplementedException();
+            GetJobBuilder().Name = AnsiConsole.Ask<string>("What is the name of the job?");
+            GetJobBuilder().Source = AnsiConsole.Ask<string>("What is the source directory?");
+            GetJobBuilder().Target = AnsiConsole.Ask<string>("What is the target directory?");
+            
+            ViewModel.BuildJobCommand.Execute(null);
+            GoBack();
         }
         else if (choice == L10N.GetTranslation("job_menu.modify_job"))
         {
@@ -110,7 +120,14 @@ public sealed class EasySaveCli : EasySaveView<BackupJob>
         }
         else if (choice == L10N.GetTranslation("job_menu.delete_job"))
         {
-            throw new NotImplementedException();
+            string jobName = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Which job do you want to delete?")
+                    .AddChoices(
+                        ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray()
+                    ));
+            ViewModel.DeleteJobCommand.Execute(jobName);
+            GoBack();
         }
         else if (choice == L10N.GetTranslation("go_back"))
         {
