@@ -1,0 +1,396 @@
+---
+config:
+  theme: dark
+---
+classDiagram
+    class Menu {
+        <<enumeration>>
+        Main
+        Job
+        JobResult
+        JobSetting
+        Language
+        LogType
+    }
+
+    class EasySaveCli {
+        - List~Menu~ menuHistory
+        + EasySaveCli() : void
+        - AddToMenuHistory(Menu menuName) : void
+        - Exit() : void
+        - GoBack() : void
+        # DisplayMainMenu() : void
+        # DisplayJobMenu() : void
+        # DisplayLanguageMenu() : void
+        # DisplayLogTypeMenu() : void
+        # DisplayJobResultMenu() : void
+        # DisplayJobSettingsMenu() : void
+    }
+
+    class ViewModelBackupJobBuilderer {
+        - string _name
+        - string _source
+        - string _target
+        + string Name
+        + string Source
+        + string Target
+        + Build() : BackupJob
+        + Clear() : void 
+        + GetFrom(BackupJob job) : void
+        + ViewModelBackupJobBuilderer() : void
+    }
+
+    class ViewModelBackupJobBuilderer~TJob~ {
+        <<interface>>
+        + Clear() : void
+        + GetFrom(TJob job) : void
+        + Build() : TJob
+    }
+
+    class BackupJob {
+        + string Name
+        + Property Timestamp
+        + Property Source
+        + Property Target
+        + Property Size
+        + Property TransferTime
+        + bool IsRunning
+        + List~BackupJobTask~ BackupJobTasks
+        + List~Property~ Properties
+        + BackupJob(string name, string source, string target) : void
+        + CanRunJob() : bool
+        + RunJob(StrategyType strategyType) : ExecutionStatus
+        + JsonSerialize() : JsonObject
+        + JsonDeserialize(JsonObject data) : void
+        + XmlSerialize() : XmlElement
+        + XmlDeserialize(XmlElement data) : void
+    }
+
+    class BackupJobManager {
+        + BackupJobManager() : base(5) : void
+        + AddJob(BackupJob job, bool save) : bool
+        + AddJob(JsonObject? jobJson) : bool
+        + RemoveJob(BackupJob? job) : bool
+        # DoAllJobs() : void
+        + DoJob(BackupJob job) : void
+    }
+
+    class JobManager {
+        <<abstract>>
+        # List~TJob~ Jobs
+        # int Size
+        + ExecutionFlowType FlowType
+        + StrategyType Strategy
+        + AddJob(TJob job, bool save)* : bool
+        + AddJob(JsonObject? jobJson)* : bool
+        + RemoveJob(TJob job)* : bool
+        + UpdateJob(string name, JsonObject? jobJson) : void
+        + UpdateJob(string name, TJob? job) : void
+        + RemoveJob(string name) : bool
+        + RemoveAllJobs() : bool
+        + GetJob(string name) : TJob
+        + GetJobs() : List~TJob~
+        # DoAllJobs()* : void
+        + DoJob(string name) : void
+        # DoJob(TJob Job)* : void
+    }
+
+    class BackupJobTask {
+        + Property Timestamp
+        + Property Source
+        + Property Target
+        + Property Size
+        + Property TransferTime
+        + BackupJobTask(BackupJob backupJob, string source, string target) : base(backupJob.Name) : void
+        + ExecuteTask(StrategyType strategyType) : ExecutionStatus
+        + JsonSerialize() : JsonObject
+        + JsonDeserialize(JsonObject data) : void
+        + XmlSerialize() : XmlElement
+        - FilesAreEqual_Hash(FileInfo first, FileInfo second)$ : bool
+    }
+
+    class L10N~TJob~ {
+        - Instance : L10N~~TJob~
+        - L10N() : void
+        + SetLanguage(LangIdentifier lang) : void
+        + GetLanguage() : LangIdentifier
+        - LoadTranslations() : void
+        + GetTranslation(key : string, parameters? : string[]) : string
+        + Get() : L10N<TJob>
+    }
+
+    class LangIdentifier {
+        + string LangId
+        + string Name
+    }
+
+    class Languages {
+        <<static>>
+        + LangIdentifier EnUs
+        + LangIdentifier FrFr
+        + List~LangIdentifier~ SupportedLangs
+    }
+
+    class Format {
+        <<enumeration>>
+        + Json
+        + Xml
+    }
+
+    class Logger~TJob~ {
+        _ string _dailyLogPath
+        + string DailyLogPath
+        _ string _statusLogPath
+        + string StatusLogPath
+        _ Format _dailyLogFormat
+        + Format DailyLogFormat
+        - ILogger _internalLogger
+        - static Logger~TJob~ Instance
+        - Logger() : void
+        + Log(LogLevel level, string message)$ : void
+        + LogInternal(LogLevel level, string message) : void
+        + Get()$ : Logger~TJob~ 
+        + SaveDailyLog(IJob job, List~JobTask~ tasks) : void
+        - LogToFile(StatusLogEntry logEntry) : void
+        - GetStatusLogFilePath() : string
+        - GetDailyLogFilePath() : string
+        - JsonSerialize(List~JobTask~ tasks) : JsonNode
+        - XmlSerialize(List~JobTask~ tasks) : XmlElement
+    }
+
+    class LoggerFactory {
+        + CreateLogger(string name) : ILogger
+    }
+
+    class StatusLogEntry {
+        + LogLevel Level
+        + string Message
+        + DateTime Timestamp
+    }
+
+    class JobExecutionStrategy {
+        <<abstract>>
+        - IJob _job
+        - StrategyType _type
+        - ExecutionStatus _status
+        + IJob Job
+        + StrategyType Type
+        + ExecutionStatus Status
+        # JobExecutionStrategy(IJob job, StrategyType strategyType) : void
+        + ExecuteJob()* : void
+    }
+
+    class StrategyType {
+        <<enumeration>>
+        + Full
+        + Differential
+    }
+
+    class ExecutionStatus {
+        <<enumeration>>
+        + NotStarted
+        + CanNotStart
+        + InProgress
+        + Completed
+        + Skipped
+        + Failed
+    }
+
+    class JobTask {
+        + string Name
+        - List~Property~ _properties
+        + GetProperties() : List~Property~
+        # JobTask(string name) : void
+        + UpdateProperty(string name, dynamic value) : bool
+        + ExecuteTask(StrategyType strategyType)* : ExecutionStatus
+        + JsonSerialize()* : JsonObject
+        + JsonDeserialize(JsonObject data)* 
+        + XmlSerialize()* : XmlElement
+        + XmlDeserialize(XmlElement data)* 
+    }
+
+    class Property~T~ {
+        - string _name
+        - string? _description
+        - T _value
+        + string Name
+        + string Description
+        + T Value
+        + Equals(object? obj) : bool
+        + GetHashCode() : int
+    }
+
+    class EasySaveConfiguration~TJob~ {
+        - const string ConfigPath = "config.json"
+        - static EasySaveConfiguration~TJob~ Instance
+        - static Logger~TJob~ Logger
+        + JsonSerialize() : JsonObject
+        + JsonDeserialize(JsonObject data) : void
+        + static SaveConfiguration() : void
+        + static LoadConfiguration() : void
+    }
+
+    class JobManager~TJob~ {
+        <<abstract>>
+        # List~TJob~ Jobs
+        # int Size
+        + AddJob(TJob job)* : bool
+        + AddJob(JsonObject? jobJson)* : bool
+        + RemoveJob(TJob job)* : bool
+        + RemoveJob(string name) : bool
+        + RemoveAllJobs() : bool
+        + UpdateJob(string name, JsonObject? jobJson) : void
+        + UpdateJob(string name, TJob? job) : void
+        + GetJob(string name) : TJob
+        + GetJobs() : List~TJob~
+        # DoAllJobs(ExecutionFlowType flowType, JobExecutionStrategy.StrategyType strategy) : void
+        # DoJob(string name, JobExecutionStrategy.StrategyType strategy) : void
+    }
+
+    class ExecutionFlowType {
+        <<enumeration>>
+        + Sequential
+        + Parallel
+    }
+
+    class Languages {
+        + static List~LangIdentifier~ SupportedLangs
+    }
+
+    class IJob {
+        <<interface>>
+        + string Name
+        + List~Property~ Properties
+        + bool IsRunning
+        + CanRunJob() : bool
+        + RunJob(StrategyType strategyType) : ExecutionStatus
+    }
+
+    class IJsonSerializable {
+        <<interface>>
+        + JsonSerialize() : JsonObject
+        + JsonDeserialize(JsonObject data) : void
+    }
+
+    class IXmlSerializable {
+        <<interface>>
+        + XmlSerialize() : XmlElement
+        + XmlDeserialize(XmlElement data) : void
+    }
+
+    class EasySaveView~TJob, TViewModelObjectBuilder~ {
+        <<abstract>>
+        # L10N~TJob~ L10N
+        + EasySaveCore~TJob~ Core
+        # EasySaveViewModel~TJob~ ViewModel
+        # EasySaveView(EasySaveCore<TJob> core, TViewModelObjectBuilder viewModelObjectBuilder) : void
+        + GetJobBuilder() : TViewModelObjectBuilder
+        # DisplayMainMenu()* : void
+        # DisplayJobMenu()* : void
+        # DisplayLanguageMenu()* : void
+        # DisplayLogTypeMenu()* : void
+        # DisplayJobResultMenu()* : void
+        # DisplayJobSettingsMenu()* : void
+    }
+
+    class EasySaveViewModel~TJob~ {
+        - JobManager~TJob~ JobManager
+        - ViewModelBackupJobBuilderer~TJob~ JobBuilder
+        - ICommand BuildJobCommand
+        - ICommand SelectedJobCommand
+        - ICommand DeleteJobCommand
+        - ICommand RunJobCommand
+        - RelayCommand LoadJobInBuilderCommand
+        - string UserInput
+        - static EasySaveViewModel~TJob~ _instance
+
+        + List~LangIdentifier~ AvailableLanguages
+        + LangIdentifier CurrentApplicationLang
+        + List~Format~ AvailableDailyLogFormats
+        + Format CurrentDailyLogFormat
+        + List~TJob~ AvailableJobs
+        + TJob? SelectedJob
+
+        + SetJobBuilder(ViewModelBackupJobBuilderer~TJob~ jobBuilder) : void
+        + static Get() : EasySaveViewModel~TJob~
+        + static Init(JobManager~TJob~ jobManager) : void
+        + event PropertyChangedEventHandler? PropertyChanged
+        - OnPropertyChanged(string? propertyName = null) : void
+    }
+
+    class EasySaveCore~TJob~ {
+        + static Version Version
+        + const string Name
+        - static EasySaveCore~TJob~ _instance
+        - EasySaveCore(JobManager~TJob~ jobManager)
+        + static Init(JobManager~TJob~ jobManager) : EasySaveCore~TJob~
+        + static Get() : EasySaveCore~TJob~
+    }
+
+   class RelayCommand {
+        - Action~object?~ execute
+        - Func~object?, bool~ canExecute
+        + RelayCommand(Action~object?~ execute, Func~object?, bool~? canExecute)
+        + bool CanExecute(object? parameter)
+        + void Execute(object? parameter) : void
+        + void RaiseCanExecuteChanged() : void
+        + event EventHandler? CanExecuteChanged
+    }
+
+   class ICommand {
+        + bool CanExecute(object? parameter)
+        + void Execute(object? parameter)
+        + void RaiseCanExecuteChanged()
+        + event EventHandler? CanExecuteChanged
+    }
+
+
+    %% Relationships
+    ViewModelBackupJobBuilderer --> ViewModelBackupJobBuilderer : Implements
+    ViewModelBackupJobBuilderer o-- BackupJob : Aggregates
+    BackupJobManager o-- BackupJob : Aggregates
+    BackupJobManager --* JobManager : Composes
+    BackupJob o-- BackupJobTask : Aggregates
+    BackupJobTask --|> JobTask : Inherits
+    BackupJobTask ..> StrategyType : Uses
+    JobTask ..> StrategyType : Uses
+    BackupJob --> IJob : Implements
+    BackupJobManager o-- IJob : Aggregates
+    BackupJobManager ..|> JobManager : Inherits
+    Logger --> IJob : Logs
+    L10N --> IJob : Provides Translations
+    L10N --> LangIdentifier : Uses
+    L10N --> Languages : Uses
+    Languages o-- LangIdentifier : Contains
+    IJob o-- Property : Aggregates
+    JobTask o-- Property : Aggregates
+    IJob --> JobTask : Implements
+    JobManager o-- IJob : Aggregates
+    JobManager ..> ExecutionFlowType : Depends On
+    BackupJobManager ..> ExecutionFlowType : Depends On
+    Logger o-- StatusLogEntry : Aggregates
+    Logger ..> Format : Depends On
+    Logger~TJob~ ..> LoggerFactory : Uses
+    IJob --> IJsonSerializable : Implements
+    IJob --> IXmlSerializable : Implements
+    JobExecutionStrategy --> StrategyType : Depends On
+    JobExecutionStrategy --> ExecutionStatus : Depends On
+    JobExecutionStrategy --> IJob : Depends On
+    EasySaveConfiguration~TJob~ --> Logger~TJob~ : Uses
+    EasySaveConfiguration~TJob~ --> IJsonSerializable : Implements
+    EasySaveConfiguration~TJob~ --> EasySaveViewModel~TJob~ : Uses
+    EasySaveConfiguration~TJob~ --> L10N~TJob~ : Uses
+    EasySaveConfiguration~TJob~ --> IJob : Uses
+    EasySaveCore~TJob~ --> EasySaveViewModel~TJob~ : Initializes
+    EasySaveCore~TJob~ --> EasySaveConfiguration~TJob~ : Loads Configuration
+    EasySaveCore~TJob~ --> Logger~TJob~ : Logs Start Message
+    EasySaveCli --|> EasySaveView~TJob~ : Implements
+    EasySaveCli --> EasySaveCore~TJob~ : Uses
+    EasySaveCli --> EasySaveViewModel~TJob~ : Uses
+    EasySaveCli ..> Format : Depends On
+    EasySaveCli ..> Menu : Depends On
+    EasySaveCli --* Property : Composes
+    BackupJob --* BackupJobTask : Composes
+    Logger --* StatusLogEntry : Composes
+    RelayCommand ..|> ICommand : Implements
+    EasySaveViewModel ..> RelayCommand : Uses
