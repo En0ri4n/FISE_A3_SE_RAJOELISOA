@@ -19,7 +19,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         JobResult,
         JobSetting,
         Language,
-        LogType
+        LogType,
+        Settings
     }
     private readonly List<Menu> menuHistory = new List<Menu>();
 
