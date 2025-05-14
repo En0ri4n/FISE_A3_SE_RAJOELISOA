@@ -27,6 +27,7 @@
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Selectionnez en aucun pour quitter)",
   "job_menu.title_all": "Lancer tout les Jobs",
   "job_menu.option_all": "Lancer Tout",
+  "job_menu.has_run": "Le lancement de Job(s) a fonctionné sans erreurs",
 
   "settings_menu.title": "Menu Option",
   "settings_menu.change_language": "Changer de langue (actuel : fr_fr)",
