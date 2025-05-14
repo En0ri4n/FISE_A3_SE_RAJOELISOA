@@ -44,6 +44,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()), new ViewModelBackupJobBuilder())
     {
+        Console.Title = L10N.GetTranslation("main.title");
         AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
     }
@@ -270,6 +271,9 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
+    //TODO Implement loader on every execut job function (do lambda function) (Do translation for waiting text)
+    //TODO Show more job information at the end
+    //TODO IF GOAT Make a progress something for each file and job maybe
     protected override void DisplayRunAllMenu()
     {
         string choice = AnsiConsole.Prompt(
@@ -281,15 +285,21 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         ));
         if (choice != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
         {
-            foreach (BackupJob job in ViewModel.JobManager.GetJobs())
+            AnsiConsole.Status()
+            .Spinner(Spinner.Known.Pong)
+            .SpinnerStyle(Style.Parse("green"))
+            .Start("Job is running. Please wait", ctx =>
             {
-                if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
+                foreach (BackupJob job in ViewModel.JobManager.GetJobs())
                 {
-                    ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
-                    return;
+                    if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
+                    {
+                        ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
+                        return;
+                    }
                 }
-            }
-            ViewModel.RunAllJobsCommand.Execute(null);
+                ViewModel.RunAllJobsCommand.Execute(null);
+            });
             DisplayJobResultMenu();
         }
         GoBack();
