@@ -231,6 +231,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             ));
         if (jobName != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
         {
+            if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(jobName).Source.Value))
+            {
+                ShowErrorScreen(L10N.GetTranslation("error.path"));
+                return;
+            }
             ViewModel.RunJobCommand.Execute(jobName);
             DisplayJobResultMenu();
         }
@@ -253,6 +258,14 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             ));
         if (jobListName.Count() != 0 && DisplayPromptRunStrategy())
         {
+            foreach (string jobName in jobListName)
+            {
+                if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(jobName).Source.Value))
+                {
+                    ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
+                    return;
+                }
+            }
             ViewModel.RunMultipleJobsCommand.Execute(jobListName);
             DisplayJobResultMenu();
         }
@@ -261,15 +274,23 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     protected override void DisplayRunAllMenu()
     {
-        string jobName = AnsiConsole.Prompt(
+        string choice = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title(L10N.GetTranslation("job_menu.title_all"))
             .AddChoices(
                 L10N.GetTranslation("job_menu.option_all"),
                 L10N.GetTranslation("main.go_back")
         ));
-        if (jobName != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
+        if (choice != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
         {
+            foreach (BackupJob job in ViewModel.JobManager.GetJobs())
+            {
+                if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
+                {
+                    ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
+                    return;
+                }
+            }
             ViewModel.RunAllJobsCommand.Execute(null);
             DisplayJobResultMenu();
         }
@@ -359,7 +380,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     protected override void DisplayJobResultMenu()
     {
-        //TODO : Add More results ?
+        //TODO : Add More results ? This is lackluster
         AnsiConsole.Clear();
         AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.has_run"));
         AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
