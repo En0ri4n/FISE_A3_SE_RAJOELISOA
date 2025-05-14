@@ -24,8 +24,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         CreateJob,
         ModifyJob,
         DeleteJob,
-        JobResult,
-        JobSetting,
         Language,
         LogType,
         DailyLogDirectory,
