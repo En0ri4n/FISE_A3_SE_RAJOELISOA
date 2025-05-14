@@ -27,7 +27,8 @@
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Sélectionnez aucun pour quitter)",
   "job_menu.title_all": "Lancer tous les Jobs",
   "job_menu.option_all": "Lancer Tout",
-  "job_menu.has_run": "Le(s) Job(s) ont été lancés sans erreurs",
+  "job_menu.one_job_success": "Le Job ont été lancé sans erreurs",
+  "job_menu.many_jobs_success": "Les {JOBNUMBER} Jobs ont été lancés sans erreurs",
 
   "job_menu.name_question": "Quel est le nom du Job ?",
   "job_menu.select_option": "Quel Job voulez-vous sélectionner ?",
@@ -59,6 +60,6 @@
   "job_modify_menu.title": "Modifier un Job (Selectionnez un Job puis appuyez sur Entrée)",
   "job_modify_menu.title_modify_page": "Appuyez sur Entrée pour utiliser la valeur par défaut (texte en vert)",
 
-
-  "error.path": "Erreur : Erreur de chemin"
+  "error.path": "Erreur : Erreur de chemin",
+  "error.path_with": "Erreur : Erreur de chemin avec le job {JOBNAME}"
 }
