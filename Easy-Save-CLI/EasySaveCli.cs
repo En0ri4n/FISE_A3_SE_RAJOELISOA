@@ -261,7 +261,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             {
                 if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(jobName).Source.Value))
                 {
-                    ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
+                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", jobName));
                     return;
                 }
             }
@@ -294,7 +294,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 {
                     if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
                     {
-                        ShowErrorScreen(L10N.GetTranslation("error.path")); //TODO Show Which one is wrong
+                        ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", job.Name));
                         return;
                     }
                 }
