@@ -18,12 +18,20 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     {
         Main,
         Job,
+        JobList,
+        RunJob,
+        RunMultipleJobs,
+        RunAllJobs,
+        CreateJob,
+        ModifyJob,
+        DeleteJob,
         JobResult,
         JobSetting,
         Language,
         LogType,
         Settings
     }
+
     private readonly List<Menu> menuHistory = new List<Menu>();
 
     private void AddToMenuHistory(Menu menuName)
@@ -55,16 +63,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             AddToMenuHistory(Menu.Job);
             DisplayJobMenu();
         }
-        /*else if(choice == L10N.GetTranslation("main_menu.change_language"))
-        {
-            AddToMenuHistory(Menu.Language); 
-            DisplayLanguageMenu();
-        }
-        else if (choice == L10N.GetTranslation("main_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
-        {
-            AddToMenuHistory(Menu.LogType);
-            DisplayLogTypeMenu();
-        }*/
         else if (choice == L10N.GetTranslation("main_menu.settings"))
         {
             AddToMenuHistory(Menu.Settings);
@@ -82,10 +80,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     }
     
     protected override void DisplayJobMenu()
-    //TODO Check if directory exist and if name is duplicated
-    //Check if more than 5 jobs ?
-    //TODO Add specific function or rework main.go_back ? All these "go back" send you to the main menu
     {
+        //TODO UPDATE TITLES
         AnsiConsole.Clear();
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -102,186 +98,44 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 ));
         if (choice == L10N.GetTranslation("job_menu.list_job"))
         {
-            AnsiConsole.Write(new Text(L10N.GetTranslation("job_menu.list_job")).Centered());
-            Table table = new Table();
-            
-            table.AddColumns(["Job Name", "Source", "Target"]);
-            
-            foreach (BackupJob job in ViewModel.JobManager.GetJobs())
-                table.AddRow([job.Name, job.Source.Value, job.Target.Value]);
-            AnsiConsole.Write(table);
-            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-            Console.ReadKey();
-            GoBack();
+            AddToMenuHistory(Menu.JobList);
+            DisplayJobListMenu();
         }
-        /*job format in config.json
-        {
-            "jobName" = "myJobName",
-            "jobSource" = "path\\to\\base\\directory",
-            "jobDestination" = "path\\to\\target\\directory"
-        }*/
+
         else if (choice == L10N.GetTranslation("job_menu.run_job"))
         {
-            string jobName = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title(L10N.GetTranslation("job_menu.title_one"))
-                .AddChoices(
-                    ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
-                ));
-            if (jobName != L10N.GetTranslation("main.go_back"))
-            {
-                ViewModel.RunJobCommand.Execute(jobName);
-                DisplayJobResultMenu();
-            }
-            GoBack();
+            AddToMenuHistory(Menu.RunJob);
+            DisplayRunMenu();
         }
         else if (choice == L10N.GetTranslation("job_menu.run_multiple_jobs"))
         {
-            if (ViewModel.JobManager.JobCount == 0)
-            {
-                AnsiConsole.Write(L10N.GetTranslation("job_menu.error_no_jobs")+Environment.NewLine);
-                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                Console.ReadKey();
-                GoBack();
-                return;
-            }
-            List<string> jobListName = AnsiConsole.Prompt(
-            new MultiSelectionPrompt<string>()
-                .Title(L10N.GetTranslation("job_menu.title_multiple"))
-                .NotRequired()
-                .AddChoices(
-                    ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray()
-                ));
-            if (jobListName.Count() != 0)
-            {
-                ViewModel.RunMultipleJobsCommand.Execute(jobListName);
-                DisplayJobResultMenu();
-            }
-            GoBack();
+            AddToMenuHistory(Menu.RunMultipleJobs);
+            DisplayRunMultipleMenu();
         }
         else if (choice == L10N.GetTranslation("job_menu.run_all_jobs"))
         {
-            string jobName = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title(L10N.GetTranslation("job_menu.title_all"))
-                .AddChoices(
-                    L10N.GetTranslation("job_menu.option_all"),
-                    L10N.GetTranslation("main.go_back")
-                ));
-            if (jobName != L10N.GetTranslation("main.go_back"))
-            {
-                ViewModel.RunAllJobsCommand.Execute(null);
-                DisplayJobResultMenu();
-            }
-            GoBack();
+            AddToMenuHistory(Menu.RunAllJobs);
+            DisplayRunAllMenu();
         }
         else if (choice == L10N.GetTranslation("job_menu.create_job"))
         {
-            if (ViewModel.JobManager.JobCount == 5)
-            {
-                AnsiConsole.Write(L10N.GetTranslation("job_menu.error_excessive_jobs") + Environment.NewLine);
-                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                Console.ReadKey();
-                GoBack();
-                return;
-            }
-            GetJobBuilder().Name = AnsiConsole.Ask<string>("What is the name of the job?");
-            if (!ViewModel.IsNameValid(GetJobBuilder().Name))
-            {
-                AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
-                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                Console.ReadKey();
-                GoBack();
-                return;
-            }
-            GetJobBuilder().Source = AnsiConsole.Ask<string>("What is the source directory?");
-            if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
-            {
-                AnsiConsole.Write("temp source path error");
-                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                Console.ReadKey();
-                GoBack();
-                return;
-            }
-            GetJobBuilder().Target = AnsiConsole.Ask<string>("What is the target directory?");
-            if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
-            {
-                AnsiConsole.Write("temp target path error");
-                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                Console.ReadKey();
-                GoBack();
-                return;
-            }
-            ViewModel.BuildJobCommand.Execute(null);
-            GoBack();
+            AddToMenuHistory(Menu.CreateJob);
+            DisplayCreateJobMenu();
         }
         else if (choice == L10N.GetTranslation("job_menu.modify_job"))
         {
-            string jobName = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title(L10N.GetTranslation("job_modify_menu.title"))
-                    .AddChoices(
-                        ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
-                    ));
-            if (jobName != L10N.GetTranslation("main.go_back"))
-            {
-                ViewModel.LoadJobInBuilderCommand.Execute(jobName);
-                GetJobBuilder().Name = AnsiConsole.Ask<string>("(temp) What is the name of the job?", GetJobBuilder().Name);
-                if (!ViewModel.IsNameValid(GetJobBuilder().Name))
-                {
-                    AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
-                    AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                    Console.ReadKey();
-                    GoBack();
-                    return;
-                }
-                GetJobBuilder().Source = AnsiConsole.Ask<string>("(temp) What is the source directory?", GetJobBuilder().Source);
-                if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
-                {
-                    AnsiConsole.Write("temp source path error");
-                    AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                    Console.ReadKey();
-                    GoBack();
-                    return;
-                }
-                GetJobBuilder().Target = AnsiConsole.Ask<string>("(temp) What is the target directory?", GetJobBuilder().Target);
-                if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
-                {
-                    AnsiConsole.Write("temp target path error");
-                    AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
-                    Console.ReadKey();
-                    GoBack();
-                    return;
-                }
-                ViewModel.UpdateFromJobBuilder();
-                GoBack();
-            }
-            GoBack();
+            AddToMenuHistory(Menu.ModifyJob);
+            DisplayModifyJobMenu();
         }
         else if (choice == L10N.GetTranslation("job_menu.delete_job"))
         {
-            string jobName = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Which job do you want to delete?")
-                    .AddChoices(
-                        ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
-                    ));
-            if (jobName != L10N.GetTranslation("main.go_back"))
-            {
-                ViewModel.DeleteJobCommand.Execute(jobName);
-            }
-            GoBack();
+            AddToMenuHistory(Menu.DeleteJob);
+            DisplayDeleteJobMenu();
         }
         else if (choice == L10N.GetTranslation("main.go_back"))
         {
             GoBack();
         }
-        //Add for selecting Directory
-        //TODO : Add exit option to file explorer (maybe in another branch)
-        
-        /*FileBrowser.Browser browser = new FileBrowser.Browser();
-        browser.GetFolderPath().RunSynchronously();
-        throw new NotImplementedException();*/
     }
 
     protected override void DisplayLanguageMenu()
@@ -328,10 +182,183 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
+    protected override void DisplayJobListMenu()
+    {
+        AnsiConsole.Write(new Text(L10N.GetTranslation("job_menu.list_job")).Centered());
+        Table table = new Table();
 
+        table.AddColumns(["Job Name", "Source", "Target"]);
+
+        foreach (BackupJob job in ViewModel.JobManager.GetJobs())
+            table.AddRow([job.Name, job.Source.Value, job.Target.Value]);
+        AnsiConsole.Write(table);
+        AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+        Console.ReadKey();
+        GoBack();
+    }
+
+    protected override void DisplayRunMenu()
+    {
+        string jobName = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title(L10N.GetTranslation("job_menu.title_one"))
+            .AddChoices(
+                ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
+            ));
+        if (jobName != L10N.GetTranslation("main.go_back"))
+        {
+            ViewModel.RunJobCommand.Execute(jobName);
+            DisplayJobResultMenu();
+        }
+        GoBack();
+    }
+
+    protected override void DisplayRunMultipleMenu()
+    {
+        if (ViewModel.JobManager.JobCount == 0)
+        {
+            AnsiConsole.Write(L10N.GetTranslation("job_menu.error_no_jobs") + Environment.NewLine);
+            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+            Console.ReadKey();
+            GoBack();
+            return;
+        }
+        List<string> jobListName = AnsiConsole.Prompt(
+        new MultiSelectionPrompt<string>()
+            .Title(L10N.GetTranslation("job_menu.title_multiple"))
+            .NotRequired()
+            .AddChoices(
+                ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray()
+            ));
+        if (jobListName.Count() != 0)
+        {
+            ViewModel.RunMultipleJobsCommand.Execute(jobListName);
+            DisplayJobResultMenu();
+        }
+        GoBack();
+    }
+
+    protected override void DisplayRunAllMenu()
+    {
+        string jobName = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title(L10N.GetTranslation("job_menu.title_all"))
+            .AddChoices(
+                L10N.GetTranslation("job_menu.option_all"),
+                L10N.GetTranslation("main.go_back")
+        ));
+        if (jobName != L10N.GetTranslation("main.go_back"))
+        {
+            ViewModel.RunAllJobsCommand.Execute(null);
+            DisplayJobResultMenu();
+        }
+        GoBack();
+    }
+
+    protected override void DisplayCreateJobMenu()
+    {
+        if (ViewModel.JobManager.JobCount == 5)
+        {
+            AnsiConsole.Write(L10N.GetTranslation("job_menu.error_excessive_jobs") + Environment.NewLine);
+            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+            Console.ReadKey();
+            GoBack();
+            return;
+        }
+        GetJobBuilder().Name = AnsiConsole.Ask<string>("What is the name of the job?");
+        if (!ViewModel.IsNameValid(GetJobBuilder().Name))
+        {
+            AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
+            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+            Console.ReadKey();
+            GoBack();
+            return;
+        }
+        GetJobBuilder().Source = AnsiConsole.Ask<string>("What is the source directory?");
+        if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
+        {
+            AnsiConsole.Write("temp source path error");
+            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+            Console.ReadKey();
+            GoBack();
+            return;
+        }
+        GetJobBuilder().Target = AnsiConsole.Ask<string>("What is the target directory?");
+        if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
+        {
+            AnsiConsole.Write("temp target path error");
+            AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+            Console.ReadKey();
+            GoBack();
+            return;
+        }
+        ViewModel.BuildJobCommand.Execute(null);
+        GoBack();
+    }
+
+    protected override void DisplayModifyJobMenu()
+        //FIXME : Titles not appearing correctly
+    {
+        string jobName = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title(L10N.GetTranslation("job_modify_menu.title"))
+            .AddChoices(
+                ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
+            ));
+        if (jobName != L10N.GetTranslation("main.go_back"))
+        {
+            ViewModel.LoadJobInBuilderCommand.Execute(jobName);
+            GetJobBuilder().Name = AnsiConsole.Ask<string>("(temp) What is the name of the job?", GetJobBuilder().Name);
+            if (!ViewModel.IsNameValid(GetJobBuilder().Name))
+            {
+                AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
+                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+                Console.ReadKey();
+                GoBack();
+                return;
+            }
+            GetJobBuilder().Source = AnsiConsole.Ask<string>("(temp) What is the source directory?", GetJobBuilder().Source);
+            if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
+            {
+                AnsiConsole.Write("temp source path error");
+                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+                Console.ReadKey();
+                GoBack();
+                return;
+            }
+            GetJobBuilder().Target = AnsiConsole.Ask<string>("(temp) What is the target directory?", GetJobBuilder().Target);
+            if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
+            {
+                AnsiConsole.Write("temp target path error");
+                AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+                Console.ReadKey();
+                GoBack();
+                return;
+            }
+            ViewModel.UpdateFromJobBuilder();
+            GoBack();
+        }
+        GoBack();
+    }
+
+    protected override void DisplayDeleteJobMenu()
+    {
+        string jobName = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("Which job do you want to delete?")
+            .AddChoices(
+                ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
+            ));
+        if (jobName != L10N.GetTranslation("main.go_back"))
+        {
+            ViewModel.DeleteJobCommand.Execute(jobName);
+        }
+        GoBack();
+    }
 
     protected override void DisplayJobResultMenu()
     {
+        //TODO : Add More results ?
         AnsiConsole.Clear();
         AnsiConsole.Write(L10N.GetTranslation("job_menu.has_run") + Environment.NewLine);
         AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
@@ -375,6 +402,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     /// <summary>
     /// Remove current menu from the menu History and go to the one before
+    /// Note that only menus with submenus are possible values for the switch case
     /// </summary>
     private void GoBack()
     {
@@ -387,9 +415,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 break;
             case Menu.Job:
                 DisplayJobMenu();
-                break;
-            case Menu.JobResult:
-                DisplayJobResultMenu();
                 break;
             case Menu.Settings:
                 DisplaySettingsMenu();
