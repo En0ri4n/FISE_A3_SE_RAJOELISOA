@@ -455,8 +455,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     public void ShowErrorScreen(string error) 
     {
-        AnsiConsole.WriteLine(error);
-        AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+        AnsiConsole.Write(new Markup($"[red]{error}[/]"));
+        AnsiConsole.Write(Environment.NewLine + L10N.GetTranslation("main.click_any"));
         Console.ReadKey();
         GoBack();
     }
