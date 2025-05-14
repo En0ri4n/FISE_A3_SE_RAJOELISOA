@@ -174,9 +174,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
         if (choice != L10N.GetTranslation("main.go_back"))
         {
-            //TODO Move to a view model (Inside a view it is so-so
-            EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat = (Format)Enum.Parse(typeof(Format), choice);
-            EasySaveConfiguration<BackupJob>.SaveConfiguration();
+            ViewModel.CurrentDailyLogFormat = Enum.Parse<Format>(choice);
         }
         GoBack();
     }
@@ -291,9 +289,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         });
     }
 
-    //TODO Implement loader on every execut job function (do lambda function) (Do translation for waiting text)
-    //TODO Show more job information at the end
-    //TODO IF GOAT Make a progress something for each file and job maybe
     protected override void DisplayRunAllMenu()
     {
         string choice = AnsiConsole.Prompt(

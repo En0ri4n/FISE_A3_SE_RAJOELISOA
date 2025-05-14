@@ -30,7 +30,7 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     public Format CurrentDailyLogFormat
     {
         get => Logger<TJob>.Get().DailyLogFormat;
-        set { Logger<TJob>.Get().DailyLogFormat = value; OnPropertyChanged(); }
+        set { Logger<TJob>.Get().DailyLogFormat = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
     }
     public string DailyLogPath
     {
