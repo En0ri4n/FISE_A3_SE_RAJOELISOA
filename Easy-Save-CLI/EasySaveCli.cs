@@ -200,16 +200,23 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                     ));
             //TODO JobName should be unique, add a check for that
             if (jobName != L10N.GetTranslation("main.go_back"))
-            {
-                throw new NotImplementedException();
-                /*if (ViewModel.JobManager.GetJobs().Select(job => job.Name).ToList().Contains(GetJobBuilder().Name)) //TODO Move this operation to ViewModel
+            {                
+                ViewModel.LoadJobInBuilderCommand.Execute(null);
+                GetJobBuilder().Name = AnsiConsole.Ask<string>("What is the name of the job?");
+                if (ViewModel.JobManager.GetJobs().Select(job => job.Name).ToList().Contains(GetJobBuilder().Name)) //TODO Move this operation to ViewModel
                 {
                     AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
                     AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
                     Console.ReadKey();
                     GoBack();
                     return;
-                }*/
+                }
+                GetJobBuilder().Source = AnsiConsole.Ask<string>("What is the source directory?");
+                //TODO Check if directory exist here
+                GetJobBuilder().Target = AnsiConsole.Ask<string>("What is the target directory?");
+                //ViewModel.BuildJobCommand.Execute(null);
+                //TODO Command to update
+                GoBack();
             }
             GoBack();
         }
