@@ -34,8 +34,15 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     public string DailyLogPath
     {
         get => Logger<TJob>.Get().DailyLogPath;
-        set { Logger<TJob>.Get().DailyLogPath = value; OnPropertyChanged(); }
+        set { Logger<TJob>.Get().DailyLogPath = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
     }
+
+    public string StatusLogPath
+    {
+        get => Logger<TJob>.Get().StatusLogPath;
+        set { Logger<TJob>.Get().StatusLogPath = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
+    }
+
 
     public List<TJob> AvailableJobs => JobManager.GetJobs();
 

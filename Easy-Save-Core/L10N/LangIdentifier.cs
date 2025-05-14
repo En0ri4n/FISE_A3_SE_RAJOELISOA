@@ -10,6 +10,8 @@ public static class Languages
 {
     public static readonly LangIdentifier EnUs = new LangIdentifier("en_us", "English (United States)");
     public static readonly LangIdentifier FrFr = new("fr_fr", "Français (France)");
+    public static readonly LangIdentifier ZhCn = new("zh_cn", "中文 (简体中文 - 中国)");
 
-    public static readonly List<LangIdentifier> SupportedLangs = [EnUs, FrFr];
+
+    public static readonly List<LangIdentifier> SupportedLangs = [EnUs, FrFr, ZhCn];
 }

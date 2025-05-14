@@ -29,13 +29,29 @@
   "job_menu.option_all": "Run all",
   "job_menu.has_run": "Job(s) runned without issues",
 
+  "job_menu.name_question": "What is the name of the job?",
+
+  "job_menu.select_option": "Which Job do you want to select?",
+
+  "information.target_directory": "What is the target directory?",
+  "information.source_directory": "What is the source directory?",
+
+
+
   "settings_menu.title": "Settings Menu",
   "settings_menu.change_language": "Change Language (current : en_us)",
   "settings_menu.change_log_type": "Change Log Type (current : {LOGTYPE})",
+  "settings_menu.change_daily_log_path": "Change Daily Log Directory (current : {PATH})",
+  "settings_menu.message_daily_log_path": "What is the Daily Log Directory?",
+
+  "settings_menu.change_status_log_path": "Change Status Log Directory (current : {PATH})",
+  "settings_menu.message_status_log_path": "What is the Status Log Directory?",
 
   "language_menu.title": "Select Language (current : English - United States)",
 
   "logtype_menu.title": "Select File Type for Daily Logs (current : {LOGTYPE})",
 
-  "job_modify_menu.title": "Update Job (Press Enter to keep current value)"
+  "job_modify_menu.title": "Update Job (Press Enter to keep current value)",
+
+  "error.path": "Error: Path Error"
 }
