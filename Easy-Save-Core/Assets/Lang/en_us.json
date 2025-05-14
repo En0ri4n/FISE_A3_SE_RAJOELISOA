@@ -1,0 +1,70 @@
+﻿{
+  "language": "English",
+
+  "main.title": "Easy Save - CLEA",
+  "main.exiting": "Exiting...",
+  "main.go_back": "Go Back",
+  "main.click_any": "Click any key to leave...",
+
+  "main_menu.title": "EasySave Main Menu",
+  "main_menu.jobs": "Manage Jobs",
+  "main_menu.settings": "Settings",
+  "main_menu.exit": "Quit",
+
+  "job_menu.title": "Jobs",
+  "job_menu.list_job": "Jobs List",
+  "job_menu.run_job": "Run a Job",
+  "job_menu.run_multiple_jobs": "Run multiple Jobs",
+  "job_menu.run_all_jobs": "Run all Jobs",
+  "job_menu.create_job": "Create a Job",
+  "job_menu.modify_job": "Modify Jobs",
+  "job_menu.delete_job": "Delete Job",
+  "job_menu.error_no_jobs": "Error: Can't run a Job : No Jobs found",
+  "job_menu.error_excessive_jobs": "Error: Can't create a Job : More than 5 jobs",
+  "job_menu.error_job_exist": "Error: Can't create a Job : Its name is already used",
+
+  "job_menu.title_one": "Run one Job",
+  "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
+  "job_menu.title_all": "Run all Jobs",
+  "job_menu.option_all": "Run all",
+  
+  "job_menu.task_run_information": "[{JOB_NAME}] Copied {SOURCE} to {TARGET} in {TIME}ms ({STATUS})",
+  "job_menu.one_job_success": "The Job runned without issues",
+  "job_menu.many_jobs_success": "The {JOBNUMBER} Jobs runned without issues",
+
+  "job_menu.name_question": "What is the name of the job?",
+
+  "job_menu.select_option": "Which Job do you want to select?",
+
+  "job_menu.column.name": "Job Name",
+  "job_menu.column.source": "Source",
+  "job_menu.column.target": "Target",
+  
+  "loader.running.text": "Job is running. Please wait...",
+
+  "information.target_directory": "What is the target directory?",
+  "information.source_directory": "What is the source directory?",
+
+  "run_strategy_menu.title": "Select Run Strategy",
+  "run_strategy_menu.option_full": "Full",
+  "run_strategy_menu.option_differential": "Differential",
+
+  "settings_menu.title": "Settings Menu",
+  "settings_menu.change_language": "Change Language (current : en_us)",
+  "settings_menu.change_log_type": "Change Log Type (current : {LOGTYPE})",
+  "settings_menu.change_daily_log_path": "Change Daily Log Directory (current : {PATH})",
+  "settings_menu.message_daily_log_path": "What is the Daily Log Directory?",
+
+  "settings_menu.change_status_log_path": "Change Status Log Directory (current : {PATH})",
+  "settings_menu.message_status_log_path": "What is the Status Log Directory?",
+
+  "language_menu.title": "Select Language (current : English - United States)",
+
+  "logtype_menu.title": "Select File Type for Daily Logs (current : {LOGTYPE})",
+
+  "job_modify_menu.title": "Update Job (Select specific job, then press enter)",
+  "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
+
+  "error.path": "Error: Path Error",
+  "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist"
+}

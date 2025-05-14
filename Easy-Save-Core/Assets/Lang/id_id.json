@@ -1,0 +1,69 @@
+﻿{
+  "language": "Bahasa Indonesia",
+
+  "main.title": "EasySave - CLEA",
+  "main.exiting": "Keluar...",
+  "main.go_back": "Kembali",
+  "main.click_any": "Tekan tombol apa saja untuk keluar...",
+
+  "main_menu.title": "Menu Utama EasySave",
+  "main_menu.jobs": "Kelola Pekerjaan",
+  "main_menu.settings": "Pengaturan",
+  "main_menu.exit": "Keluar",
+
+  "job_menu.title": "Pekerjaan",
+  "job_menu.list_job": "Daftar Pekerjaan",
+  "job_menu.run_job": "Jalankan Satu Pekerjaan",
+  "job_menu.run_multiple_jobs": "Jalankan Banyak Pekerjaan",
+  "job_menu.run_all_jobs": "Jalankan Semua Pekerjaan",
+  "job_menu.create_job": "Buat Pekerjaan",
+  "job_menu.modify_job": "Ubah Pekerjaan",
+  "job_menu.delete_job": "Hapus Pekerjaan",
+  "job_menu.error_no_jobs": "Kesalahan: Tidak bisa menjalankan pekerjaan: Tidak ada pekerjaan ditemukan",
+  "job_menu.error_excessive_jobs": "Kesalahan: Tidak bisa membuat pekerjaan: Lebih dari 5 pekerjaan",
+  "job_menu.error_job_exist": "Kesalahan: Tidak bisa membuat pekerjaan: Nama sudah digunakan",
+
+  "job_menu.title_one": "Jalankan Satu Pekerjaan",
+  "job_menu.title_multiple": "Jalankan Banyak Pekerjaan (kosongkan pilihan untuk keluar)",
+  "job_menu.title_all": "Jalankan Semua Pekerjaan",
+  "job_menu.option_all": "Jalankan semua",
+
+  "job_menu.task_run_information": "[{JOB_NAME}] menyalin {SOURCE} ke {TARGET} dalam {TIME}ms ({STATUS})",
+  "job_menu.one_job_success": "Pekerjaan berhasil dijalankan tanpa masalah",
+  "job_menu.many_jobs_success": "{JOBNUMBER} pekerjaan berhasil dijalankan tanpa masalah",
+
+  "job_menu.name_question": "Apa nama pekerjaan?",
+  "job_menu.select_option": "Pekerjaan mana yang ingin Anda pilih?",
+
+  "job_menu.column.name": "Nama Pekerjaan",
+  "job_menu.column.source": "Sumber",
+  "job_menu.column.target": "Tujuan",
+
+  "loader.running.text": "Pekerjaan sedang dijalankan. Mohon tunggu...",
+
+  "information.target_directory": "Apa direktori tujuan?",
+  "information.source_directory": "Apa direktori sumber?",
+
+  "run_strategy_menu.title": "Pilih Strategi Eksekusi",
+  "run_strategy_menu.option_full": "Penuh",
+  "run_strategy_menu.option_differential": "Diferensial",
+
+  "settings_menu.title": "Menu Pengaturan",
+  "settings_menu.change_language": "Ganti Bahasa (saat ini: id_id)",
+  "settings_menu.change_log_type": "Ganti Jenis Log (saat ini: {LOGTYPE})",
+  "settings_menu.change_daily_log_path": "Ganti Direktori Log Harian (saat ini: {PATH})",
+  "settings_menu.message_daily_log_path": "Apa direktori log harian?",
+
+  "settings_menu.change_status_log_path": "Ganti Direktori Log Status (saat ini: {PATH})",
+  "settings_menu.message_status_log_path": "Apa direktori log status?",
+
+  "language_menu.title": "Pilih Bahasa (saat ini: Bahasa Indonesia)",
+
+  "logtype_menu.title": "Pilih Jenis File untuk Log Harian (saat ini: {LOGTYPE})",
+
+  "job_modify_menu.title": "Perbarui Pekerjaan (Pilih pekerjaan, lalu tekan enter)",
+  "job_modify_menu.title_modify_page": "Tekan enter untuk menggunakan nilai default (teks hijau)",
+
+  "error.path": "Kesalahan: Kesalahan jalur",
+  "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}"
+}

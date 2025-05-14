@@ -1,7 +1,10 @@
 .idea/
+.run/
+build/
 bin/
 obj/
 .vs/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+EasySave-CLEA.sln.*

@@ -1,0 +1,69 @@
+﻿{
+  "language": "Malagasy",
+
+  "main.title": "EasySave - CLEA",
+  "main.exiting": "Mivoaka...",
+  "main.go_back": "Miverena",
+  "main.click_any": "Tsindrio bokotra iray hivoahana...",
+
+  "main_menu.title": "Menio Fototra EasySave",
+  "main_menu.jobs": "Mitantana Asa",
+  "main_menu.settings": "Toerana",
+  "main_menu.exit": "Hiala",
+
+  "job_menu.title": "Asa",
+  "job_menu.list_job": "Lisitr’Asa",
+  "job_menu.run_job": "Mampandeha Asa iray",
+  "job_menu.run_multiple_jobs": "Mampandeha Asa maro",
+  "job_menu.run_all_jobs": "Mampandeha Asa rehetra",
+  "job_menu.create_job": "Mamorona Asa",
+  "job_menu.modify_job": "Manova Asa",
+  "job_menu.delete_job": "Mamafa Asa",
+  "job_menu.error_no_jobs": "Hadisoana: Tsy afaka mampandeha Asa: Tsy nisy Asa hita",
+  "job_menu.error_excessive_jobs": "Hadisoana: Tsy afaka mamorona Asa: Mihoatra ny 5 Asa",
+  "job_menu.error_job_exist": "Hadisoana: Tsy afaka mamorona Asa: Efa misy io anarana io",
+
+  "job_menu.title_one": "Mampandeha Asa iray",
+  "job_menu.title_multiple": "Mampandeha Asa maro (Tsy misafidy = miala)",
+  "job_menu.title_all": "Mampandeha Asa rehetra",
+  "job_menu.option_all": "Alefa daholo",
+
+  "job_menu.task_run_information": "[{JOB_NAME}] Naka tahiry avy amin’i {SOURCE} ho any amin’i {TARGET} tao anatin’ny {TIME}ms ({STATUS})",
+  "job_menu.one_job_success": "Vita tsara ilay Asa",
+  "job_menu.many_jobs_success": "Asa {JOBNUMBER} vita tsara tsy misy olana",
+
+  "job_menu.name_question": "Inona no anaran’ny Asa?",
+  "job_menu.select_option": "Asa inona no tianao hofidiana?",
+
+  "job_menu.column.name": "Anaran’ny Asa",
+  "job_menu.column.source": "Loharano",
+  "job_menu.column.target": "Tanjona",
+
+  "loader.running.text": "Mandeha ilay Asa. Miandrasa azafady...",
+
+  "information.target_directory": "Aiza ny lahatahiry tanjona?",
+  "information.source_directory": "Aiza ny lahatahiry loharano?",
+
+  "run_strategy_menu.title": "Fidio ny Fomba Fampandehanana",
+  "run_strategy_menu.option_full": "Feno",
+  "run_strategy_menu.option_differential": "Misy hasiana fanovana fotsiny",
+
+  "settings_menu.title": "Menion'ny Toerana",
+  "settings_menu.change_language": "Ovay ny Teny (ankehitriny: mg_mg)",
+  "settings_menu.change_log_type": "Ovay ny Karazana Log (ankehitriny: {LOGTYPE})",
+  "settings_menu.change_daily_log_path": "Ovay ny Lahatahiry Log isan’andro (ankehitriny: {PATH})",
+  "settings_menu.message_daily_log_path": "Aiza ny lahatahiry log isan’andro?",
+
+  "settings_menu.change_status_log_path": "Ovay ny Lahatahiry Log Status (ankehitriny: {PATH})",
+  "settings_menu.message_status_log_path": "Aiza ny lahatahiry log status?",
+
+  "language_menu.title": "Fidio ny Teny (ankehitriny: Malagasy)",
+
+  "logtype_menu.title": "Fidio ny Karazana Rakitra ho an’ny Log isan’andro (ankehitriny: {LOGTYPE})",
+
+  "job_modify_menu.title": "Hanavao Asa (Safidio dia tsindrio enter)",
+  "job_modify_menu.title_modify_page": "Tsindrio enter raha hampiasa sandan’ny mahazatra (teny maitso)",
+
+  "error.path": "Hadisoana: Hadisoana amin’ny lalana",
+  "error.path_with": "Hadisoana: Hadisoana amin’ny lalana amin’ny Asa {JOBNAME}"
+}
