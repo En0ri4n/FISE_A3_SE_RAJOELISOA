@@ -66,16 +66,6 @@ public class BackupJobManager : JobManager<BackupJob>
         EasySaveConfiguration<BackupJob>.SaveConfiguration();
     }
 
-    protected override void DoAllJobs()
-    {
-        foreach (var job in Jobs)
-        {
-            if (job.CanRunJob())
-            {
-                job.RunJob(Strategy);
-            }
-        }
-    }
 
     public override void DoJob(BackupJob job)
     {
@@ -83,6 +73,25 @@ public class BackupJobManager : JobManager<BackupJob>
             throw new Exception($"Job {job.Name} cannot be run");
         
         job.RunJob(Strategy);
-        Logger<BackupJob>.Get().SaveDailyLog(job, new List<JobTask>(job.BackupJobTasks));
+        Logger<BackupJob>.Get().SaveDailyLog(new List<JobTask>(job.BackupJobTasks));
+    }
+
+    public override void DoMultipleJob(List<BackupJob> jobs)
+    {
+        foreach (var job in jobs)
+        {
+            if (job.CanRunJob())
+            {
+                job.RunJob(Strategy);
+
+            }
+        }
+
+        Logger<BackupJob>.Get().SaveDailyLog([.. jobs.SelectMany(job => job.BackupJobTasks)]);
+    }
+
+    public override void DoAllJobs()
+    {
+        DoMultipleJob(Jobs);
     }
 }

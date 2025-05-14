@@ -77,7 +77,7 @@ public class Logger<TJob> where TJob : IJob
     /// <param name="job">The job whose properties are to be logged.</param>
     /// <param name="tasks">The list of tasks associated with the job.</param>
     /// <param name="format">The format in which the log should be saved (JSON or XML).</param>
-    public void SaveDailyLog(IJob job, List<JobTask> tasks)
+    public void SaveDailyLog(List<JobTask> tasks)
     {
         using StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true);
         string fileContent;
@@ -90,6 +90,7 @@ public class Logger<TJob> where TJob : IJob
                 Log(LogLevel.Information, $"Saving daily log to file in JSON format at {GetDailyLogFilePath()}");
                 break;
             case Format.Xml:
+                //TODO change way to save in the file for clarity (currently no identation)
                 XmlElement xml = XmlSerialize(tasks);
                 fileContent = xml.OuterXml;
                 Log(LogLevel.Information, $"Saving daily log to file in XML format at {GetDailyLogFilePath()}");
@@ -153,7 +154,7 @@ public class Logger<TJob> where TJob : IJob
         XmlElement root = doc.CreateElement("Tasks");
 
         foreach (JobTask jobTask in tasks)
-            root.AppendChild(jobTask.XmlSerialize());
+            root.AppendChild(jobTask.XmlSerialize(doc));
         
         doc.AppendChild(root);
         return root;
