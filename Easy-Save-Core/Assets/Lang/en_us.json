@@ -35,5 +35,7 @@
 
   "language_menu.title": "Select Language (current : English - United States)",
 
-  "logtype_menu.title": "Select File Type for Daily Logs (current : {LOGTYPE})"
+  "logtype_menu.title": "Select File Type for Daily Logs (current : {LOGTYPE})",
+
+  "job_modify_menu.title": "Update Job (Press Enter to keep current value)"
 }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using CLEA.EasySaveCore.Utilities;
+using System.Text.Json.Nodes;
 
 namespace CLEA.EasySaveCore.Models;
 
@@ -25,7 +26,11 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
             throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
 
         if (jobJson != null)
+        {
             job.JsonDeserialize(jobJson);
+            EasySaveConfiguration<TJob>.SaveConfiguration();
+        }
+
     }
     
     public void UpdateJob(string name, TJob? job)
@@ -35,7 +40,10 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
             throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
 
         if (job != null)
+        {
             existingJob.JsonDeserialize(job.JsonSerialize());
+            EasySaveConfiguration<TJob>.SaveConfiguration();
+        }
     }
 
     public bool RemoveJob(string name)
