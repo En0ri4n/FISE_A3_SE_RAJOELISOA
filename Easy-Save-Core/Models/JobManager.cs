@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using CLEA.EasySaveCore.Utilities;
+using System.Text.Json.Nodes;
 
 namespace CLEA.EasySaveCore.Models;
 
@@ -25,7 +26,11 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
             throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
 
         if (jobJson != null)
+        {
             job.JsonDeserialize(jobJson);
+            EasySaveConfiguration<TJob>.SaveConfiguration();
+        }
+
     }
     
     public void UpdateJob(string name, TJob? job)
@@ -35,7 +40,10 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
             throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
 
         if (job != null)
+        {
             existingJob.JsonDeserialize(job.JsonSerialize());
+            EasySaveConfiguration<TJob>.SaveConfiguration();
+        }
     }
 
     public bool RemoveJob(string name)
@@ -58,12 +66,9 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
         return true;
     }
 
-    public TJob GetJob(string name)
+    public TJob? GetJob(string name)
     {
-        var job = Jobs.FirstOrDefault(j => j.Name == name);
-        
-        if (job == null)
-            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
+        TJob? job = Jobs.FirstOrDefault(j => j.Name == name);
         
         return job;
     }
@@ -73,7 +78,7 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
         return Jobs;
     }
     
-    protected abstract void DoAllJobs();
+    public abstract void DoAllJobs();
 
     public void DoJob(string name)
     {
@@ -86,4 +91,11 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
     }
 
     public abstract void DoJob(TJob job);
+
+    public void DoMultipleJob(List<string> jobs)
+    {
+        DoMultipleJob(jobs.Select(jobName => GetJob(jobName)).ToList());
+    }
+
+    public abstract void DoMultipleJob(List<TJob> jobs);
 }

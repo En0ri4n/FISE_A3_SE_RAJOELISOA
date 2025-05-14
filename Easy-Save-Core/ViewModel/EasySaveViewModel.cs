@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Xml.Linq;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
+using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
@@ -30,6 +32,18 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         get => Logger<TJob>.Get().DailyLogFormat;
         set { Logger<TJob>.Get().DailyLogFormat = value; OnPropertyChanged(); }
     }
+    public string DailyLogPath
+    {
+        get => Logger<TJob>.Get().DailyLogPath;
+        set { Logger<TJob>.Get().DailyLogPath = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
+    }
+
+    public string StatusLogPath
+    {
+        get => Logger<TJob>.Get().StatusLogPath;
+        set { Logger<TJob>.Get().StatusLogPath = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
+    }
+
 
     public List<TJob> AvailableJobs => JobManager.GetJobs();
 
@@ -52,6 +66,9 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
 
     public ICommand DeleteJobCommand;
     public ICommand RunJobCommand;
+    public ICommand RunMultipleJobsCommand;
+    public ICommand RunAllJobsCommand;
+    public ICommand ChangeRunStrategyCommand;
 
     private static EasySaveViewModel<TJob> _instance;
     
@@ -96,6 +113,32 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
                 JobManager.DoJob(name);
             }
         }, _ => true);
+
+        RunMultipleJobsCommand = new RelayCommand(jobNameList =>
+        {
+            if (jobNameList is List<string> jobNames)
+            {
+                JobManager.DoMultipleJob(jobNames);
+            }
+        }, _ => true);
+
+        ChangeRunStrategyCommand = new RelayCommand(strategy =>
+        {
+            if (strategy is string strategyName)
+            {
+                JobManager.Strategy = strategyName switch
+                {
+                    "Full" => StrategyType.Full,
+                    "Differential" => StrategyType.Differential,
+                    _ => throw new NotImplementedException()
+                };
+            }
+        }, _ => true);
+
+        RunAllJobsCommand = new RelayCommand(_ =>
+        {
+            JobManager.DoAllJobs();
+        }, _ => true);
     }
 
     public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
@@ -123,9 +166,12 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     }
 
 
-    public bool IsNameValid(string name)
+    public bool IsNameValid(string name, bool isCreation)
     {
-        return JobManager.GetJobs().All(job => job?.Name != name);
+        TJob? existingJob = JobManager.GetJob(name);
+        bool exists = existingJob != null;
+
+        return isCreation ? !exists : exists;
     }
 
     public void UpdateFromJobBuilder()

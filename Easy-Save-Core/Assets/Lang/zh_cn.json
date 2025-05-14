@@ -1,0 +1,63 @@
+{
+  "language": "中文 (简体)",
+
+  "main.title": "Easy Save - CLEA",
+  "main.exiting": "正在退出...",
+  "main.go_back": "返回",
+  "main.click_any": "按任意键退出...",
+
+  "main_menu.title": "EasySave 主菜单",
+  "main_menu.jobs": "管理任务",
+  "main_menu.settings": "设置",
+  "main_menu.exit": "退出",
+
+  "job_menu.title": "任务",
+  "job_menu.list_job": "任务列表",
+  "job_menu.run_job": "运行任务",
+  "job_menu.run_multiple_jobs": "运行多个任务",
+  "job_menu.run_all_jobs": "运行所有任务",
+  "job_menu.create_job": "创建任务",
+  "job_menu.modify_job": "修改任务",
+  "job_menu.delete_job": "删除任务",
+  "job_menu.error_no_jobs": "错误: 无法运行任务: 没有找到任何任务",
+  "job_menu.error_excessive_jobs": "错误: 无法创建任务: 超过5个任务",
+  "job_menu.error_job_exist": "错误: 无法创建任务: 名称已存在",
+
+  "job_menu.title_one": "运行单个任务",
+  "job_menu.title_multiple": "运行多个任务（不选择任何任务则退出)",
+  "job_menu.title_all": "运行所有任务",
+  "job_menu.option_all": "运行全部",
+  "job_menu.has_run": "任务已成功运行",
+
+  "job_menu.name_question": "任务的名称是什么？",
+  "job_menu.select_option": "您想选择哪个任务？",
+
+  "job_menu.column.name": "任务名称",
+  "job_menu.column.source": "源目录",
+  "job_menu.column.target": "目标目录",
+
+  "information.target_directory": "目标目录是什么？",
+  "information.source_directory": "源目录是什么？",
+
+  "run_strategy_menu.title": "选择执行策略",
+  "run_strategy_menu.option_full": "完全备份",
+  "run_strategy_menu.option_differential": "差异备份",
+
+  "settings_menu.title": "设置菜单",
+  "settings_menu.change_language": "更改语言（当前: zh_cn)",
+  "settings_menu.change_log_type": "更改日志类型（当前: {LOGTYPE})",
+  "settings_menu.change_daily_log_path": "更改每日日志目录（当前: {PATH})",
+  "settings_menu.message_daily_log_path": "每日日志目录是什么？",
+
+  "settings_menu.change_status_log_path": "更改状态日志目录（当前: {PATH})",
+  "settings_menu.message_status_log_path": "状态日志目录是什么？",
+
+  "language_menu.title": "选择语言（当前: 中文 - 简体)",
+
+  "logtype_menu.title": "选择每日日志文件类型（当前: {LOGTYPE})",
+
+  "job_modify_menu.title": "更新任务（选择特定任务，然后按 Enter）",
+  "job_modify_menu.title_modify_page": "按 Enter 使用默认值（绿色文本）",
+
+  "error.path": "错误: 路径错误"
+}

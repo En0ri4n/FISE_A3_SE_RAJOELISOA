@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
@@ -70,14 +71,14 @@ public class Logger<TJob> where TJob : IJob
     {
         return Instance;
     }
-    
+
     /// <summary>
     /// Saves a daily log for the specified job and its associated tasks in the given format (JSON or XML).
     /// </summary>
     /// <param name="job">The job whose properties are to be logged.</param>
     /// <param name="tasks">The list of tasks associated with the job.</param>
     /// <param name="format">The format in which the log should be saved (JSON or XML).</param>
-    public void SaveDailyLog(IJob job, List<JobTask> tasks)
+    public void SaveDailyLog(List<JobTask> tasks)
     {
         using StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true);
         string fileContent;
@@ -85,19 +86,33 @@ public class Logger<TJob> where TJob : IJob
         {
             default:
             case Format.Json:
+                // Pretty print JSON
                 JsonNode json = JsonSerialize(tasks);
-                fileContent = json.ToString();
+                fileContent = json.ToJsonString(new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
                 Log(LogLevel.Information, $"Saving daily log to file in JSON format at {GetDailyLogFilePath()}");
                 break;
+
             case Format.Xml:
-                XmlElement xml = XmlSerialize(tasks);
-                fileContent = xml.OuterXml;
+                // Pretty print XML
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.AppendChild(xmlDoc.ImportNode(XmlSerialize(tasks), true));
+                using (StringWriter stringWriter = new StringWriter())
+                using (XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter))
+                {
+                    xmlTextWriter.Formatting = Formatting.Indented;
+                    xmlDoc.WriteTo(xmlTextWriter);
+                    fileContent = stringWriter.ToString();
+                }
                 Log(LogLevel.Information, $"Saving daily log to file in XML format at {GetDailyLogFilePath()}");
                 break;
         }
         writer.WriteLine(fileContent);
         writer.WriteLine();
     }
+
 
     /// <summary>
     /// Logs a message to the status log file.
@@ -153,7 +168,7 @@ public class Logger<TJob> where TJob : IJob
         XmlElement root = doc.CreateElement("Tasks");
 
         foreach (JobTask jobTask in tasks)
-            root.AppendChild(jobTask.XmlSerialize());
+            root.AppendChild(jobTask.XmlSerialize(doc));
         
         doc.AppendChild(root);
         return root;

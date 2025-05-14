@@ -56,6 +56,6 @@ public abstract class JobTask : IJsonSerializable, IXmlSerializable
 
     public abstract void JsonDeserialize(JsonObject data);
 
-    public abstract XmlElement XmlSerialize();
+    public abstract XmlElement XmlSerialize(XmlDocument parent);
     public abstract void XmlDeserialize(XmlElement data);
 }
