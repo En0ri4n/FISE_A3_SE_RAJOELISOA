@@ -232,7 +232,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 return;
             }
             SetRunHandler([jobName]);
-            ViewModel.RunJobCommand.Execute(jobName);
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Aesthetic)
+                .SpinnerStyle(Style.Parse("blue"))
+                .Start(L10N.GetTranslation("loader.running.text"),
+                    ctx => ViewModel.RunJobCommand.Execute(jobName));
             DisplayJobResultMenu(1);
         }
         GoBack();
@@ -263,7 +267,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 }
             }
             SetRunHandler(jobListName.ToArray());
-            ViewModel.RunMultipleJobsCommand.Execute(jobListName);
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Grenade)
+                .SpinnerStyle(Style.Parse("yellow"))
+                .Start(L10N.GetTranslation("loader.running.text"),
+                    ctx => ViewModel.RunMultipleJobsCommand.Execute(jobListName));
             DisplayJobResultMenu(jobListName.Count());
         }
         GoBack();
@@ -305,15 +313,14 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                     return;
                 }
             }
+            SetRunHandler(ViewModel.AvailableJobs.Select(x => x.Name).ToArray());
             AnsiConsole.Status()
             .Spinner(Spinner.Known.Pong)
             .SpinnerStyle(Style.Parse("green"))
-            .Start("Job is running. Please wait", ctx =>
+            .Start(L10N.GetTranslation("loader.running.text"), ctx =>
             {
                 ViewModel.RunAllJobsCommand.Execute(null);
             });
-            SetRunHandler(ViewModel.AvailableJobs.Select(x => x.Name).ToArray());
-            ViewModel.RunAllJobsCommand.Execute(null);
             DisplayJobResultMenu(ViewModel.JobManager.GetJobs().Count());
         }
         GoBack();
