@@ -7,6 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100">
+            </RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Easy Save</Label>
+        
+        <Menu Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel  Orientation="Vertical">
+                <MenuItem Header="Manage jobs" FontSize="40" HorizontalAlignment="Center"></MenuItem>
+                <MenuItem Header="Options" FontSize="40" HorizontalAlignment="Center"></MenuItem>
+                <MenuItem Header="Quit" FontSize="40" HorizontalAlignment="Center"></MenuItem>
+            </StackPanel>
+        </Menu>
+        
     </Grid>
 </Window>
