@@ -50,6 +50,6 @@ public class TranslationSystemUnitTest
         var l10N = L10N<BackupJob>.Get();
         l10N.SetLanguage(Languages.EnUs);
 
-        Assert.Throws<KeyNotFoundException>(() => l10N.GetTranslation("nonexistent.key"));
+        Assert.Equal("nonexistent.key", l10N.GetTranslation("nonexistent.key"));
     }
 }
