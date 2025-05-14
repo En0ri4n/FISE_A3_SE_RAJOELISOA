@@ -101,7 +101,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             AddToMenuHistory(Menu.JobList);
             DisplayJobListMenu();
         }
-
         else if (choice == L10N.GetTranslation("job_menu.run_job"))
         {
             AddToMenuHistory(Menu.RunJob);
@@ -197,6 +196,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
+    //TODO : Add Option to check source for all 3 Run Function
+    //And an error message if check is invalid
     protected override void DisplayRunMenu()
     {
         string jobName = AnsiConsole.Prompt(
