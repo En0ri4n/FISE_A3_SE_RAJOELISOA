@@ -63,11 +63,11 @@ public class BackupJob : IJob
             return;
         }
 
-        if (string.IsNullOrEmpty(Source.Value) || string.IsNullOrEmpty(Target.Value))
+        if (string.IsNullOrEmpty(Source.Value.ToString()) || string.IsNullOrEmpty(Target.Value.ToString()))
             throw new Exception("Source or Target path is not set.");
 
-        if (!Directory.Exists(Source.Value))
-            throw new DirectoryNotFoundException($"Source directory '{Source.Value}' does not exist.");
+        if (!Directory.Exists(Source.Value.ToString()))
+            throw new DirectoryNotFoundException($"Source directory '{Source.Value.ToString()}' does not exist.");
 
         if (Source.Value == Target.Value)
             throw new Exception("Source and Target paths cannot be the same.");
@@ -77,22 +77,22 @@ public class BackupJob : IJob
         IsRunning = true;
         Timestamp.Value = DateTime.Now;
         
-        if (!Directory.Exists(Target.Value))
-            Directory.CreateDirectory(Target.Value);
+        if (!Directory.Exists(Target.Value.ToString()))
+            Directory.CreateDirectory(Target.Value.ToString());
 
-        string[] sourceDirectoriesArray = Directory.GetDirectories(Source.Value, "*", SearchOption.AllDirectories);
+        string[] sourceDirectoriesArray = Directory.GetDirectories((string) Source.Value.ToString(), "*", SearchOption.AllDirectories);
 
         foreach (string directory in sourceDirectoriesArray)
         {
-            string dirToCreate = directory.Replace(Source.Value, Target.Value);
+            string dirToCreate = directory.Replace(Source.Value.ToString(), Target.Value.ToString());
             Directory.CreateDirectory(dirToCreate);
         }
 
-        string[] sourceFilesArray = Directory.GetFiles(Source.Value, "*.*", SearchOption.AllDirectories);
+        string[] sourceFilesArray = Directory.GetFiles((string) Source.Value.ToString(), "*.*", SearchOption.AllDirectories);
 
         foreach (string path in sourceFilesArray)
         {
-            BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source.Value, Target.Value));
+            BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) Source.Value.ToString(), (string) Target.Value.ToString()));
             BackupJobTasks.Add(jobTask);
         }
 
