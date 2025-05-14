@@ -67,10 +67,9 @@ public class L10N<TJob> where TJob : IJob
 
     public string GetTranslation(string key, string[]? parameters = null)
     {
-        if (!_translations.TryGetValue(key, out var translation))
-            throw new KeyNotFoundException($"Translation key '{key}' not found for language '{_currentLang}'");
+        _translations.TryGetValue(key, out var translation);
 
-        return translation;
+        return translation ?? key;
     }
 
     public static L10N<TJob> Get()

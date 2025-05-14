@@ -1,14 +1,12 @@
 ﻿using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
-using System.IO;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCLI;
@@ -235,6 +233,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 ShowErrorScreen(L10N.GetTranslation("error.path"));
                 return;
             }
+            SetRunHandler([jobName]);
             ViewModel.RunJobCommand.Execute(jobName);
             DisplayJobResultMenu(1);
         }
@@ -265,10 +264,25 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                     return;
                 }
             }
+            SetRunHandler(jobListName.ToArray());
             ViewModel.RunMultipleJobsCommand.Execute(jobListName);
             DisplayJobResultMenu(jobListName.Count());
         }
         GoBack();
+    }
+    
+    private void SetRunHandler(string[] jobNames)
+    {
+        ViewModel.OnTaskCompletedFor(jobNames, task =>
+        {
+            BackupJobTask backupTask = (BackupJobTask) task;
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.task_run_information")
+                .Replace("{JOB_NAME}", backupTask.Name)
+                .Replace("{SOURCE}", backupTask.Source.Value.ToString())
+                .Replace("{TARGET}", backupTask.Target.Value.ToString())
+                .Replace("{TIME}", backupTask.TransferTime.Value.ToString())
+                .Replace("{STATUS}", backupTask.Status.ToString()));
+        });
     }
 
     //TODO Implement loader on every execut job function (do lambda function) (Do translation for waiting text)
@@ -300,6 +314,8 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             {
                 ViewModel.RunAllJobsCommand.Execute(null);
             });
+            SetRunHandler(ViewModel.AvailableJobs.Select(x => x.Name).ToArray());
+            ViewModel.RunAllJobsCommand.Execute(null);
             DisplayJobResultMenu(ViewModel.JobManager.GetJobs().Count());
         }
         GoBack();

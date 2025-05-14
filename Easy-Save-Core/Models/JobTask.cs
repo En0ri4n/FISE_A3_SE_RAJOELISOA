@@ -6,6 +6,8 @@ namespace CLEA.EasySaveCore.Models;
 
 public abstract class JobTask : IJsonSerializable, IXmlSerializable
 {
+    public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
+
     public string Name
     {
         get
@@ -50,7 +52,7 @@ public abstract class JobTask : IJsonSerializable, IXmlSerializable
         return true;
     }
     
-    public abstract JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
+    public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
 
     public abstract JsonObject JsonSerialize();
 

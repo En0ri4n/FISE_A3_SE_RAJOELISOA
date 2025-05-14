@@ -140,6 +140,19 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
             JobManager.DoAllJobs();
         }, _ => true);
     }
+    
+    public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
+    {
+        foreach (var jobName in jobNames)
+        {
+            var job = JobManager.GetJob(jobName);
+            if (job == null)
+                continue;
+            
+            job.ClearTaskCompletedHandler();
+            job.TaskCompletedHandler += callback;
+        }
+    }
 
     public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
     {

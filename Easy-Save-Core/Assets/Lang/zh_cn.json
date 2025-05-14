@@ -27,6 +27,8 @@
   "job_menu.title_multiple": "运行多个任务（不选择任何任务则退出)",
   "job_menu.title_all": "运行所有任务",
   "job_menu.option_all": "运行全部",
+  
+  "job_menu.task_run_information": "[{JOB_NAME}] 已从 {SOURCE} 复制到 {TARGET}, 耗时 {TIME} 毫秒（{STATUS})",
   "job_menu.has_run": "任务已成功运行",
 
   "job_menu.name_question": "任务的名称是什么？",

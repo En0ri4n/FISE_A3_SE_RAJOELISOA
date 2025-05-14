@@ -71,8 +71,11 @@ public class BackupJobManager : JobManager<BackupJob>
     {
         if (!job.CanRunJob())
             throw new Exception($"Job {job.Name} cannot be run");
-        
+
+        job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
         job.RunJob(Strategy);
+        job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
+        
         Logger<BackupJob>.Get().SaveDailyLog(new List<JobTask>(job.BackupJobTasks));
     }
 
@@ -82,8 +85,9 @@ public class BackupJobManager : JobManager<BackupJob>
         {
             if (job.CanRunJob())
             {
+                job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
                 job.RunJob(Strategy);
-
+                job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
             }
         }
 
