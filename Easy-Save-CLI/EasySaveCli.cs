@@ -285,19 +285,19 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         ));
         if (choice != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
         {
+            foreach (BackupJob job in ViewModel.JobManager.GetJobs())
+            {
+                if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
+                {
+                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", job.Name));
+                    return;
+                }
+            }
             AnsiConsole.Status()
             .Spinner(Spinner.Known.Pong)
             .SpinnerStyle(Style.Parse("green"))
             .Start("Job is running. Please wait", ctx =>
             {
-                foreach (BackupJob job in ViewModel.JobManager.GetJobs())
-                {
-                    if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
-                    {
-                        ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", job.Name));
-                        return;
-                    }
-                }
                 ViewModel.RunAllJobsCommand.Execute(null);
             });
             DisplayJobResultMenu(ViewModel.JobManager.GetJobs().Count());
