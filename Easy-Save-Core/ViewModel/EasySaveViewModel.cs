@@ -103,23 +103,25 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         JobBuilder = jobBuilder;
     }
 
-    public bool DoesPathExists(string path)
+    public bool DoesDirectoryPathExist(string path)
     {
         return Directory.Exists(path) ;
     }
 
-    public bool IsPathValid(string path)
+    public bool IsDirectoryPathValid(string path)
     {
         try
         {
-            Path.GetDirectoryName(path);
+            string fullPath = Path.GetFullPath(path);
+
+            return !Path.HasExtension(fullPath);
         }
         catch
         {
             return false;
         }
-        return true;
     }
+
 
     public bool IsNameValid(string name)
     {
