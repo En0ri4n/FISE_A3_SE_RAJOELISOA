@@ -32,8 +32,16 @@
   "job_menu.name_question": "Quel est le nom du Job ?",
   "job_menu.select_option": "Quel Job voulez-vous sélectionner ?",
 
+  "job_menu.column.name": "Nom du Job",
+  "job_menu.column.source": "Source",
+  "job_menu.column.target": "Cible",
+
   "information.target_directory": "Quel est le répertoire cible ?",
   "information.source_directory": "Quel est le répertoire source ?",
+
+  "run_strategy_menu.title": "Selectionnez Stratégie d'exécution",
+  "run_strategy_menu.option_full": "Full",
+  "run_strategy_menu.option_differential": "Differentielle",
 
   "settings_menu.title": "Menu des Options",
   "settings_menu.change_language": "Changer de langue (actuel : fr_fr)",

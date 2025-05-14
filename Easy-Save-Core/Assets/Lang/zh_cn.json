@@ -32,8 +32,16 @@
   "job_menu.name_question": "任务的名称是什么？",
   "job_menu.select_option": "您想选择哪个任务？",
 
+  "job_menu.column.name": "任务名称",
+  "job_menu.column.source": "源目录",
+  "job_menu.column.target": "目标目录",
+
   "information.target_directory": "目标目录是什么？",
   "information.source_directory": "源目录是什么？",
+
+  "run_strategy_menu.title": "选择执行策略",
+  "run_strategy_menu.option_full": "完全备份",
+  "run_strategy_menu.option_differential": "差异备份",
 
   "settings_menu.title": "设置菜单",
   "settings_menu.change_language": "更改语言（当前: zh_cn)",

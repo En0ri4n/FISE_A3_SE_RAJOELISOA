@@ -33,10 +33,17 @@
 
   "job_menu.select_option": "Which Job do you want to select?",
 
+  "job_menu.column.name": "Job Name",
+  "job_menu.column.source": "Source",
+  "job_menu.column.target": "Target",
+
+
   "information.target_directory": "What is the target directory?",
   "information.source_directory": "What is the source directory?",
 
-
+  "run_strategy_menu.title": "Select Run Strategy",
+  "run_strategy_menu.option_full": "Full",
+  "run_strategy_menu.option_differential": "Differential",
 
   "settings_menu.title": "Settings Menu",
   "settings_menu.change_language": "Change Language (current : en_us)",

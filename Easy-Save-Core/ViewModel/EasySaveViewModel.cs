@@ -6,6 +6,7 @@ using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
+using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCore.ViewModel;
 
@@ -67,6 +68,7 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     public ICommand RunJobCommand;
     public ICommand RunMultipleJobsCommand;
     public ICommand RunAllJobsCommand;
+    public ICommand ChangeRunStrategyCommand;
 
     private static EasySaveViewModel<TJob> _instance;
     
@@ -117,6 +119,19 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
             if (jobNameList is List<string> jobNames)
             {
                 JobManager.DoMultipleJob(jobNames);
+            }
+        }, _ => true);
+
+        ChangeRunStrategyCommand = new RelayCommand(strategy =>
+        {
+            if (strategy is string strategyName)
+            {
+                JobManager.Strategy = strategyName switch
+                {
+                    "Full" => StrategyType.Full,
+                    "Differential" => StrategyType.Differential,
+                    _ => throw new NotImplementedException()
+                };
             }
         }, _ => true);
 

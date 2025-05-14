@@ -76,12 +76,29 @@ namespace EasySaveCore.Models
         {
             XmlElement jobElement = document.CreateElement("BackupJobTask");
 
-            jobElement.SetAttribute("Name", Name);
-            jobElement.SetAttribute("Source", Source.Value);
-            jobElement.SetAttribute("Target", Target.Value);
-            jobElement.SetAttribute("Size", Size.Value.ToString());
-            jobElement.SetAttribute("FileTransferTime", ((double) TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture));
-            jobElement.SetAttribute("Timestamp", ((DateTime) Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss"));
+            XmlElement nameElement = document.CreateElement("Name");
+            nameElement.InnerText = Name;
+            jobElement.AppendChild(nameElement);
+
+            XmlElement sourceElement = document.CreateElement("Source");
+            sourceElement.InnerText = Source.Value;
+            jobElement.AppendChild(sourceElement);
+
+            XmlElement targetElement = document.CreateElement("Target");
+            targetElement.InnerText = Target.Value;
+            jobElement.AppendChild(targetElement);
+
+            XmlElement sizeElement = document.CreateElement("Size");
+            sizeElement.InnerText = Size.Value.ToString();
+            jobElement.AppendChild(sizeElement);
+
+            XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
+            fileTransferTimeElement.InnerText = ((double)TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture);
+            jobElement.AppendChild(fileTransferTimeElement);
+
+            XmlElement timestampElement = document.CreateElement("Timestamp");
+            timestampElement.InnerText = ((DateTime)Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss");
+            jobElement.AppendChild(timestampElement);
 
             return jobElement;
         }
