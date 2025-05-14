@@ -1,14 +1,12 @@
 ﻿using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
-using System.IO;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCLI;
@@ -26,8 +24,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         CreateJob,
         ModifyJob,
         DeleteJob,
-        JobResult,
-        JobSetting,
         Language,
         LogType,
         DailyLogDirectory,
@@ -158,7 +154,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
             if (selectedLang != L10N.GetLanguage())
             {
-                L10N.SetLanguage(selectedLang);
+                ViewModel.CurrentApplicationLang = selectedLang;
             }
         }
         GoBack();
@@ -178,9 +174,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
         if (choice != L10N.GetTranslation("main.go_back"))
         {
-            //TODO Move to a view model (Inside a view it is so-so
-            EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat = (Format)Enum.Parse(typeof(Format), choice);
-            EasySaveConfiguration<BackupJob>.SaveConfiguration();
+            ViewModel.CurrentDailyLogFormat = Enum.Parse<Format>(choice);
         }
         GoBack();
     }
@@ -232,10 +226,15 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         {
             if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(jobName).Source.Value))
             {
-                ShowErrorScreen(L10N.GetTranslation("error.path"));
+                ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", jobName).Replace("{PATH}", ViewModel.JobManager.GetJob(jobName).Source.Value));
                 return;
             }
-            ViewModel.RunJobCommand.Execute(jobName);
+            SetRunHandler([jobName]);
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Aesthetic)
+                .SpinnerStyle(Style.Parse("blue"))
+                .Start(L10N.GetTranslation("loader.running.text"),
+                    ctx => ViewModel.RunJobCommand.Execute(jobName));
             DisplayJobResultMenu(1);
         }
         GoBack();
@@ -261,19 +260,35 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             {
                 if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(jobName).Source.Value))
                 {
-                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", jobName));
+                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", jobName).Replace("{PATH}", ViewModel.JobManager.GetJob(jobName).Source.Value));
                     return;
                 }
             }
-            ViewModel.RunMultipleJobsCommand.Execute(jobListName);
+            SetRunHandler(jobListName.ToArray());
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Grenade)
+                .SpinnerStyle(Style.Parse("yellow"))
+                .Start(L10N.GetTranslation("loader.running.text"),
+                    ctx => ViewModel.RunMultipleJobsCommand.Execute(jobListName));
             DisplayJobResultMenu(jobListName.Count());
         }
         GoBack();
     }
+    
+    private void SetRunHandler(string[] jobNames)
+    {
+        ViewModel.OnTaskCompletedFor(jobNames, task =>
+        {
+            BackupJobTask backupTask = (BackupJobTask) task;
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.task_run_information")
+                .Replace("{JOB_NAME}", backupTask.Name)
+                .Replace("{SOURCE}", backupTask.Source.Value.ToString())
+                .Replace("{TARGET}", backupTask.Target.Value.ToString())
+                .Replace("{TIME}", backupTask.TransferTime.Value.ToString())
+                .Replace("{STATUS}", backupTask.Status.ToString()));
+        });
+    }
 
-    //TODO Implement loader on every execut job function (do lambda function) (Do translation for waiting text)
-    //TODO Show more job information at the end
-    //TODO IF GOAT Make a progress something for each file and job maybe
     protected override void DisplayRunAllMenu()
     {
         string choice = AnsiConsole.Prompt(
@@ -287,16 +302,17 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         {
             foreach (BackupJob job in ViewModel.JobManager.GetJobs())
             {
-                if (!ViewModel.DoesDirectoryPathExist(ViewModel.JobManager.GetJob(job.Name).Source.Value))
+                if (!ViewModel.DoesDirectoryPathExist(job.Source.Value))
                 {
-                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", job.Name));
+                    ShowErrorScreen(L10N.GetTranslation("error.path_with").Replace("{JOBNAME}", job.Name).Replace("{PATH}", job.Source.Value));
                     return;
                 }
             }
+            SetRunHandler(ViewModel.AvailableJobs.Select(x => x.Name).ToArray());
             AnsiConsole.Status()
             .Spinner(Spinner.Known.Pong)
             .SpinnerStyle(Style.Parse("green"))
-            .Start("Job is running. Please wait", ctx =>
+            .Start(L10N.GetTranslation("loader.running.text"), ctx =>
             {
                 ViewModel.RunAllJobsCommand.Execute(null);
             });

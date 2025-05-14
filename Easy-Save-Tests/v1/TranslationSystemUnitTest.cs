@@ -6,7 +6,7 @@ namespace CLEA_Tests;
 
 public class TranslationSystemUnitTest
 {
-    private static readonly LangIdentifier FakeLang = new("fake_lang", "FakeLang");
+    private static readonly LangIdentifier FakeLang = new LangIdentifier("fake_lang", "FakeLang");
     
     [SkippableFact]
     public void Get_ShouldReturnSingletonInstance()

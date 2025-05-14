@@ -27,6 +27,8 @@
   "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
   "job_menu.title_all": "Run all Jobs",
   "job_menu.option_all": "Run all",
+  
+  "job_menu.task_run_information": "[{JOB_NAME}] Copied {SOURCE} to {TARGET} in {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "The Job runned without issues",
   "job_menu.many_jobs_success": "The {JOBNUMBER} Jobs runned without issues",
 
@@ -37,7 +39,8 @@
   "job_menu.column.name": "Job Name",
   "job_menu.column.source": "Source",
   "job_menu.column.target": "Target",
-
+  
+  "loader.running.text": "Job is running. Please wait...",
 
   "information.target_directory": "What is the target directory?",
   "information.source_directory": "What is the source directory?",
@@ -63,5 +66,5 @@
   "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
 
   "error.path": "Error: Path Error",
-  "error.path_with": "Error: Path Error with the job {JOBNAME}"
+  "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist"
 }

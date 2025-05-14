@@ -30,7 +30,7 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     public Format CurrentDailyLogFormat
     {
         get => Logger<TJob>.Get().DailyLogFormat;
-        set { Logger<TJob>.Get().DailyLogFormat = value; OnPropertyChanged(); }
+        set { Logger<TJob>.Get().DailyLogFormat = value; EasySaveConfiguration<BackupJob>.SaveConfiguration(); OnPropertyChanged(); }
     }
     public string DailyLogPath
     {
@@ -139,6 +139,19 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         {
             JobManager.DoAllJobs();
         }, _ => true);
+    }
+    
+    public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
+    {
+        foreach (var jobName in jobNames)
+        {
+            var job = JobManager.GetJob(jobName);
+            if (job == null)
+                continue;
+            
+            job.ClearTaskCompletedHandler();
+            job.TaskCompletedHandler += callback;
+        }
     }
 
     public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
