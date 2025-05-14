@@ -6,7 +6,9 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
 {
     protected List<TJob> Jobs { get; } = new List<TJob>(size);
     protected int Size { get; } = size;
-    
+
+    public int JobCount => Jobs.Count;
+
     public ExecutionFlowType ExecutionFlowType { get; set; } = ExecutionFlowType.Sequential;
     public JobExecutionStrategy.StrategyType Strategy { get; set; } = JobExecutionStrategy.StrategyType.Full;
 

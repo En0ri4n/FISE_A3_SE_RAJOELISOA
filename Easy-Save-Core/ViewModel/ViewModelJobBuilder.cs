@@ -6,6 +6,14 @@ namespace CLEA.EasySaveCore.ViewModel;
 
 public abstract class ViewModelJobBuilder<TJob> : INotifyPropertyChanged where TJob : IJob
 {
+    private string _initialName = string.Empty;
+
+    public string InitialName
+    {
+        get => _initialName;
+        protected set { _initialName = value; OnPropertyChanged(); }
+    }
+
     /// <summary>
     /// Clears the current state of the builder.
     /// </summary>

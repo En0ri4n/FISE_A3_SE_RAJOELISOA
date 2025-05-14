@@ -124,6 +124,34 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         JobBuilder = jobBuilder;
     }
 
+    public bool DoesPathExists(string path)
+    {
+        return Directory.Exists(path) ;
+    }
+
+    public bool IsPathValid(string path)
+    {
+        try
+        {
+            Path.GetDirectoryName(path);
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public bool IsNameValid(string name)
+    {
+        return JobManager.GetJobs().All(job => job?.Name != name);
+    }
+
+    public void UpdateFromJobBuilder()
+    {
+        JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build());
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

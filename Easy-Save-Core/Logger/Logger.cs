@@ -113,6 +113,9 @@ public class Logger<TJob> where TJob : IJob
     /// </summary>
     private string GetStatusLogFilePath()
     {
+        if (!Directory.Exists(_statusLogPath))
+            Directory.CreateDirectory(_statusLogPath);
+        
         return Path.Combine(_statusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
     
@@ -121,6 +124,9 @@ public class Logger<TJob> where TJob : IJob
     /// </summary>
     private string GetDailyLogFilePath()
     {
+        if (!Directory.Exists(_dailyLogPath))
+            Directory.CreateDirectory(_dailyLogPath);
+        
         return Path.Combine(_dailyLogPath, $"dailyLog-{DateTime.Now:dd-MM-yyyy}.log");
     }
 
