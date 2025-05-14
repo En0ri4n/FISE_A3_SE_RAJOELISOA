@@ -9,8 +9,6 @@
   "main_menu.title": "Menu principal de EasySave",
   "main_menu.jobs": "Gérer les Jobs",
   "main_menu.settings": "Options",
-  "main_menu.change_language": "Changer de langue (actuel : fr_fr)",
-  "main_menu.change_log_type": "Changer de type de Log (actuel : {LOGTYPE})",
   "main_menu.exit": "Quitter",
 
   "job_menu.title": "Jobs",
@@ -32,6 +30,8 @@
   "job_menu.has_run": "Le lancement de Job(s) a fonctionné sans erreurs",
 
   "settings_menu.title": "Menu Option",
+  "settings_menu.change_language": "Changer de langue (actuel : fr_fr)",
+  "settings_menu.change_log_type": "Changer de type de Log (actuel : {LOGTYPE})",
 
   "language_menu.title": "Sélectionner la langue (actuel : Français - France)",
 

@@ -9,8 +9,6 @@
   "main_menu.title": "EasySave Main Menu",
   "main_menu.jobs": "Manage Jobs",
   "main_menu.settings": "Settings",
-  "main_menu.change_language": "Change Language (current : en_us)",
-  "main_menu.change_log_type": "Change Log Type (current : {LOGTYPE})",
   "main_menu.exit": "Quit",
 
   "job_menu.title": "Jobs",
@@ -32,6 +30,8 @@
   "job_menu.has_run": "Job(s) runned without issues",
 
   "settings_menu.title": "Settings Menu",
+  "settings_menu.change_language": "Change Language (current : en_us)",
+  "settings_menu.change_log_type": "Change Log Type (current : {LOGTYPE})",
 
   "language_menu.title": "Select Language (current : English - United States)",
 
