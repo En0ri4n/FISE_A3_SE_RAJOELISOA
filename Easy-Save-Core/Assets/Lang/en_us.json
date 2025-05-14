@@ -66,5 +66,5 @@
   "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
 
   "error.path": "Error: Path Error",
-  "error.path_with": "Error: Path Error with the job {JOBNAME}"
+  "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist"
 }

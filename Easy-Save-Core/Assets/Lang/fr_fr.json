@@ -65,5 +65,5 @@
   "job_modify_menu.title_modify_page": "Appuyez sur Entrée pour utiliser la valeur par défaut (texte en vert)",
 
   "error.path": "Erreur : Erreur de chemin",
-  "error.path_with": "Erreur : Erreur de chemin avec le job {JOBNAME}"
+  "error.path_with": "Erreur : Le chemin '{PATH}' du job '{JOBNAME}' est introuvable"
 }
