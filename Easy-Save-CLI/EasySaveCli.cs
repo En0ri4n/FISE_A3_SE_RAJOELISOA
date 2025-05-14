@@ -137,7 +137,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         }
         else if (choice == L10N.GetTranslation("job_menu.run_multiple_jobs"))
         {
-            if (ViewModel.JobManager.GetJobs().Count == 0)
+            if (ViewModel.JobManager.JobCount == 0)
             {
                 AnsiConsole.Write(L10N.GetTranslation("job_menu.error_no_jobs")+Environment.NewLine);
                 AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
@@ -177,7 +177,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         }
         else if (choice == L10N.GetTranslation("job_menu.create_job"))
         {
-            if (ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Count() == 5) //TODO Move this operation to ViewModel
+            if (ViewModel.JobManager.JobCount == 5)
             {
                 AnsiConsole.Write(L10N.GetTranslation("job_menu.error_excessive_jobs") + Environment.NewLine);
                 AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
