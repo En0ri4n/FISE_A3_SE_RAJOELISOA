@@ -306,7 +306,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     }
 
     protected override void DisplayModifyJobMenu()
-        //FIXME : Titles not appearing correctly
     {
         string jobName = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
@@ -314,9 +313,11 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             .AddChoices(
                 ViewModel.JobManager.GetJobs().Select(job => job.Name).ToArray().Append(L10N.GetTranslation("main.go_back"))
             ));
+        AnsiConsole.Clear();
         if (jobName != L10N.GetTranslation("main.go_back"))
         {
             AnsiConsole.Write(new Text(L10N.GetTranslation("job_modify_menu.title_modify_page")).Centered());
+            AnsiConsole.WriteLine("‎‎‎ "); // some space to breathe ...
             ViewModel.LoadJobInBuilderCommand.Execute(jobName);
             GetJobBuilder().Name = AnsiConsole.Ask<string>(L10N.GetTranslation("job_menu.name_question"), GetJobBuilder().Name);
             if (!ViewModel.IsNameValid(GetJobBuilder().InitialName, false))
