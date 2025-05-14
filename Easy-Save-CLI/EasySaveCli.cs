@@ -388,7 +388,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     protected override void DisplayJobResultMenu(int jobNumber)
     {
-        //TODO : Add More results ? This is lackluster
         AnsiConsole.Clear();
         if (jobNumber == 1)
         {
