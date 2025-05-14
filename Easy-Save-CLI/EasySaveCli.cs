@@ -44,6 +44,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()), new ViewModelBackupJobBuilder())
     {
+        Console.Title = L10N.GetTranslation("main.title");
         AddToMenuHistory(Menu.Main);
         DisplayMainMenu();
     }
@@ -262,6 +263,9 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
+    //TODO Implement loader on every execut job function (do lambda function) (Do translation for waiting text)
+    //TODO Show more job information at the end
+    //TODO IF GOAT Make a progress something for each file and job maybe
     protected override void DisplayRunAllMenu()
     {
         string jobName = AnsiConsole.Prompt(
@@ -273,7 +277,13 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         ));
         if (jobName != L10N.GetTranslation("main.go_back") && DisplayPromptRunStrategy())
         {
-            ViewModel.RunAllJobsCommand.Execute(null);
+            AnsiConsole.Status()
+            .Spinner(Spinner.Known.Pong)
+            .SpinnerStyle(Style.Parse("green"))
+            .Start("Job is running. Please wait", ctx =>
+            {
+                ViewModel.RunAllJobsCommand.Execute(null);
+            });
             DisplayJobResultMenu();
         }
         GoBack();
