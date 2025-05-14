@@ -10,7 +10,7 @@ public sealed class ViewModelBackupJobBuilder : ViewModelJobBuilder<BackupJob>
     private string _name = string.Empty;
     private string _source = string.Empty;
     private string _target = string.Empty;
-    
+
     public string Name
     {
         get => _name;
@@ -38,6 +38,7 @@ public sealed class ViewModelBackupJobBuilder : ViewModelJobBuilder<BackupJob>
 
     public override void GetFrom(BackupJob job)
     {
+        InitialName = job.Name;
         Name = job.Name;
         Source = job.Source.Value;
         Target = job.Target.Value;
