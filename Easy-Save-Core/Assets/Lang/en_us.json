@@ -39,7 +39,8 @@
   "job_menu.column.name": "Job Name",
   "job_menu.column.source": "Source",
   "job_menu.column.target": "Target",
-
+  
+  "loader.running.text": "Job is running. Please wait...",
 
   "information.target_directory": "What is the target directory?",
   "information.source_directory": "What is the source directory?",

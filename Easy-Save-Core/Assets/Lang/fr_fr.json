@@ -29,7 +29,7 @@
   "job_menu.option_all": "Lancer Tout",
   
   "job_menu.task_run_information": "[{JOB_NAME}] {SOURCE} a été copié vers {TARGET} en {TIME}ms ({STATUS})",
-  "job_menu.one_job_success": "Le Job ont été lancé sans erreurs",
+  "job_menu.one_job_success": "Le job a été lancé sans erreurs",
   "job_menu.many_jobs_success": "Les {JOBNUMBER} Jobs ont été lancés sans erreurs",
 
   "job_menu.name_question": "Quel est le nom du Job ?",
@@ -38,6 +38,8 @@
   "job_menu.column.name": "Nom du Job",
   "job_menu.column.source": "Source",
   "job_menu.column.target": "Cible",
+  
+  "loader.running.text": "Un job est en cours d'exécution. Veuillez patienter...",
 
   "information.target_directory": "Quel est le répertoire cible ?",
   "information.source_directory": "Quel est le répertoire source ?",
