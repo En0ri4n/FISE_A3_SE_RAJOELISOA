@@ -29,6 +29,7 @@
   "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
   "job_menu.title_all": "Run all Jobs",
   "job_menu.option_all": "Run all",
+  "job_menu.has_run": "Job(s) runned without issues",
 
   "settings_menu.title": "Settings Menu",
 
