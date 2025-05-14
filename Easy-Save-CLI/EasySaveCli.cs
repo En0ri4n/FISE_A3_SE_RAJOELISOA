@@ -66,7 +66,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         }*/
         else if (choice == L10N.GetTranslation("main_menu.settings"))
         {
-            AddToMenuHistory(Menu.Option);
+            AddToMenuHistory(Menu.Settings);
             DisplaySettingsMenu(); 
         }
         else if(choice == L10N.GetTranslation("main_menu.exit"))
