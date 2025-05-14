@@ -262,34 +262,34 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     {
         if (ViewModel.JobManager.JobCount == 5)
         {
-            AnsiConsole.Write(L10N.GetTranslation("job_menu.error_excessive_jobs") + Environment.NewLine);
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.error_excessive_jobs"));
             AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
             Console.ReadKey();
             GoBack();
             return;
         }
-        GetJobBuilder().Name = AnsiConsole.Ask<string>("What is the name of the job?");
-        if (!ViewModel.IsNameValid(GetJobBuilder().Name))
+        GetJobBuilder().Name = AnsiConsole.Ask<string>(L10N.GetTranslation("information.source_directory"));
+        if (!ViewModel.IsNameValid(GetJobBuilder().Name, true))
         {
-            AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.error_job_exist"));
             AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
             Console.ReadKey();
             GoBack();
             return;
         }
-        GetJobBuilder().Source = AnsiConsole.Ask<string>("What is the source directory?");
+        GetJobBuilder().Source = AnsiConsole.Ask<string>(L10N.GetTranslation("information.source_directory"));
         if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
         {
-            AnsiConsole.Write("temp source path error");
+            AnsiConsole.WriteLine(L10N.GetTranslation("error.path"));
             AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
             Console.ReadKey();
             GoBack();
             return;
         }
-        GetJobBuilder().Target = AnsiConsole.Ask<string>("What is the target directory?");
+        GetJobBuilder().Target = AnsiConsole.Ask<string>(L10N.GetTranslation("information.target_directory"));
         if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
         {
-            AnsiConsole.Write("temp target path error");
+            AnsiConsole.WriteLine(L10N.GetTranslation("error.path"));
             AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
             Console.ReadKey();
             GoBack();
@@ -310,29 +310,30 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             ));
         if (jobName != L10N.GetTranslation("main.go_back"))
         {
+            AnsiConsole.Write(new Text(L10N.GetTranslation("job_modify_menu.title_modify_page")).Centered());
             ViewModel.LoadJobInBuilderCommand.Execute(jobName);
-            GetJobBuilder().Name = AnsiConsole.Ask<string>("(temp) What is the name of the job?", GetJobBuilder().Name);
-            if (!ViewModel.IsNameValid(GetJobBuilder().Name))
+            GetJobBuilder().Name = AnsiConsole.Ask<string>(L10N.GetTranslation("job_menu.name_question"), GetJobBuilder().Name);
+            if (!ViewModel.IsNameValid(GetJobBuilder().InitialName, false))
             {
-                AnsiConsole.Write(L10N.GetTranslation("job_menu.error_job_exist") + Environment.NewLine);
+                AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.error_job_exist"));
                 AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
                 Console.ReadKey();
                 GoBack();
                 return;
             }
-            GetJobBuilder().Source = AnsiConsole.Ask<string>("(temp) What is the source directory?", GetJobBuilder().Source);
+            GetJobBuilder().Source = AnsiConsole.Ask<string>(L10N.GetTranslation("information.source_directory"), GetJobBuilder().Source);
             if (!ViewModel.DoesDirectoryPathExist(GetJobBuilder().Source))
             {
-                AnsiConsole.Write("temp source path error");
+                AnsiConsole.WriteLine(L10N.GetTranslation("error.path"));
                 AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
                 Console.ReadKey();
                 GoBack();
                 return;
             }
-            GetJobBuilder().Target = AnsiConsole.Ask<string>("(temp) What is the target directory?", GetJobBuilder().Target);
+            GetJobBuilder().Target = AnsiConsole.Ask<string>(L10N.GetTranslation("information.target_directory"), GetJobBuilder().Target);
             if (!ViewModel.IsDirectoryPathValid(GetJobBuilder().Target))
             {
-                AnsiConsole.Write("temp target path error");
+                AnsiConsole.WriteLine(L10N.GetTranslation("error.path"));
                 AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
                 Console.ReadKey();
                 GoBack();

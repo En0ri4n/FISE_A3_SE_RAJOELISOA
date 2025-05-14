@@ -51,7 +51,9 @@
 
   "logtype_menu.title": "Select File Type for Daily Logs (current : {LOGTYPE})",
 
-  "job_modify_menu.title": "Update Job (Press Enter to keep current value)",
+  "job_modify_menu.title": "Update Job (Select specific job, then press enter)",
+  "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
+
 
   "error.path": "Error: Path Error"
 }

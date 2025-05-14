@@ -66,12 +66,9 @@ public abstract class JobManager<TJob>(int size) where TJob : IJob
         return true;
     }
 
-    public TJob GetJob(string name)
+    public TJob? GetJob(string name)
     {
-        var job = Jobs.FirstOrDefault(j => j.Name == name);
-        
-        if (job == null)
-            throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
+        TJob? job = Jobs.FirstOrDefault(j => j.Name == name);
         
         return job;
     }

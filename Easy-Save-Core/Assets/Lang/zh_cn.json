@@ -48,7 +48,8 @@
 
   "logtype_menu.title": "选择每日日志文件类型（当前: {LOGTYPE})",
 
-  "job_modify_menu.title": "更新任务（按 Enter 保持当前值)",
+  "job_modify_menu.title": "更新任务（选择特定任务，然后按 Enter）",
+  "job_modify_menu.title_modify_page": "按 Enter 使用默认值（绿色文本）",
 
   "error.path": "错误: 路径错误"
 }

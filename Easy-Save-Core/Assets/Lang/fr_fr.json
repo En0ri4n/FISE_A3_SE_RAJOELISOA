@@ -48,7 +48,9 @@
 
   "logtype_menu.title": "Sélectionner un type pour les logs journalières (actuel : {LOGTYPE})",
 
-  "job_modify_menu.title": "Modifier un Job (Appuyez sur Entrée pour garder la valeur actuelle)",
+  "job_modify_menu.title": "Modifier un Job (Selectionnez un Job puis appuyez sur Entrée)",
+  "job_modify_menu.title_modify_page": "Appuyez sur Entrée pour utiliser la valeur par défaut (texte en vert)",
+
 
   "error.path": "Erreur : Erreur de chemin"
 }

@@ -151,9 +151,12 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
     }
 
 
-    public bool IsNameValid(string name)
+    public bool IsNameValid(string name, bool isCreation)
     {
-        return JobManager.GetJobs().All(job => job?.Name != name);
+        TJob? existingJob = JobManager.GetJob(name);
+        bool exists = existingJob != null;
+
+        return isCreation ? !exists : exists;
     }
 
     public void UpdateFromJobBuilder()
