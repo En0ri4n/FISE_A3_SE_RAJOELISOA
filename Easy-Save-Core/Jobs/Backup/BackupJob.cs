@@ -15,6 +15,10 @@ public class BackupJob : IJob
     public bool IsRunning;
 
     public string Name { get; set; }
+    
+    public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
+
+    public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
     public List<Property<dynamic>> Properties => new List<Property<dynamic>>();
 
     bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
@@ -36,15 +40,28 @@ public class BackupJob : IJob
         Properties.AddRange([new Property<dynamic>("name", name), Timestamp, Source, Target, Size, TransferTime]);
     }
     
+    public void OnTaskCompleted(dynamic task)
+    {
+        TaskCompletedHandler?.Invoke(task);
+    }
+    
+    public void ClearTaskCompletedHandler()
+    {
+        TaskCompletedHandler = null;
+    }
+    
     public bool CanRunJob()
     {
         return !IsRunning;
     }
 
-    public JobExecutionStrategy.ExecutionStatus RunJob(JobExecutionStrategy.StrategyType strategyType)
+    public void RunJob(JobExecutionStrategy.StrategyType strategyType)
     {
         if (!CanRunJob())
-            return JobExecutionStrategy.ExecutionStatus.CanNotStart;
+        {
+            Status = JobExecutionStrategy.ExecutionStatus.CanNotStart;
+            return;
+        }
 
         if (string.IsNullOrEmpty(Source.Value) || string.IsNullOrEmpty(Target.Value))
             throw new Exception("Source or Target path is not set.");
@@ -87,7 +104,7 @@ public class BackupJob : IJob
 
         IsRunning = false;
 
-        return JobExecutionStrategy.ExecutionStatus.Completed;
+        Status = JobExecutionStrategy.ExecutionStatus.Completed;
     }
 
     public JsonObject JsonSerialize()

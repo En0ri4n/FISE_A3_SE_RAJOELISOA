@@ -27,6 +27,8 @@
   "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
   "job_menu.title_all": "Run all Jobs",
   "job_menu.option_all": "Run all",
+  
+  "job_menu.task_run_information": "[{JOB_NAME}] Copied {SOURCE} to {TARGET} in {TIME}ms ({STATUS})",
   "job_menu.has_run": "Job(s) runned without issues",
 
   "job_menu.name_question": "What is the name of the job?",

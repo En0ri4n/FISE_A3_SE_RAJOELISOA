@@ -27,6 +27,8 @@
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Sélectionnez aucun pour quitter)",
   "job_menu.title_all": "Lancer tous les Jobs",
   "job_menu.option_all": "Lancer Tout",
+  
+  "job_menu.task_run_information": "[{JOB_NAME}] {SOURCE} a été copié vers {TARGET} en {TIME}ms ({STATUS})",
   "job_menu.has_run": "Le(s) Job(s) ont été lancés sans erreurs",
 
   "job_menu.name_question": "Quel est le nom du Job ?",
