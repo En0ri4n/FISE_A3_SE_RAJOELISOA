@@ -154,7 +154,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
             if (selectedLang != L10N.GetLanguage())
             {
-                L10N.SetLanguage(selectedLang);
+                ViewModel.CurrentApplicationLang = selectedLang;
             }
         }
         GoBack();
