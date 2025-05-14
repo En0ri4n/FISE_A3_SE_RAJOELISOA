@@ -27,7 +27,8 @@
   "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
   "job_menu.title_all": "Run all Jobs",
   "job_menu.option_all": "Run all",
-  "job_menu.has_run": "Job(s) runned without issues",
+  "job_menu.one_job_success": "The Job runned without issues",
+  "job_menu.many_jobs_success": "The {JOBNUMBER} Jobs runned without issues",
 
   "job_menu.name_question": "What is the name of the job?",
 
@@ -60,7 +61,6 @@
 
   "job_modify_menu.title": "Update Job (Select specific job, then press enter)",
   "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
-
 
   "error.path": "Error: Path Error"
 }

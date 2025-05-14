@@ -236,7 +236,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 return;
             }
             ViewModel.RunJobCommand.Execute(jobName);
-            DisplayJobResultMenu();
+            DisplayJobResultMenu(1);
         }
         GoBack();
     }
@@ -266,7 +266,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 }
             }
             ViewModel.RunMultipleJobsCommand.Execute(jobListName);
-            DisplayJobResultMenu();
+            DisplayJobResultMenu(jobListName.Count());
         }
         GoBack();
     }
@@ -300,7 +300,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
                 }
                 ViewModel.RunAllJobsCommand.Execute(null);
             });
-            DisplayJobResultMenu();
+            DisplayJobResultMenu(ViewModel.JobManager.GetJobs().Count());
         }
         GoBack();
     }
@@ -386,11 +386,18 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         GoBack();
     }
 
-    protected override void DisplayJobResultMenu()
+    protected override void DisplayJobResultMenu(int jobNumber)
     {
         //TODO : Add More results ? This is lackluster
         AnsiConsole.Clear();
-        AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.has_run"));
+        if (jobNumber == 1)
+        {
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.one_job_success"));
+        }
+        else
+        {
+            AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.many_jobs_success").Replace("{JOBNUMBER}",jobNumber.ToString()));
+        }
         AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
         Console.ReadKey();
     }

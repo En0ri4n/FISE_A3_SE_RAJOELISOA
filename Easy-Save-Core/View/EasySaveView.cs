@@ -25,7 +25,7 @@ public abstract class EasySaveView<TJob, TViewModelObjectBuilder> where TJob : I
     protected abstract void DisplayJobMenu();
     protected abstract void DisplayLanguageMenu();
     protected abstract void DisplayLogTypeMenu();
-    protected abstract void DisplayJobResultMenu();
+    protected abstract void DisplayJobResultMenu(int jobNumber);
     protected abstract void DisplaySettingsMenu();
     protected abstract void DisplayJobListMenu();
     protected abstract void DisplayRunMenu();
