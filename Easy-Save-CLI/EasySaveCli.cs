@@ -54,16 +54,6 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             AddToMenuHistory(Menu.Job);
             DisplayJobMenu();
         }
-        /*else if(choice == L10N.GetTranslation("main_menu.change_language"))
-        {
-            AddToMenuHistory(Menu.Language); 
-            DisplayLanguageMenu();
-        }
-        else if (choice == L10N.GetTranslation("main_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
-        {
-            AddToMenuHistory(Menu.LogType);
-            DisplayLogTypeMenu();
-        }*/
         else if (choice == L10N.GetTranslation("main_menu.settings"))
         {
             AddToMenuHistory(Menu.Settings);
@@ -309,7 +299,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         new SelectionPrompt<string>()
             .Title(L10N.GetTranslation("settings_menu.title"))
             .AddChoices(
-                L10N.GetTranslation("settings_menu.change_language"), //TODO Rename main_menu -> option_menu
+                L10N.GetTranslation("settings_menu.change_language"),
                 L10N.GetTranslation("settings_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()),
                 L10N.GetTranslation("main.go_back")
             ));
