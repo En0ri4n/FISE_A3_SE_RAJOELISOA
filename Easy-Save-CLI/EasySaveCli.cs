@@ -131,6 +131,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             if (jobName != L10N.GetTranslation("main.go_back"))
             {
                 ViewModel.RunJobCommand.Execute(jobName);
+                DisplayJobResultMenu();
             }
             GoBack();
         }
@@ -154,6 +155,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             if (jobListName.Count() != 0)
             {
                 ViewModel.RunMultipleJobsCommand.Execute(jobListName);
+                DisplayJobResultMenu();
             }
             GoBack();
         }
@@ -169,6 +171,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             if (jobName != L10N.GetTranslation("main.go_back"))
             {
                 ViewModel.RunAllJobsCommand.Execute(null);
+                DisplayJobResultMenu();
             }
             GoBack();
         }
@@ -329,8 +332,10 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
     protected override void DisplayJobResultMenu()
     {
-        AddToMenuHistory(Menu.JobResult);
-        throw new NotImplementedException();
+        AnsiConsole.Clear();
+        AnsiConsole.Write(L10N.GetTranslation("job_menu.has_run") + Environment.NewLine);
+        AnsiConsole.Write(L10N.GetTranslation("main.click_any"));
+        Console.ReadKey();
     }
 
     protected override void DisplaySettingsMenu()
