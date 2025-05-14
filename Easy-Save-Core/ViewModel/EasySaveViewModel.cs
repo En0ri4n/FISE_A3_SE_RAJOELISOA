@@ -103,22 +103,27 @@ public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
         JobBuilder = jobBuilder;
     }
 
-    public bool DoesSourcePathExists(string sourcePath)
+    public bool DoesPathExists(string path)
     {
-        return Directory.Exists(sourcePath) ;
+        return Directory.Exists(path) ;
     }
 
-    public bool IsDestinationPathValid(string destinationPath)
+    public bool IsPathValid(string path)
     {
         try
         {
-            Path.GetDirectoryName(destinationPath);
+            Path.GetDirectoryName(path);
         }
         catch
         {
             return false;
         }
         return true;
+    }
+
+    public bool IsNameValid(string name)
+    {
+        return JobManager.GetJobs().All(job => job?.Name != name);
     }
 
     public void UpdateFromJobBuilder()
