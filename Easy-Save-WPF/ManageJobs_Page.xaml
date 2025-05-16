@@ -21,22 +21,32 @@
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*">
-                </ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="200"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
+                <Label Grid.Row="0" FontSize="20" Height="40" Width="100" Margin="19,21,481,19" VerticalAlignment="Center">Name</Label>
+                <Label FontSize="20" Margin="124,0,376,0" Height="40" Width="100" VerticalAlignment="Center">Source</Label>
+                <Label FontSize="20" Margin="250,0,250,0" Height="40" Width="100" VerticalAlignment="Center">Target</Label>
+                <Label Grid.Row="0" FontSize="20" Margin="385,21,115,19" Height="40" Width="100" VerticalAlignment="Center">Status Log</Label>
+                <Label Grid.Row="0" FontSize="20" Margin="490,20,10,20" Height="40" Width="100" VerticalAlignment="Center">Daily Log</Label>
+            </Grid>
             <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-
-            <StackPanel  Grid.Column="1"  Orientation="Vertical" VerticalAlignment="Center">
-                <Button Height="50">Create</Button>
-                <Button Height="50">Run One</Button>
-                <Button Height="50">Run All</Button>
-                <Button Height="50">Modify</Button>
-                <Button Height="50">Delete</Button>
-            </StackPanel>
-
+            <Menu Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="180">
+                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                    <MenuItem Header="Create" FontSize="30"/>
+                    <MenuItem Header="Run One" FontSize="30"/>
+                    <MenuItem Header="Run All" FontSize="30"/>
+                    <MenuItem Header="Modify" FontSize="30"/>
+                    <MenuItem Header="Delete" FontSize="30"/>
+                </StackPanel>
+            </Menu>
         </Grid>
-
     </Grid>
 </Page>
