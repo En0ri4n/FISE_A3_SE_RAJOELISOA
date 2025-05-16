@@ -7,6 +7,24 @@
         mc:Ignorable="d"
         Title="CreateJob_Window" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Content="{Binding create_or_modify, Mode=OneWay}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Job name :</Label>
+            <TextBox Grid.Row="0"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+            <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Source directory path :</Label>
+            <TextBox Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+            <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Target directory path :</Label>
+            <TextBox Grid.Row="2"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+        </Grid>
         
     </Grid>
 </Window>
