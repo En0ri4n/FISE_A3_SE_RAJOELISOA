@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Options_Page">
+      Title="Options_Page" Background="#f3f3f3">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -14,7 +14,7 @@
             </RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Easy Save</Label>
+        <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Options</Label>
 
         <Menu Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel  Orientation="Vertical">

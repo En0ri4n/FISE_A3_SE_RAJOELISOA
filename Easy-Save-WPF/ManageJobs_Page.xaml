@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ManageJobs_Page">
+      Title="ManageJobs_Page" Background="#f3f3f3">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -15,9 +15,11 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="20,20,0,20">Quit</Button>
+            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="20,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="40">Quit</Button>
             <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Manage Jobs</Label>
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="680,20,0,20">Options</Button>
+            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="680,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/options_icon.png"></Image>
+            </Button>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -40,11 +42,11 @@
             <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
             <Menu Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="180">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <MenuItem Header="Create" FontSize="30"/>
+                    <MenuItem Header="Create" FontSize="30" Click="CreateWindow_Click"/>
                     <MenuItem Header="Run One" FontSize="30"/>
                     <MenuItem Header="Run All" FontSize="30"/>
-                    <MenuItem Header="Modify" FontSize="30"/>
-                    <MenuItem Header="Delete" FontSize="30"/>
+                    <MenuItem Header="Modify" FontSize="30" Click="ModifyWindow_Click"/>
+                    <MenuItem Header="Delete" FontSize="30" Click="DeleteWindow_Click"/>
                 </StackPanel>
             </Menu>
         </Grid>
