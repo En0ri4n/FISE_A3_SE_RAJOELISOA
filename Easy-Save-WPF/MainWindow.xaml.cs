@@ -20,9 +20,27 @@ namespace Easy_Save_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        public void QuitBTN_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        public void OptionsBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Options_Page());
+
+        }
+
+        private void ManageJobsBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ManageJobs_Page());
+        }
+
     }
 }
