@@ -10,8 +10,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="{Binding create_or_modify, Mode=OneWay}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
+        <Label Content="{Binding Titre}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
@@ -19,12 +20,19 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Job name :</Label>
-            <TextBox Grid.Row="0"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+            <TextBox Grid.Row="0" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
             <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Source directory path :</Label>
-            <TextBox Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+            <TextBox Grid.Row="1" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
+            <Button Grid.Row="1" Margin="667,46,27,0" Click="folderBTN_CLick">
+                <Image Source="/assets/folder_icon.png"></Image>
+            </Button>
             <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Target directory path :</Label>
-            <TextBox Grid.Row="2"  HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="500" Margin="0,0,0,13"/>
+            <TextBox Grid.Row="2" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
+            <Button Grid.Row="2" Margin="667,46,27,0" Click="folderBTN_CLick">
+                <Image Source="/assets/folder_icon2.png"></Image>
+            </Button>
         </Grid>
-        
+        <Button Grid.Row="1" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,274,0,0" Grid.RowSpan="2"></Button>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_CLick" Margin="206,274,0,0" Grid.RowSpan="2">Cancel</Button>
     </Grid>
 </Window>

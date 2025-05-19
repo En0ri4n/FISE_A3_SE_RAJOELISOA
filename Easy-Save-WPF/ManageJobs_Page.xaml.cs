@@ -16,6 +16,8 @@ namespace Easy_Save_WPF
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
     /// </summary>
+    
+    //TODO : dynamic job list binding
     public partial class ManageJobs_Page : Page
     {
         //MainWindow window = new MainWindow();
@@ -24,6 +26,7 @@ namespace Easy_Save_WPF
         public ManageJobs_Page()
         {
             InitializeComponent();
+            ManageJobs_Grid.DataContext = options;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -32,18 +35,24 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            //window.MainFrame.Content = options;
-            //NavigationCommands.BrowseBack;
+            MainWindow window = new MainWindow();
+            window.OptionsBTN_Click(sender, e);
         }
 
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
-            CreateJob_Window create = new CreateJob_Window();
+            CreateJob_Window create = new CreateJob_Window()
+            {
+                Titre = "Create Job"
+            };
             create.Show();
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            CreateJob_Window create = new CreateJob_Window();
+            CreateJob_Window create = new CreateJob_Window()
+            {
+                Titre = "Modify Job"
+            };
             create.Show();
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
@@ -52,6 +61,14 @@ namespace Easy_Save_WPF
             create.Show();
         }
 
+        public void RunOne_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        public void RunAll_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
 
     }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Background="#f3f3f3">
-    <Grid>
+    <Grid x:Name="Main_Grid">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="100">
