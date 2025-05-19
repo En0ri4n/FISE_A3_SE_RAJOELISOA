@@ -40,7 +40,8 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
             { "dailyLogPath", Logger.DailyLogPath },
             { "statusLogPath", Logger.StatusLogPath },
             { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
-            { "jobs", jobs }
+            { "jobs", jobs },
+            { "encryptedFormats", Logger.EncryptedFormats.ToString() } //TODO test if this works AND TODO Confirm Format with Anthony
         };
 
         return data;
