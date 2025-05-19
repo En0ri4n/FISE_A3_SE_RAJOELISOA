@@ -13,7 +13,7 @@ public class BackupJobManager : JobManager<BackupJob>
 
     public override bool AddJob(BackupJob job, bool save)
     {
-        if (job == null || Jobs.Count >= Size || Jobs.Any(j => j.Name == job.Name))
+        if (job == null || (Size != -1 && Jobs.Count >= Size) || Jobs.Any(j => j.Name == job.Name))
             return false;
         
         Jobs.Add(job);

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Text;
 
-namespace Prosit_5;
+namespace CLEA.Encryptor;
 
 /// <summary>
 /// Encryptor is a singleton class helping in encryption and decryption

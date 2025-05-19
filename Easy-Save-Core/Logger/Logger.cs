@@ -28,9 +28,6 @@ public class Logger<TJob> where TJob : IJob
     private Format _dailyLogFormat;
     public Format DailyLogFormat { get => _dailyLogFormat; set => _dailyLogFormat = value; }
 
-    private List<string> _encryptedFormats;
-    public List<string> EncryptedFormats { get => _encryptedFormats; set => _encryptedFormats = value; }
-
     private readonly ILogger _internalLogger;
     
     private static readonly Logger<TJob> Instance = new Logger<TJob>();
@@ -43,7 +40,6 @@ public class Logger<TJob> where TJob : IJob
         _dailyLogPath = @"logs\daily\";
         _statusLogPath = @"logs\status\";
         _dailyLogFormat = Format.Json;
-        _encryptedFormats = new List<string>();
 
 
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddSimpleConsole(options =>

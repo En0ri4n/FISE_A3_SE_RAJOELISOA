@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
+using CLEA.Encryptor;
 using Microsoft.Extensions.Logging;
 
 namespace EasySaveCore.Models
@@ -15,6 +17,7 @@ namespace EasySaveCore.Models
         public Property<dynamic> Target;
         public Property<dynamic> Size;
         public Property<dynamic> TransferTime;
+        public Property<dynamic> EncryptionTime;
 
         public BackupJobTask(BackupJob backupJob, string source, string target) : base(backupJob.Name)
         {
@@ -24,6 +27,7 @@ namespace EasySaveCore.Models
             Target = new Property<dynamic>("target", target);
             Size = new Property<dynamic>("size", 0);
             TransferTime = new Property<dynamic>("transferTime", -1);
+            EncryptionTime = new Property<dynamic>("encryptionTime", -1);
             GetProperties().AddRange([Timestamp, Source, Target, Size, TransferTime]);
         }
 
@@ -46,7 +50,17 @@ namespace EasySaveCore.Models
 
             try
             {
-                File.Copy(Source.Value, Target.Value, true);
+                if (EasySaveConfiguration<BackupJob>.isEncryptorLoaded() && EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
+                {
+                    Stopwatch encryptionWatch = Stopwatch.StartNew();
+                    Encryptor.Get().ProcessFile(Source.Value.ToString(), Target.Value.ToString());
+                    encryptionWatch.Stop();
+                    EncryptionTime.Value = encryptionWatch.ElapsedMilliseconds;
+                }
+                else
+                {
+                    File.Copy(Source.Value, Target.Value, true);
+                }
             }
             catch (Exception e)
             {
@@ -70,7 +84,8 @@ namespace EasySaveCore.Models
                 ["Source"] = Source.Value,
                 ["Target"] = Target.Value,
                 ["Size"] = (long) Size.Value,
-                ["FileTransferTime"] = (double) TransferTime.Value / 1000D
+                ["FileTransferTime"] = (double) TransferTime.Value / 1000D,
+                ["EncryptionTime"] = (double) EncryptionTime.Value / 1000D
             };
             return json;
         }
@@ -107,6 +122,10 @@ namespace EasySaveCore.Models
             XmlElement timestampElement = document.CreateElement("Timestamp");
             timestampElement.InnerText = ((DateTime)Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss");
             jobElement.AppendChild(timestampElement);
+            
+            XmlElement encryptionTimeElement = document.CreateElement("EncryptionTime");
+            encryptionTimeElement.InnerText = ((double)EncryptionTime.Value / 1000D).ToString(CultureInfo.InvariantCulture);
+            jobElement.AppendChild(encryptionTimeElement);
 
             return jobElement;
         }

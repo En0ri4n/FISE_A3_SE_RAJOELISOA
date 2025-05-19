@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
@@ -21,6 +20,27 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
     private static readonly EasySaveConfiguration<TJob> Instance = new EasySaveConfiguration<TJob>();
     private static Logger<TJob> Logger => Logger<TJob>.Get();
 
+    private List<string> _extensionsToEncrypt = [];
+    public List<string> ExtensionsToEncrypt
+    {
+        get => _extensionsToEncrypt;
+        set
+        {
+            _extensionsToEncrypt = value;
+            SaveConfiguration();
+        }
+    }
+    
+    public static EasySaveConfiguration<TJob> Get()
+    {
+        return Instance;
+    }
+    
+    public static bool isEncryptorLoaded()
+    {
+        return Type.GetType("CLEA.Encryptor.Encryptor") != null;
+    }
+
     /// <summary>
     /// Serialize the configuration to a JSON object.
     /// All properties have default values and are not null to avoid serialization issues.
@@ -33,6 +53,10 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
             if (job is IJsonSerializable jsonSerializable)
                 jobs.Add(jsonSerializable.JsonSerialize());
         
+        JsonArray extensionsToEncrypt = new JsonArray();
+        foreach (string extension in ExtensionsToEncrypt)
+            extensionsToEncrypt.Add(extension);
+        
         JsonObject data = new JsonObject
         {
             { "version", EasySaveCore<TJob>.Version.ToString() },
@@ -41,7 +65,7 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
             { "statusLogPath", Logger.StatusLogPath },
             { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
             { "jobs", jobs },
-            { "encryptedFormats", Logger.EncryptedFormats.ToString() } //TODO test if this works AND TODO Confirm Format with Anthony
+            { "extensionsToEncrypt",  extensionsToEncrypt } //TODO test if this works AND TODO Confirm Format with Anthony
         };
 
         return data;
@@ -90,6 +114,20 @@ public class EasySaveConfiguration<TJob> : IJsonSerializable where TJob : IJob
         }
         else
             throw new JsonException("Jobs not found in configuration file");
+        
+        // Encrypted file extensions
+        data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
+        if (extensionsToEncrypt != null)
+        {
+            _extensionsToEncrypt.Clear();
+            foreach(JsonNode? format in extensionsToEncrypt.AsArray())
+            {
+                if (format is JsonValue formatValue)
+                    _extensionsToEncrypt.Add(formatValue.ToString());
+            }
+        }
+        else
+            throw new JsonException("Encrypted file extensions not found in configuration file");
 
         // Language
         // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION
