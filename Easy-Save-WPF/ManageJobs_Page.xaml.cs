@@ -20,13 +20,10 @@ namespace Easy_Save_WPF
     //TODO : dynamic job list binding
     public partial class ManageJobs_Page : Page
     {
-        //MainWindow window = new MainWindow();
-        Options_Page options = new Options_Page();
 
         public ManageJobs_Page()
         {
             InitializeComponent();
-            ManageJobs_Grid.DataContext = options;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -61,13 +58,15 @@ namespace Easy_Save_WPF
             create.Show();
         }
 
-        public void RunOne_Click(object sender, RoutedEventArgs e)
+        public void RunJob_Click(object sender, RoutedEventArgs e)
         {
             //TODO
         }
-        public void RunAll_Click(object sender, RoutedEventArgs e)
+
+        public void Selected(object sender, RoutedEventArgs e)
         {
-            //TODO
+            //TODO select all job
+            //https://stackoverflow.com/questions/14441273/how-to-handle-checkbox-checked-unchecked-event-with-command-in-viewmodel-in-silv/14442515
         }
 
     }

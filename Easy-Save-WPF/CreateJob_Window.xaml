@@ -33,6 +33,6 @@
             </Button>
         </Grid>
         <Button Grid.Row="1" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,274,0,0" Grid.RowSpan="2"></Button>
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_CLick" Margin="206,274,0,0" Grid.RowSpan="2">Cancel</Button>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,274,0,0" Grid.RowSpan="2">Cancel</Button>
     </Grid>
 </Window>

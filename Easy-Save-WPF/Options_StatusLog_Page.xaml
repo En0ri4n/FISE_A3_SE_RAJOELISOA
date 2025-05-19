@@ -20,12 +20,12 @@
 
         <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Margin="3,157,0,0" >New path :</Label>
         <TextBox Grid.Row="1" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="3,0,0,96"/>
-        <Button Grid.Row="1" Margin="670,203,24,97" Click="folderBTN_CLick">
+        <Button Grid.Row="1" Margin="670,203,24,97" >
             <Image Source="/assets/folder_icon.png"></Image>
         </Button>
 
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Right" Margin="0,252,25,22" Click="DeleteBTN_Click">Delete</Button>
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Margin="25,252,0,22" Click="CancelBTN_Click">Cancel</Button>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Right" Margin="0,252,25,22" >Delete</Button>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Margin="25,252,0,22" >Cancel</Button>
         
     </Grid>
 </Page>

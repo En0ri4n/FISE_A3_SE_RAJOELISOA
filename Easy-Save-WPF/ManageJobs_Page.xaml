@@ -5,50 +5,49 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="1080" d:DesignWidth="1920"
       Title="ManageJobs_Page" Background="#f3f3f3">
 
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="100">
-            </RowDefinition>
+            <RowDefinition Height="120"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="20,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="40">Quit</Button>
-            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Manage Jobs</Label>
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="680,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="86,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="40">Quit</Button>
+            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Manage Jobs</Label>
+            <Button Height="60" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
                 <Image Source="/assets/options_icon.png"></Image>
+            </Button>
+            <Button Height="60" Width="73" HorizontalAlignment="Left" Margin="1707,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Height="60" Width="73" HorizontalAlignment="Left" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Height="60" Width="73" HorizontalAlignment="Left" Margin="1260,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
+            </Button>
+            <Button Height="60" Width="73" HorizontalAlignment="Left" Margin="1333,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Height="60" Width="73" HorizontalAlignment="Left" Margin="1411,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="200"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-                <Label Grid.Row="0" FontSize="20" Height="40" Width="100" Margin="19,21,481,19" VerticalAlignment="Center">Name</Label>
-                <Label FontSize="20" Margin="124,0,376,0" Height="40" Width="100" VerticalAlignment="Center">Source</Label>
-                <Label FontSize="20" Margin="250,0,250,0" Height="40" Width="100" VerticalAlignment="Center">Target</Label>
-                <Label Grid.Row="0" FontSize="20" Margin="385,21,115,19" Height="40" Width="100" VerticalAlignment="Center">Status Log</Label>
-                <Label Grid.Row="0" FontSize="20" Margin="490,20,10,20" Height="40" Width="100" VerticalAlignment="Center">Daily Log</Label>
-            </Grid>
-            <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-            <Menu Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="180">
-                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <MenuItem Header="Create" FontSize="30" Click="CreateWindow_Click"/>
-                    <MenuItem Header="Run One" FontSize="30" Click="RunOne_Click"/>
-                    <MenuItem Header="Run All" FontSize="30" Click="RunAll_Click"/>
-                    <MenuItem Header="Modify" FontSize="30" Click="ModifyWindow_Click"/>
-                    <MenuItem Header="Delete" FontSize="30" Click="DeleteWindow_Click"/>
-                </StackPanel>
-            </Menu>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+            </Grid.RowDefinitions>
+            <CheckBox Grid.Row="0" Margin="10,0,-10,0" IsChecked="{Binding Selected}">Select/Deselect All
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="4" ScaleY="4" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            <Label></Label>
         </Grid>
     </Grid>
 </Page>
