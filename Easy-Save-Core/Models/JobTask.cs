@@ -50,8 +50,7 @@ public abstract class JobTask : IJsonSerializable, IXmlSerializable
         return true;
     }
     
-    public abstract JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
-
+    public abstract JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType, bool isEncrypted); 
     public abstract JsonObject JsonSerialize();
 
     public abstract void JsonDeserialize(JsonObject data);

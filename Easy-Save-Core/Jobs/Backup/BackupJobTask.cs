@@ -25,7 +25,7 @@ namespace EasySaveCore.Models
             GetProperties().AddRange([Timestamp, Source, Target, Size, TransferTime]);
         }
 
-        public override JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
+        public override JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType, bool isEncrypted)
         {
             Timestamp.Value = DateTime.Now;
             Size.Value = new FileInfo(Source.Value).Length;
@@ -41,6 +41,11 @@ namespace EasySaveCore.Models
 
             try
             {
+                /*if is_encrypted()
+                 * {
+                 * use encypted value as source.value /!\
+                 * }
+                 */
                 File.Copy(Source.Value, Target.Value, true);
             }
             catch (Exception e)

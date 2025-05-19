@@ -80,7 +80,7 @@ public class BackupJob : IJob
         }
 
         foreach(BackupJobTask jobTask in BackupJobTasks)
-            jobTask.ExecuteTask(strategyType);
+            jobTask.ExecuteTask(strategyType,false); //TODO REMOVE FALSE BY FUNCTION THAT SEARCH IF TYPE IS IN encryptedFormats from EasySaveConfiguration.cs
 
         TransferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
         Size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
