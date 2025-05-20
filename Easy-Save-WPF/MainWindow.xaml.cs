@@ -35,8 +35,9 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new Options_Page());
-
+            Options_PopUp optionsWindow = new Options_PopUp();
+            optionsWindow.Owner = this;
+            optionsWindow.ShowDialog();
         }
 
         private void ManageJobsBTN_Click(object sender, RoutedEventArgs e)

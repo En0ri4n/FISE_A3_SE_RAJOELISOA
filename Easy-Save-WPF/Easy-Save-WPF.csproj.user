@@ -26,5 +26,8 @@
     <Compile Update="Options_StatusLog_Page.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Options_PopUp.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
