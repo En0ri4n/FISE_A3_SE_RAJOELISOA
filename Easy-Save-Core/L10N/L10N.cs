@@ -1,12 +1,15 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace CLEA.EasySaveCore.L10N;
-
-public class L10N<TJob> where TJob : IJob
+namespace CLEA.EasySaveCore.L10N
+{
+    public class L10N<TJob> where TJob : IJob
 {
     private static readonly L10N<TJob> Instance = new L10N<TJob>();
 
@@ -26,7 +29,7 @@ public class L10N<TJob> where TJob : IJob
 
         _currentLang = lang;
         LoadTranslations();
-        Utilities.Logger<TJob>.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
+        Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
     }
     
     public LangIdentifier GetLanguage()
@@ -67,14 +70,14 @@ public class L10N<TJob> where TJob : IJob
 
     public string GetTranslation(string key, string[]? parameters = null)
     {
-        if (!_translations.TryGetValue(key, out var translation))
-            throw new KeyNotFoundException($"Translation key '{key}' not found for language '{_currentLang}'");
+        _translations.TryGetValue(key, out var translation);
 
-        return translation;
+        return translation ?? key;
     }
 
     public static L10N<TJob> Get()
     {
         return Instance;
     }
+}
 }

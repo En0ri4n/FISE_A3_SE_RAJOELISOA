@@ -22,5 +22,31 @@ namespace Easy_Save_WPF
         {
             InitializeComponent();
         }
+
+        public void LanguageBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.LanguageBTN_Click(sender, e);
+        }
+        public void LogTypeBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.LogTypeBTN_Click(sender, e);
+        }
+        public void DailyLogBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.DailyLogBTN_Click(sender, e);
+        }
+        public void StatusLogBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.StatusLogBTN_Click(sender, e);
+        }
+        public void ReturnBTN_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow window = new MainWindow();
+            window.ReturnBTN_Click(sender, e);
+        }
     }
 }

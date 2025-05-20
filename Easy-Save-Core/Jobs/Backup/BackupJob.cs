@@ -1,150 +1,179 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
 
-namespace EasySaveCore.Models;
-
-public class BackupJob : IJob
+namespace EasySaveCore.Models
 {
-    public Property<dynamic> Timestamp;
-    public Property<dynamic> Source;
-    public Property<dynamic> Target;
-    public Property<dynamic> Size;
-    public Property<dynamic> TransferTime;
-
-    public bool IsRunning;
-
-    public string Name { get; set; }
-    public List<Property<dynamic>> Properties => new List<Property<dynamic>>();
-
-    bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
-
-    public readonly List<BackupJobTask> BackupJobTasks = new List<BackupJobTask>();
-
-    public BackupJob() : this(string.Empty, string.Empty, string.Empty)
+    public class BackupJob : IJob
     {
-    }
+        public Property<dynamic> Timestamp;
+        public Property<dynamic> Source;
+        public Property<dynamic> Target;
+        public Property<dynamic> Size;
+        public Property<dynamic> TransferTime;
 
-    public BackupJob(string name, string source, string target)
-    {
-        Name = name;
-        Timestamp = new Property<dynamic>("timestamp", new DateTime());
-        Source = new Property<dynamic>("source", source);
-        Target = new Property<dynamic>("target", target);
-        Size = new Property<dynamic>("size", (long) 0);
-        TransferTime = new Property<dynamic>("transferTime", (long) 0);
-        Properties.AddRange([new Property<dynamic>("name", name), Timestamp, Source, Target, Size, TransferTime]);
-    }
-    
-    public bool CanRunJob()
-    {
-        return !IsRunning;
-    }
+        public bool IsRunning;
 
-    public JobExecutionStrategy.ExecutionStatus RunJob(JobExecutionStrategy.StrategyType strategyType)
-    {
-        if (!CanRunJob())
-            return JobExecutionStrategy.ExecutionStatus.CanNotStart;
-
-        if (string.IsNullOrEmpty(Source.Value) || string.IsNullOrEmpty(Target.Value))
-            throw new Exception("Source or Target path is not set.");
-
-        if (!Directory.Exists(Source.Value))
-            throw new DirectoryNotFoundException($"Source directory '{Source.Value}' does not exist.");
-
-        if (Source.Value == Target.Value)
-            throw new Exception("Source and Target paths cannot be the same.");
+        public string Name { get; set; }
         
-        BackupJobTasks.Clear();
-        
-        IsRunning = true;
-        Timestamp.Value = DateTime.Now;
-        
-        if (!Directory.Exists(Target.Value))
-            Directory.CreateDirectory(Target.Value);
+        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
-        string[] sourceDirectoriesArray = Directory.GetDirectories(Source.Value, "*", SearchOption.AllDirectories);
+        public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
+        public List<Property<dynamic>> Properties => new List<Property<dynamic>>();
 
-        foreach (string directory in sourceDirectoriesArray)
+        bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
+
+        public readonly List<BackupJobTask> BackupJobTasks = new List<BackupJobTask>();
+
+        public BackupJob() : this(string.Empty, string.Empty, string.Empty)
         {
-            string dirToCreate = directory.Replace(Source.Value, Target.Value);
-            Directory.CreateDirectory(dirToCreate);
         }
 
-        string[] sourceFilesArray = Directory.GetFiles(Source.Value, "*.*", SearchOption.AllDirectories);
-
-        foreach (string path in sourceFilesArray)
+        public BackupJob(string name, string source, string target)
         {
-            BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source.Value, Target.Value));
-            BackupJobTasks.Add(jobTask);
+            Name = name;
+            Timestamp = new Property<dynamic>("timestamp", new DateTime());
+            Source = new Property<dynamic>("source", source);
+            Target = new Property<dynamic>("target", target);
+            Size = new Property<dynamic>("size", (long) 0);
+            TransferTime = new Property<dynamic>("transferTime", (long) 0);
+            Properties.AddRange(new List<Property<dynamic>> 
+            { 
+                new Property<dynamic>("name", name), 
+                Timestamp, 
+                Source, 
+                Target, 
+                Size, 
+                TransferTime 
+            });
+        }
+        
+        public void OnTaskCompleted(dynamic task)
+        {
+            TaskCompletedHandler?.Invoke(task);
+        }
+        
+        public void ClearTaskCompletedHandler()
+        {
+            TaskCompletedHandler = null;
+        }
+        
+        public bool CanRunJob()
+        {
+            return !IsRunning;
         }
 
-        foreach(BackupJobTask jobTask in BackupJobTasks)
-            jobTask.ExecuteTask(strategyType);
+        public void RunJob(JobExecutionStrategy.StrategyType strategyType)
+        {
+            if (!CanRunJob())
+            {
+                Status = JobExecutionStrategy.ExecutionStatus.CanNotStart;
+                return;
+            }
 
-        TransferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
-        Size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
+            if (string.IsNullOrEmpty(Source.Value) || string.IsNullOrEmpty(Target.Value))
+                throw new Exception("Source or Target path is not set.");
 
-        IsRunning = false;
+            if (!Directory.Exists(Source.Value))
+                throw new DirectoryNotFoundException($"Source directory '{Source.Value}' does not exist.");
 
-        return JobExecutionStrategy.ExecutionStatus.Completed;
-    }
+            if (Source.Value == Target.Value)
+                throw new Exception("Source and Target paths cannot be the same.");
+            
+            BackupJobTasks.Clear();
+            
+            IsRunning = true;
+            Timestamp.Value = DateTime.Now;
+            
+            if (!Directory.Exists(Target.Value))
+                Directory.CreateDirectory(Target.Value);
 
-    public JsonObject JsonSerialize()
-    {
-        JsonObject jsonObject = new JsonObject();
+            string[] sourceDirectoriesArray = Directory.GetDirectories(Source.Value, "*", SearchOption.AllDirectories);
 
-        jsonObject.Add("Name", Name);
-        jsonObject.Add("Source", Source.Value);
-        jsonObject.Add("Target", Target.Value);
-        return jsonObject;
-    }
+            foreach (string directory in sourceDirectoriesArray)
+            {
+                string dirToCreate = directory.Replace(Source.Value, Target.Value);
+                Directory.CreateDirectory(dirToCreate);
+            }
 
-    public void JsonDeserialize(JsonObject data)
-    {
-        if (data.ContainsKey("Name"))
-            Name = data["Name"]!.ToString();
-        else
-            throw new Exception("Invalid JSON data: Missing 'Name' property.");
+            string[] sourceFilesArray = Directory.GetFiles(Source.Value, "*.*", SearchOption.AllDirectories);
 
-        if (data.ContainsKey("Source"))
-            Source.Value = data["Source"]!.ToString();
-        else
-            throw new Exception("Invalid JSON data: Missing 'Source' property.");
+            foreach (string path in sourceFilesArray)
+            {
+                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source.Value, Target.Value));
+                BackupJobTasks.Add(jobTask);
+            }
 
-        if (data.ContainsKey("Target"))
-            Target.Value = data["Target"]!.ToString();
-        else
-            throw new Exception("Invalid JSON data: Missing 'Target' property.");
-    }
+            foreach(BackupJobTask jobTask in BackupJobTasks)
+                jobTask.ExecuteTask(strategyType);
 
-    public XmlElement XmlSerialize()
-    {
-        XmlDocument doc = new XmlDocument();
-        XmlElement jobElement = doc.CreateElement("BackupJob");
+            TransferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
+            Size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
 
-        jobElement.SetAttribute("Name", Name);
-        jobElement.SetAttribute("Source", Source.Value.ToString());
-        jobElement.SetAttribute("Target", Target.Value.ToString());
+            IsRunning = false;
 
-        return jobElement;
-    }
+            Status = JobExecutionStrategy.ExecutionStatus.Completed;
+        }
 
-    public void XmlDeserialize(XmlElement data)
-    {
-        if (data.HasAttribute("Name"))
-            Name = data.GetAttribute("Name");
-        else
-            throw new Exception("Invalid XML data: Missing 'Name' attribute.");
+        public JsonObject JsonSerialize()
+        {
+            JsonObject jsonObject = new JsonObject();
 
-        if (data.HasAttribute("Source"))
-            Source.Value = data.GetAttribute("Source");
-        else
-            throw new Exception("Invalid XML data: Missing 'Source' attribute.");
+            jsonObject.Add("Name", Name);
+            jsonObject.Add("Source", Source.Value);
+            jsonObject.Add("Target", Target.Value);
+            return jsonObject;
+        }
 
-        if (data.HasAttribute("Target"))
-            Target.Value = data.GetAttribute("Target");
-        else
-            throw new Exception("Invalid XML data: Missing 'Target' attribute.");
+        public void JsonDeserialize(JsonObject data)
+        {
+            if (data.ContainsKey("Name"))
+                Name = data["Name"]!.ToString();
+            else
+                throw new Exception("Invalid JSON data: Missing 'Name' property.");
+
+            if (data.ContainsKey("Source"))
+                Source.Value = data["Source"]!.ToString();
+            else
+                throw new Exception("Invalid JSON data: Missing 'Source' property.");
+
+            if (data.ContainsKey("Target"))
+                Target.Value = data["Target"]!.ToString();
+            else
+                throw new Exception("Invalid JSON data: Missing 'Target' property.");
+        }
+
+        public XmlElement XmlSerialize(XmlDocument parent)
+        {
+            XmlElement jobElement = parent.CreateElement("BackupJob");
+
+            jobElement.SetAttribute("Name", Name);
+            jobElement.SetAttribute("Source", Source.Value.ToString());
+            jobElement.SetAttribute("Target", Target.Value.ToString());
+
+            return jobElement;
+        }
+
+        public void XmlDeserialize(XmlElement data)
+        {
+            if (data.HasAttribute("Name"))
+                Name = data.GetAttribute("Name");
+            else
+                throw new Exception("Invalid XML data: Missing 'Name' attribute.");
+
+            if (data.HasAttribute("Source"))
+                Source.Value = data.GetAttribute("Source");
+            else
+                throw new Exception("Invalid XML data: Missing 'Source' attribute.");
+
+            if (data.HasAttribute("Target"))
+                Target.Value = data.GetAttribute("Target");
+            else
+                throw new Exception("Invalid XML data: Missing 'Target' attribute.");
+        }
     }
 }

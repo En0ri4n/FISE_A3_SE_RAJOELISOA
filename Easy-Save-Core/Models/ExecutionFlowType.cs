@@ -1,7 +1,8 @@
-﻿namespace CLEA.EasySaveCore.Models;
-
-public enum ExecutionFlowType
+﻿namespace CLEA.EasySaveCore.Models
 {
-    Sequential,
-    Parallel
+    public enum ExecutionFlowType
+    {
+        Sequential,
+        Parallel
+    }
 }

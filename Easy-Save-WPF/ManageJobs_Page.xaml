@@ -5,50 +5,61 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="1000" d:DesignWidth="1920"
       Title="ManageJobs_Page" Background="#f3f3f3">
 
-    <Grid>
+    <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="100">
-            </RowDefinition>
+            <RowDefinition Height="120"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="20,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="40">Quit</Button>
-            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Manage Jobs</Label>
-            <Button Height="60" Width="100" HorizontalAlignment="Left" Margin="680,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
-                <Image Source="/assets/options_icon.png"></Image>
+            <Button Height="80" Width="144" HorizontalAlignment="Left" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60">Quit</Button>
+            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Manage Jobs</Label>
+            <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+                <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
             </Button>
+            <Label VerticalAlignment="Center" FontSize="40" Margin="1651,20,91,0">Daily log</Label>
+            <Label VerticalAlignment="Center" FontSize="40" Margin="1400,20,318,0">Status log</Label>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="200"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Border Grid.Row="0" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-                <Label Grid.Row="0" FontSize="20" Height="40" Width="100" Margin="19,21,481,19" VerticalAlignment="Center">Name</Label>
-                <Label FontSize="20" Margin="124,0,376,0" Height="40" Width="100" VerticalAlignment="Center">Source</Label>
-                <Label FontSize="20" Margin="250,0,250,0" Height="40" Width="100" VerticalAlignment="Center">Target</Label>
-                <Label Grid.Row="0" FontSize="20" Margin="385,21,115,19" Height="40" Width="100" VerticalAlignment="Center">Status Log</Label>
-                <Label Grid.Row="0" FontSize="20" Margin="490,20,10,20" Height="40" Width="100" VerticalAlignment="Center">Daily Log</Label>
-            </Grid>
-            <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" Margin="5"></Border>
-            <Menu Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="180">
-                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <MenuItem Header="Create" FontSize="30" Click="CreateWindow_Click"/>
-                    <MenuItem Header="Run One" FontSize="30"/>
-                    <MenuItem Header="Run All" FontSize="30"/>
-                    <MenuItem Header="Modify" FontSize="30" Click="ModifyWindow_Click"/>
-                    <MenuItem Header="Delete" FontSize="30" Click="DeleteWindow_Click"/>
-                </StackPanel>
-            </Menu>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="60"></RowDefinition>
+            </Grid.RowDefinitions>
+            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center"  IsChecked="{Binding Selected}">Select/Deselect All
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="4" ScaleY="4" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="846,0,1002,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
+                <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
+            </Button>
+            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="924,0,924,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
+                <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="1002,0,846,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
+                <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1718,0,128,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click">
+                <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
+                <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
+            </Button>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="0,0,1794,0">Name</Label>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="279,0,1409,0">Source path</Label>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="708,0,980,0">Target path</Label>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1546,0,170,0">Encryption</Label>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1120,0,626,0">Progress</Label>
+            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1755,0,3,0">Strategy</Label>
+            <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                
+            </DataGrid>
+            <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
+            <Border Grid.Row="2" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
         </Grid>
     </Grid>
 </Page>

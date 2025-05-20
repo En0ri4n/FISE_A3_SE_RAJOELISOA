@@ -1,14 +1,19 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
+using Microsoft.Extensions.Logging;
 
 namespace EasySaveCore.Models
 {
     public class BackupJobTask : JobTask
     {
+        private readonly BackupJob _backupJob;
         public Property<dynamic> Timestamp;
         public Property<dynamic> Source;
         public Property<dynamic> Target;
@@ -17,24 +22,35 @@ namespace EasySaveCore.Models
 
         public BackupJobTask(BackupJob backupJob, string source, string target) : base(backupJob.Name)
         {
+            _backupJob = backupJob;
             Timestamp = new Property<dynamic>("timestamp", new DateTime());
             Source = new Property<dynamic>("source", source);
             Target = new Property<dynamic>("target", target);
             Size = new Property<dynamic>("size", 0);
             TransferTime = new Property<dynamic>("transferTime", -1);
-            GetProperties().AddRange([Timestamp, Source, Target, Size, TransferTime]);
+            GetProperties().AddRange(new List<Property<dynamic>>()
+            {
+                Timestamp,
+                Source,
+                Target,
+                Size,
+                TransferTime
+            });
         }
 
-        public override JobExecutionStrategy.ExecutionStatus ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
+        public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
         {
             Timestamp.Value = DateTime.Now;
             Size.Value = new FileInfo(Source.Value).Length;
 
             if (File.Exists(Target.Value)
-                && FilesAreEqual_Hash(new FileInfo (Source.Value), new FileInfo(Target.Value))
+                && FilesAreEqual(new FileInfo (Source.Value), new FileInfo(Target.Value))
                 && strategyType == JobExecutionStrategy.StrategyType.Differential)
             {
-                    return JobExecutionStrategy.ExecutionStatus.Skipped;
+                    Status = JobExecutionStrategy.ExecutionStatus.Skipped;
+                    _backupJob.OnTaskCompleted(this);
+                    CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+                    return;
             }
 
             Stopwatch watch = Stopwatch.StartNew();
@@ -45,12 +61,15 @@ namespace EasySaveCore.Models
             }
             catch (Exception e)
             {
-                return JobExecutionStrategy.ExecutionStatus.Failed;
+                Status = JobExecutionStrategy.ExecutionStatus.Failed;
+                return;
             }
 
             watch.Stop();
             TransferTime.Value = watch.ElapsedMilliseconds;
-            return JobExecutionStrategy.ExecutionStatus.Completed;
+            Status = JobExecutionStrategy.ExecutionStatus.Completed;
+            _backupJob.OnTaskCompleted(this);
+            CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
         }
 
         public override JsonObject JsonSerialize()
@@ -72,17 +91,33 @@ namespace EasySaveCore.Models
             throw new NotImplementedException("This method should not be called.");
         }
 
-        public override XmlElement XmlSerialize()
+        public override XmlElement XmlSerialize(XmlDocument document)
         {
-            XmlDocument doc = new XmlDocument();
-            XmlElement jobElement = doc.CreateElement("BackupJobTask");
+            XmlElement jobElement = document.CreateElement("BackupJobTask");
 
-            jobElement.SetAttribute("Name", Name);
-            jobElement.SetAttribute("Source", Source.Value);
-            jobElement.SetAttribute("Target", Target.Value);
-            jobElement.SetAttribute("Size", Size.Value.ToString());
-            jobElement.SetAttribute("FileTransferTime", ((double) TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture));
-            jobElement.SetAttribute("Timestamp", ((DateTime) Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss"));
+            XmlElement nameElement = document.CreateElement("Name");
+            nameElement.InnerText = Name;
+            jobElement.AppendChild(nameElement);
+
+            XmlElement sourceElement = document.CreateElement("Source");
+            sourceElement.InnerText = Source.Value;
+            jobElement.AppendChild(sourceElement);
+
+            XmlElement targetElement = document.CreateElement("Target");
+            targetElement.InnerText = Target.Value;
+            jobElement.AppendChild(targetElement);
+
+            XmlElement sizeElement = document.CreateElement("Size");
+            sizeElement.InnerText = Size.Value.ToString();
+            jobElement.AppendChild(sizeElement);
+
+            XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
+            fileTransferTimeElement.InnerText = ((double)TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture);
+            jobElement.AppendChild(fileTransferTimeElement);
+
+            XmlElement timestampElement = document.CreateElement("Timestamp");
+            timestampElement.InnerText = ((DateTime)Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss");
+            jobElement.AppendChild(timestampElement);
 
             return jobElement;
         }
@@ -92,19 +127,9 @@ namespace EasySaveCore.Models
             throw new NotImplementedException("This method should not be called.");
         }
 
-        private static bool FilesAreEqual_Hash(FileInfo first, FileInfo second)
+        private static bool FilesAreEqual(FileInfo first, FileInfo second)
         {
-            using FileStream firstStream = first.OpenRead();
-            using FileStream secondStream = second.OpenRead();
-            byte[] firstHash = MD5.Create().ComputeHash(firstStream);
-            byte[] secondHash = MD5.Create().ComputeHash(secondStream);
-
-            for (int i = 0; i < firstHash.Length; i++)
-            {
-                if (firstHash[i] != secondHash[i])
-                    return false;
-            }
-            return true;
+            return first.Length == second.Length && first.Name == second.Name;
         }
     }
 }

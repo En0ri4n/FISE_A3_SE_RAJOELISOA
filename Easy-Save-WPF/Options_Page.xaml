@@ -18,11 +18,11 @@
 
         <Menu Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel  Orientation="Vertical">
-                <MenuItem Header="Language" FontSize="40" HorizontalAlignment="Center"></MenuItem>
-                <MenuItem Header="Log Type" FontSize="40" HorizontalAlignment="Center"></MenuItem>
-                <MenuItem Header="Status log Path" FontSize="40" HorizontalAlignment="Center"></MenuItem>
-                <MenuItem Header="Daily log Path" FontSize="40" HorizontalAlignment="Center"></MenuItem>
-                <MenuItem Header="Return" FontSize="40" HorizontalAlignment="Center"></MenuItem>
+                <MenuItem Header="Language" FontSize="40" HorizontalAlignment="Center" Click="LanguageBTN_Click"></MenuItem>
+                <MenuItem Header="Log Type" FontSize="40" HorizontalAlignment="Center" Click="LogTypeBTN_Click"></MenuItem>
+                <MenuItem Header="Status log Path" FontSize="40" HorizontalAlignment="Center" Click="StatusLogBTN_Click"></MenuItem>
+                <MenuItem Header="Daily log Path" FontSize="40" HorizontalAlignment="Center" Click="DailyLogBTN_Click"></MenuItem>
+                <MenuItem Header="Return" FontSize="40" HorizontalAlignment="Center" Click="ReturnBTN_Click"></MenuItem>
             </StackPanel>
         </Menu>
     </Grid>

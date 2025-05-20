@@ -11,19 +11,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Easy_Save_WPF;
+
 namespace Easy_Save_WPF
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
     /// </summary>
+    
+    //TODO : dynamic job list binding
     public partial class ManageJobs_Page : Page
     {
-        //MainWindow window = new MainWindow();
-        Options_Page options = new Options_Page();
 
         public ManageJobs_Page()
         {
             InitializeComponent();
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel.AvailableJobs;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -32,18 +35,24 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            //window.MainFrame.Content = options;
-            //NavigationCommands.BrowseBack;
+            MainWindow window = new MainWindow();
+            window.OptionsBTN_Click(sender, e);
         }
 
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
-            CreateJob_Window create = new CreateJob_Window();
+            CreateJob_Window create = new CreateJob_Window()
+            {
+                Titre = "Create Job"
+            };
             create.Show();
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            CreateJob_Window create = new CreateJob_Window();
+            CreateJob_Window create = new CreateJob_Window()
+            {
+                Titre = "Modify Job"
+            };
             create.Show();
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
@@ -52,6 +61,26 @@ namespace Easy_Save_WPF
             create.Show();
         }
 
+        public void StopBTN_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        public void PauseBTN_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        
+
+        public void RunJob_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+
+        public void Selected(object sender, RoutedEventArgs e)
+        {
+            //TODO select all job
+            //https://stackoverflow.com/questions/14441273/how-to-handle-checkbox-checked-unchecked-event-with-command-in-viewmodel-in-silv/14442515
+        }
 
     }
 }

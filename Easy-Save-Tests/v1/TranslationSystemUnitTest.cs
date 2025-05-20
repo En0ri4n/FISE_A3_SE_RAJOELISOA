@@ -6,7 +6,7 @@ namespace CLEA_Tests;
 
 public class TranslationSystemUnitTest
 {
-    private static readonly LangIdentifier FakeLang = new("fake_lang", "FakeLang");
+    private static readonly LangIdentifier FakeLang = new LangIdentifier("fake_lang", "FakeLang");
     
     [SkippableFact]
     public void Get_ShouldReturnSingletonInstance()
@@ -50,6 +50,6 @@ public class TranslationSystemUnitTest
         var l10N = L10N<BackupJob>.Get();
         l10N.SetLanguage(Languages.EnUs);
 
-        Assert.Throws<KeyNotFoundException>(() => l10N.GetTranslation("nonexistent.key"));
+        Assert.Equal("nonexistent.key", l10N.GetTranslation("nonexistent.key"));
     }
 }

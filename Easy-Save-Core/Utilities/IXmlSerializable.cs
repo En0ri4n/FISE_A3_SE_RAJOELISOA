@@ -1,10 +1,11 @@
 ﻿using System.Xml;
 using CLEA.EasySaveCore.Models;
 
-namespace CLEA.EasySaveCore.Utilities;
-
-public interface IXmlSerializable
+namespace CLEA.EasySaveCore.Utilities
 {
-    public XmlElement XmlSerialize();
-    public void XmlDeserialize(XmlElement data);
+    public interface IXmlSerializable
+    {
+        public XmlElement XmlSerialize(XmlDocument parent);
+        public void XmlDeserialize(XmlElement data);
+    }
 }

@@ -11,7 +11,19 @@
     <Compile Update="ManageJobs_Page.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Options_DailyLog_Page.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Options_Language_Page.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Options_LogType_Page.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Options_Page.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Options_StatusLog_Page.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -8,29 +8,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Easy_Save_WPF
 {
     /// <summary>
-    /// Logique d'interaction pour DeleteJob_Window.xaml
+    /// Logique d'interaction pour Options_Language_Page.xaml
     /// </summary>
-    public partial class DeleteJob_Window : Window
+    public partial class Options_Language_Page : Page
     {
-        public string jobName { get; set; }
-        public DeleteJob_Window()
+        public Options_Language_Page()
         {
             InitializeComponent();
-            this.DataContext = this;
-        }
-
-        public void CancelBTN_Click(object sender, RoutedEventArgs e)
-        {
-            //TODO
-        }
-
-        public void DeleteBTN_Click(object sender, RoutedEventArgs e)
-        {
+            List<string> listLanguages = new List<string>()
+            {
+                "Test", "TODO", "hello world"
+            };
+            this.languagesListBox.ItemsSource = listLanguages;
             //TODO
         }
     }
