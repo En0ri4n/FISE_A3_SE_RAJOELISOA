@@ -7,4 +7,11 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Easy-Save-Core\Easy-Save-Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FamFamFam.Flags.Wpf" Version="1.2.1" />
+    </ItemGroup>
 </Project>

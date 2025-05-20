@@ -249,4 +249,7 @@ namespace CLEA.EasySaveCore.ViewModel
             _instance = new EasySaveViewModel<TJob>(jobManager);
         }
     }
+
+
+    // Options PopUp Methods
 }

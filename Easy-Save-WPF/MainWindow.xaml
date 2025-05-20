@@ -5,8 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="1000" Width="1920" Background="#f3f3f3"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Grid x:Name="Main_Grid">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120">
+                </RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Easy Save</Label>
 
+            <Menu Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel  Orientation="Vertical">
+                    <MenuItem Header="Manage jobs" FontSize="80" HorizontalAlignment="Center" Click="ManageJobsBTN_Click"></MenuItem>
+                    <MenuItem Header="Options" FontSize="80" HorizontalAlignment="Center" Click="OptionsBTN_Click"></MenuItem>
+                    <MenuItem Header="Quit" FontSize="80" HorizontalAlignment="Center" Click="QuitBTN_Click"></MenuItem>
+                </StackPanel>
+            </Menu>
+        </Grid>
+        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Height="1000" Width="1920"/>
     </Grid>
 </Window>
