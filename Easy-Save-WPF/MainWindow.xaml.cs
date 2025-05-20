@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CLEA.EasySaveCore;
+using CLEA.EasySaveCore.Jobs.Backup;
+using EasySaveCore.Models;
 
 namespace Easy_Save_WPF
 {
@@ -25,6 +28,7 @@ namespace Easy_Save_WPF
 
         public MainWindow()
         {
+            EasySaveCore<BackupJob>.Init(new BackupJobManager());
             InitializeComponent();
         }
 
