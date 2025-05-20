@@ -13,12 +13,12 @@ public class LoggerTests
     //     Skip.IfNot(EasySaveCore<IJob>.Version.Major == 1);
     //     
     //     // Arrange
-    //     CLEA.EasySaveCore.Utilities.Logger<BackupJob> logger = CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Get();
+    //     CLEA.EasySaveCore.Utilities.Logger logger = CLEA.EasySaveCore.Utilities.Logger.Get();
     //     string testMessage = "Test log message";
     //     LogLevel testLevel = LogLevel.Information;
     //
     //     // Act
-    //     CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(testLevel, testMessage);
+    //     CLEA.EasySaveCore.Utilities.Logger.Log(testLevel, testMessage);
     //
     //     // Assert
     //     string logFilePath = Directory.GetFiles(logger.StatusLogPath, $"statusLog-{DateTime.Now:dd-MM-yyyy}.log")[0];

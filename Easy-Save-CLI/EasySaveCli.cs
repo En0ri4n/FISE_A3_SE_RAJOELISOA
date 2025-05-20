@@ -167,7 +167,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title(L10N.GetTranslation("logtype_menu.title").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
+                .Title(L10N.GetTranslation("logtype_menu.title").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger.Get().DailyLogFormat.ToString()))
                 .AddChoices(
                     ViewModel.AvailableDailyLogFormats.Select(f=> f.ToString()).Append(L10N.GetTranslation("main.go_back"))
                 ));
@@ -422,7 +422,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         AnsiConsole.Clear();
         AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
 
-        string path = AnsiConsole.Ask<string>(L10N.GetTranslation("settings_menu.message_daily_log_path"), EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogPath.ToString());
+        string path = AnsiConsole.Ask<string>(L10N.GetTranslation("settings_menu.message_daily_log_path"), EasySaveCore.Utilities.Logger.Get().DailyLogPath.ToString());
 
         if (!ViewModel.IsDirectoryPathValid(path))
         {
@@ -443,7 +443,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         AnsiConsole.Clear();
         AnsiConsole.Write(new Text(L10N.GetTranslation("main.title")).Centered());
 
-        string path = AnsiConsole.Ask<string>(L10N.GetTranslation("settings_menu.message_status_log_path"), EasySaveCore.Utilities.Logger<BackupJob>.Get().StatusLogPath.ToString());
+        string path = AnsiConsole.Ask<string>(L10N.GetTranslation("settings_menu.message_status_log_path"), EasySaveCore.Utilities.Logger.Get().StatusLogPath.ToString());
 
         if (!ViewModel.IsDirectoryPathValid(path))
         {
@@ -467,9 +467,9 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             .Title(L10N.GetTranslation("settings_menu.title"))
             .AddChoices(
                 L10N.GetTranslation("settings_menu.change_language"),
-                L10N.GetTranslation("settings_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()),
-                L10N.GetTranslation("settings_menu.change_daily_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogPath.ToString()),
-                L10N.GetTranslation("settings_menu.change_status_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger<BackupJob>.Get().StatusLogPath.ToString()),
+                L10N.GetTranslation("settings_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger.Get().DailyLogFormat.ToString()),
+                L10N.GetTranslation("settings_menu.change_daily_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger.Get().DailyLogPath.ToString()),
+                L10N.GetTranslation("settings_menu.change_status_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger.Get().StatusLogPath.ToString()),
                 L10N.GetTranslation("main.go_back")
             ));
 
@@ -478,17 +478,17 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
             AddToMenuHistory(Menu.Language);
             DisplayLanguageMenu();
         }
-        else if (choice == L10N.GetTranslation("settings_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogFormat.ToString()))
+        else if (choice == L10N.GetTranslation("settings_menu.change_log_type").Replace("{LOGTYPE}", EasySaveCore.Utilities.Logger.Get().DailyLogFormat.ToString()))
         {
             AddToMenuHistory(Menu.LogType);
             DisplayLogTypeMenu();
         }
-        else if (choice == L10N.GetTranslation("settings_menu.change_daily_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger<BackupJob>.Get().DailyLogPath.ToString()))
+        else if (choice == L10N.GetTranslation("settings_menu.change_daily_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger.Get().DailyLogPath.ToString()))
         {
             AddToMenuHistory(Menu.DailyLogDirectory);
             DisplayDailyLogDirectoryMenu();
         }
-        else if (choice == L10N.GetTranslation("settings_menu.change_status_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger<BackupJob>.Get().StatusLogPath.ToString()))
+        else if (choice == L10N.GetTranslation("settings_menu.change_status_log_path").Replace("{PATH}", EasySaveCore.Utilities.Logger.Get().StatusLogPath.ToString()))
         {
             AddToMenuHistory(Menu.StatusLogDirectory);
             DisplayStatusLogDirectoryMenu();
@@ -500,7 +500,7 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
     {
         AnsiConsole.Write(L10N.GetTranslation("main.exiting"));
         Thread.Sleep(1000);
-        EasySaveCore.Utilities.Logger<BackupJob>.Log(LogLevel.Information, "Quitting EasySave-CLEA..." + Environment.NewLine);
+        EasySaveCore.Utilities.Logger.Log(LogLevel.Information, "Quitting EasySave-CLEA..." + Environment.NewLine);
         AnsiConsole.Clear();
         Environment.Exit(0);
     }

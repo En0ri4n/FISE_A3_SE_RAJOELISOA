@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Xml;
@@ -25,7 +28,14 @@ namespace EasySaveCore.Models
             Target = new Property<dynamic>("target", target);
             Size = new Property<dynamic>("size", 0);
             TransferTime = new Property<dynamic>("transferTime", -1);
-            GetProperties().AddRange([Timestamp, Source, Target, Size, TransferTime]);
+            GetProperties().AddRange(new List<Property<dynamic>>()
+            {
+                Timestamp,
+                Source,
+                Target,
+                Size,
+                TransferTime
+            });
         }
 
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
@@ -39,7 +49,7 @@ namespace EasySaveCore.Models
             {
                     Status = JobExecutionStrategy.ExecutionStatus.Skipped;
                     _backupJob.OnTaskCompleted(this);
-                    CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+                    CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
                     return;
             }
 
@@ -59,7 +69,7 @@ namespace EasySaveCore.Models
             TransferTime.Value = watch.ElapsedMilliseconds;
             Status = JobExecutionStrategy.ExecutionStatus.Completed;
             _backupJob.OnTaskCompleted(this);
-            CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+            CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
         }
 
         public override JsonObject JsonSerialize()

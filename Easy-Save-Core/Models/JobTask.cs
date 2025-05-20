@@ -1,63 +1,66 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Utilities;
 
-namespace CLEA.EasySaveCore.Models;
-
-public abstract class JobTask : IJsonSerializable, IXmlSerializable
+namespace CLEA.EasySaveCore.Models
 {
-    public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
-
-    public string Name
+    public abstract class JobTask : IJsonSerializable, IXmlSerializable
     {
-        get
-        {
-            Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
+        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
-            if (property == null)
-                throw new Exception("Name property not found");
-            
-            return property.Value;
-        }
-        set
+        public string Name
         {
-            Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
+            get
+            {
+                Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
 
-            if (property == null)
-                throw new Exception("Name property not found");
+                if (property == null)
+                    throw new Exception("Name property not found");
             
-            property.Value = value;
+                return property.Value;
+            }
+            set
+            {
+                Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
+
+                if (property == null)
+                    throw new Exception("Name property not found");
+            
+                property.Value = value;
+            }
         }
-    }
-    private readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
+        private readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
     
-    public List<Property<dynamic>> GetProperties()
-    {
-        return _properties;
-    }
+        public List<Property<dynamic>> GetProperties()
+        {
+            return _properties;
+        }
 
-    protected JobTask(string name)
-    {
-        _properties.Add(new Property<dynamic>("name", name));
-    }
+        protected JobTask(string name)
+        {
+            _properties.Add(new Property<dynamic>("name", name));
+        }
 
-    public bool UpdadeProperty(string name, dynamic value)
-    {
-        Property<dynamic>? property = _properties.Find(prop => prop.Name == name);
+        public bool UpdadeProperty(string name, dynamic value)
+        {
+            Property<dynamic>? property = _properties.Find(prop => prop.Name == name);
 
-        if (property == null)
-            return false;
+            if (property == null)
+                return false;
         
-        property.Value = value;
-        return true;
-    }
+            property.Value = value;
+            return true;
+        }
     
-    public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
+        public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
 
-    public abstract JsonObject JsonSerialize();
+        public abstract JsonObject JsonSerialize();
 
-    public abstract void JsonDeserialize(JsonObject data);
+        public abstract void JsonDeserialize(JsonObject data);
 
-    public abstract XmlElement XmlSerialize(XmlDocument parent);
-    public abstract void XmlDeserialize(XmlElement data);
+        public abstract XmlElement XmlSerialize(XmlDocument parent);
+        public abstract void XmlDeserialize(XmlElement data);
+    }
 }

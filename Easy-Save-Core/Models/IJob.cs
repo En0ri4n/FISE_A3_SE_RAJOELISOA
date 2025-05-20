@@ -1,22 +1,24 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Utilities;
 
-namespace CLEA.EasySaveCore.Models;
-
-public interface IJob : IJsonSerializable, IXmlSerializable
+namespace CLEA.EasySaveCore.Models
 {
-    string Name { get; }
+    public interface IJob : IJsonSerializable, IXmlSerializable
+    {
+        string Name { get; }
     
-    JobExecutionStrategy.ExecutionStatus Status { get; set; }
+        JobExecutionStrategy.ExecutionStatus Status { get; set; }
     
-    public delegate void TaskCompletedDelegate(dynamic task);
-    public event TaskCompletedDelegate TaskCompletedHandler;
-    public void ClearTaskCompletedHandler();
+        public delegate void TaskCompletedDelegate(dynamic task);
+        public event TaskCompletedDelegate TaskCompletedHandler;
+        public void ClearTaskCompletedHandler();
     
-    List<Property<dynamic>> Properties { get; }
+        List<Property<dynamic>> Properties { get; }
     
-    bool IsRunning { get; set; }
+        bool IsRunning { get; set; }
     
-    bool CanRunJob();
-    void RunJob(JobExecutionStrategy.StrategyType strategyType);
+        bool CanRunJob();
+        void RunJob(JobExecutionStrategy.StrategyType strategyType);
+    }
 }
