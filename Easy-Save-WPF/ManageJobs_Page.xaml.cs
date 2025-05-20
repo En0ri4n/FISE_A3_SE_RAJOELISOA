@@ -11,6 +11,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Easy_Save_WPF;
+
 namespace Easy_Save_WPF
 {
     /// <summary>
@@ -24,6 +26,7 @@ namespace Easy_Save_WPF
         public ManageJobs_Page()
         {
             InitializeComponent();
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel.AvailableJobs;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -57,6 +60,16 @@ namespace Easy_Save_WPF
             DeleteJob_Window create = new DeleteJob_Window();
             create.Show();
         }
+
+        public void StopBTN_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        public void PauseBTN_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {

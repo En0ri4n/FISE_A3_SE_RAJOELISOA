@@ -34,19 +34,19 @@
                     <ScaleTransform ScaleX="4" ScaleY="4" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="846,0,1002,0" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="846,0,1002,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
                 <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="924,0,924,0" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="924,0,924,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
                 <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="1002,0,846,0" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="1002,0,846,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
                 <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1718,0,128,0" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1718,0,128,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click">
                 <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
+            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
             <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="0,0,1794,0">Name</Label>
@@ -55,9 +55,8 @@
             <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1546,0,170,0">Encryption</Label>
             <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1120,0,626,0">Progress</Label>
             <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1755,0,3,0">Strategy</Label>
-            <DataGrid Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center">Select/Deselect All
-                </CheckBox>
+            <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                
             </DataGrid>
             <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
             <Border Grid.Row="2" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
