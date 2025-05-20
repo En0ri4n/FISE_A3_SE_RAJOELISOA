@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
-        Title="Options" Height="670" Width="1004" WindowStartupLocation="CenterOwner" Background="#f4f4f4">
+        Title="Options" Height="650" Width="750" WindowStartupLocation="CenterOwner" Background="#f4f4f4" 
+        ResizeMode="NoResize">
     <Window.Resources>
         <Flags:CountryIdToFlagImageSourceConverter x:Key="CountryIdToFlagImageSourceConverter" />
     </Window.Resources>
@@ -22,14 +23,14 @@
             <!-- Language -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 16">
                 <TextBlock Text="Language:" FontSize="16" Width="150" VerticalAlignment="Center"/>
-                <ComboBox SelectedItem="{Binding SelectedCountry}" 
-                  ItemsSource="{Binding AvailablesLanguages}" 
+                <ComboBox ItemsSource="{Binding AvailableLanguages}"
                   UseLayoutRounding="True" 
-                  SelectedIndex="12" Width="200" FontSize="14">
+                  SelectedItem="{Binding CurrentApplicationLang, Mode=TwoWay}"
+                  Width="200" FontSize="14">
                     <ComboBox.ItemTemplate>
-                        <DataTemplate DataType="Flags:CountryData">
+                        <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding LangId, Converter={StaticResource CountryIdToFlagImageSourceConverter}}" 
+                                <Image Source="{Binding IsoCode, Converter={StaticResource CountryIdToFlagImageSourceConverter}}" 
                                    Width="23" Height="18" 
                                    Stretch="None" 
                                    RenderOptions.BitmapScalingMode="HighQuality" 
@@ -44,24 +45,28 @@
             <!-- Log Type -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 16">
                 <TextBlock Text="Log Type:" FontSize="16" Width="150" VerticalAlignment="Center"/>
-                <ComboBox Name="LogTypeComboBox" Width="200" FontSize="14">
-                    <ComboBoxItem Content="JSON"/>
-                    <ComboBoxItem Content="XML"/>
+                <ComboBox Name="LogTypeComboBox" Width="200" FontSize="14" ItemsSource="{Binding AvailableDailyLogFormats}"
+                           SelectedItem="{Binding CurrentDailyLogFormat, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
             </StackPanel>
 
             <!-- Daily Log Directory -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 16">
                 <TextBlock Text="Daily Log Dir:" FontSize="16" Width="150" VerticalAlignment="Center"/>
-                <TextBlock Name="DailyLogPathText" Text="C:\Logs\Daily" FontSize="14" Width="400" Background="#e0e0e0" Padding="5"/>
-                <Button Content="Browse" Click="ChangeDailyLogPath_Click" Margin="10 0 0 0"/>
+                <TextBlock Name="DailyLogPathText" Text="{Binding DailyLogPath}" FontSize="14" Width="400" Background="#e0e0e0" Padding="5"/>
+                <Button Content="Browse" Command="{Binding ShowFolderDialogCommand}" CommandParameter="true" Margin="10 0 0 0"/>
             </StackPanel>
 
             <!-- Status Log Directory -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 16">
                 <TextBlock Text="Status Log Dir:" FontSize="16" Width="150" VerticalAlignment="Center"/>
-                <TextBlock Name="StatusLogPathText" Text="C:\Logs\Status" FontSize="14" Width="400" Background="#e0e0e0" Padding="5"/>
-                <Button Content="Browse" Click="ChangeStatusLogPath_Click" Margin="10 0 0 0"/>
+                <TextBlock Name="StatusLogPathText" Text="{Binding StatusLogPath}" FontSize="14" Width="400" Background="#e0e0e0" Padding="5"/>
+                <Button Content="Browse" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Margin="10 0 0 0"/>
             </StackPanel>
 
             <!-- Extensions -->

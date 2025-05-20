@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using FolderBrowserEx;
 using System.Windows.Controls;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
@@ -13,20 +14,6 @@ namespace Easy_Save_WPF
 
             InitializeComponent();
             DataContext = EasySaveViewModel<BackupJob>.Get();
-        }
-
-        private void ChangeDailyLogPath_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Title = "Select Daily Log Destination Folder";
-            dialog.ShowDialog();
-        }
-
-        private void ChangeStatusLogPath_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Title = "Select Status Log Destination Folder";
-            dialog.ShowDialog();
         }
 
         private void AddExtension_Click(object sender, RoutedEventArgs e)

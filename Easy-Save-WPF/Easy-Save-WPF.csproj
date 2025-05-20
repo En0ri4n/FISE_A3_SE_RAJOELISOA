@@ -13,5 +13,6 @@
 
     <ItemGroup>
       <PackageReference Include="FamFamFam.Flags.Wpf" Version="1.2.1" />
+      <PackageReference Include="FolderBrowserEx" Version="1.0.1" />
     </ItemGroup>
 </Project>

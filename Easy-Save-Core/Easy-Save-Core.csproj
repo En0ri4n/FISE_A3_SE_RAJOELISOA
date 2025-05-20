@@ -9,6 +9,7 @@
         <None Update="l10n\*.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <PackageReference Include="FolderBrowserEx" Version="1.0.1" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.4" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

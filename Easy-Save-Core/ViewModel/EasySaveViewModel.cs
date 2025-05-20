@@ -10,7 +10,12 @@ using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
+using FolderBrowserEx;
+using System.Windows.Forms;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
+using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
+using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
@@ -172,6 +177,41 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
+            ShowFolderDialogCommand = new RelayCommand((input) =>
+            {
+                bool isDailyLog = bool.Parse((string)input);
+
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                string title = "Select Status Log Folder";
+
+                folderBrowserDialog.Title = title;
+                string path = StatusLogPath;
+
+                if (isDailyLog) {
+                    folderBrowserDialog.Title = "Select Daily Log Folder";
+                    path = DailyLogPath;
+                }
+
+                string fullPath = Path.IsPathRooted(path) ? path
+                : Path.GetFullPath(Path.Combine(".", path));
+
+                folderBrowserDialog.InitialFolder = fullPath;
+                folderBrowserDialog.AllowMultiSelect = false;
+
+                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                if (isDailyLog)
+                {
+                    DailyLogPath = folderBrowserDialog.SelectedFolder;
+                }
+                else
+                {
+                    StatusLogPath = folderBrowserDialog.SelectedFolder;
+                }
+            }, _ => true);
+
+
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
         }
 
@@ -248,8 +288,10 @@ namespace CLEA.EasySaveCore.ViewModel
 
             _instance = new EasySaveViewModel<TJob>(jobManager);
         }
+
+        // Options PopUp Methods
+
+        public ICommand ShowFolderDialogCommand { get; }
+
     }
-
-
-    // Options PopUp Methods
 }

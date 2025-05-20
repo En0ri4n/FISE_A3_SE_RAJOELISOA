@@ -80,6 +80,8 @@ namespace CLEA.EasySaveCore.Utilities
             data.TryGetPropertyValue("dailyLogFormat", out JsonNode? dailyLogFormat);
             if (dailyLogFormat != null)
                 Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
+            if (!Directory.Exists(Logger.DailyLogPath))
+                Directory.CreateDirectory(Logger.DailyLogPath);
 
             // Jobs
             data.TryGetPropertyValue("jobs", out JsonNode? jobs);
