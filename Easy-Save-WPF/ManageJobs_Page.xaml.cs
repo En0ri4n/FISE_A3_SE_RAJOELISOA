@@ -34,6 +34,7 @@ namespace Easy_Save_WPF
             InitializeComponent();
             this.DataContext = EasySaveViewModel<BackupJob>.Get();
             this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+            //this.jobsDatagrid.DataContext = this;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -52,7 +53,12 @@ namespace Easy_Save_WPF
             {
                 Titre = "Create Job"
             };
-            create.Show();
+            while (create.ShowDialog() == true)
+            {
+
+            }
+            this.jobsDatagrid.ItemsSource = null;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -60,7 +66,16 @@ namespace Easy_Save_WPF
             {
                 Titre = "Modify Job"
             };
+
             create.Show();
+
+            var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
+            EasySaveViewModel<BackupJob>.Get().LoadJobInBuilderCommand.Execute(selectedJob);
+
+            create.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            create.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            create.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {

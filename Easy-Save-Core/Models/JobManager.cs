@@ -19,7 +19,7 @@ namespace CLEA.EasySaveCore.Models
         protected JobManager(int size)
         {
             Size = size;
-            Jobs = new List<TJob>(size);
+            Jobs = size != -1 ? new List<TJob>(size) : new List<TJob>();
         }
 
         public abstract bool AddJob(TJob job, bool save);

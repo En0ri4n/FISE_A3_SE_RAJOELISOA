@@ -39,7 +39,7 @@
                 <Image Source="/assets/folder_icon2.png"></Image>
             </Button>
         </Grid>
-        <Button Grid.Row="2" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10"/>
+        <Button Name="createBTN" Grid.Row="2" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10"/>
         <Button Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,10,0,10">Cancel</Button>
     </Grid>
 </Window>
