@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.L10N;
@@ -21,7 +24,48 @@ namespace CLEA.EasySaveCore.Utilities
     {
         private const string ConfigPath = "config.json";
         private static readonly EasySaveConfiguration<TJob> Instance = new EasySaveConfiguration<TJob>();
+        public EasySaveConfiguration()
+        {
+            ExtensionsToEncrypt.CollectionChanged += (sender, args) =>
+            {
+                SaveConfiguration();
+            };
+
+            ProcessesToBlacklist.CollectionChanged += (sender, args) =>
+            {
+                SaveConfiguration();
+            };
+        }
+
         private static Logger Logger => Logger.Get();
+        public static EasySaveConfiguration<TJob> Get()
+        {
+            return Instance;
+        }
+
+        private ObservableCollection<string> _extensionsToEncrypt = new ObservableCollection<string>();
+
+        public ObservableCollection<string> ExtensionsToEncrypt
+        {
+            get => _extensionsToEncrypt;
+            set
+            {
+                _extensionsToEncrypt = value;
+                SaveConfiguration();
+            }
+        }
+
+        private ObservableCollection<string> _processesToBlacklist = new ObservableCollection<string>();
+
+        public ObservableCollection<string> ProcessesToBlacklist
+        {
+            get => _processesToBlacklist;
+            set
+            {
+                _processesToBlacklist = value;
+                SaveConfiguration();
+            }
+        }
 
         /// <summary>
         /// Serialize the configuration to a JSON object.
@@ -35,6 +79,14 @@ namespace CLEA.EasySaveCore.Utilities
                 if (job is IJsonSerializable jsonSerializable)
                     jobs.Add(jsonSerializable.JsonSerialize());
 
+            JsonArray extensionsToEncrypt = new JsonArray();
+            foreach (string extension in ExtensionsToEncrypt)
+                extensionsToEncrypt.Add(extension);
+
+            JsonArray processesToBlacklist = new JsonArray();
+            foreach (string process in ProcessesToBlacklist)
+                processesToBlacklist.Add(process);
+
             JsonObject data = new JsonObject
             {
                 { "version", EasySaveCore<TJob>.Version.ToString() },
@@ -42,6 +94,8 @@ namespace CLEA.EasySaveCore.Utilities
                 { "dailyLogPath", Logger.DailyLogPath },
                 { "statusLogPath", Logger.StatusLogPath },
                 { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
+                { "extensionsToEncrypt",  extensionsToEncrypt},
+                { "processesToBlacklist",  processesToBlacklist},
                 { "jobs", jobs }
             };
 
@@ -82,6 +136,34 @@ namespace CLEA.EasySaveCore.Utilities
                 Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
             if (!Directory.Exists(Logger.DailyLogPath))
                 Directory.CreateDirectory(Logger.DailyLogPath);
+
+            // Encrypted file extensions
+            data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
+            if (extensionsToEncrypt != null)
+            {
+                _extensionsToEncrypt.Clear();
+                foreach (JsonNode? format in extensionsToEncrypt.AsArray())
+                {
+                    if (format is JsonValue formatValue)
+                        _extensionsToEncrypt.Add(formatValue.ToString());
+                }
+            }
+            else
+                throw new JsonException("Encrypted file extensions not found in configuration file");
+
+            // Processes to blacklist
+            data.TryGetPropertyValue("processesToBlacklist", out JsonNode? processesToBlacklist);
+            if (processesToBlacklist != null)
+            {
+                _processesToBlacklist.Clear();
+                foreach (JsonNode? process in processesToBlacklist.AsArray())
+                {
+                    if (process is JsonValue processValue)
+                        _processesToBlacklist.Add(processValue.ToString());
+                }
+            }
+            else
+                throw new JsonException("Processes to Blacklist not found in configuration file");
 
             // Jobs
             data.TryGetPropertyValue("jobs", out JsonNode? jobs);

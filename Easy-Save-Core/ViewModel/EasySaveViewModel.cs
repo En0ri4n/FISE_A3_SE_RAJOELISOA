@@ -16,6 +16,8 @@ using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
@@ -111,6 +113,13 @@ namespace CLEA.EasySaveCore.ViewModel
         public ICommand RunMultipleJobsCommand;
         public ICommand RunAllJobsCommand;
         public ICommand ChangeRunStrategyCommand;
+        public ICommand ShowFolderDialogCommand { get; }
+        public ICommand ResetFolderLogPathCommand { get; }
+        public ICommand AddProcessToBlacklistCommand { get; }
+        public ICommand RemoveProcessToBlacklistCommand { get; }
+        public ICommand AddExtensionToEncryptCommand { get; }
+        public ICommand RemoveExtensionToEncryptCommand { get; }
+
 
         private static EasySaveViewModel<TJob> _instance;
 
@@ -211,6 +220,73 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
+            ResetFolderLogPathCommand = new RelayCommand((input) =>
+            {
+                bool isDailyLogPath = bool.Parse((string)input);
+
+                string path = @"logs\";
+
+                if (isDailyLogPath)
+                {
+                    path += @"daily\";
+                    DailyLogPath = path;
+                }
+                else
+                {
+                    path += @"status\"; 
+                    StatusLogPath = path;
+                }
+            }, _ => true);
+
+            AddExtensionToEncryptCommand = new RelayCommand((input) =>
+            {
+                string extension = (input as string)?.Trim();
+
+                if (string.IsNullOrEmpty(extension))
+                    return;
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(extension, @"^\.[\w]+$"))
+                    return;
+
+                if (!ExtensionsToEncrypt.Contains(extension))
+                {
+                    ExtensionsToEncrypt.Add(extension);
+                }
+            }, _ => true);
+
+            RemoveExtensionToEncryptCommand = new RelayCommand((input) =>
+            {
+                string extensionToRemove = (input as string);
+                if (extensionToRemove != null && ExtensionsToEncrypt.Contains(extensionToRemove))
+                {
+                    ExtensionsToEncrypt.Remove(extensionToRemove);
+                }
+            }, _ => true);
+
+            AddProcessToBlacklistCommand = new RelayCommand((input) =>
+            {
+                string process = (input as string)?.Trim();
+
+                if (string.IsNullOrEmpty(process))
+                    return;
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
+                    return;
+
+                if (!ProcessesToBlacklist.Contains(process))
+                {
+                    ProcessesToBlacklist.Add(process);
+                }
+            }, _ => true);
+
+            RemoveProcessToBlacklistCommand = new RelayCommand((input) =>
+            {
+                string processToRemove = (input as string);
+                if (processToRemove != null && ProcessesToBlacklist.Contains(processToRemove))
+                {
+                    ProcessesToBlacklist.Remove(processToRemove);
+                }
+            }, _ => true);
 
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
         }
@@ -289,9 +365,48 @@ namespace CLEA.EasySaveCore.ViewModel
             _instance = new EasySaveViewModel<TJob>(jobManager);
         }
 
-        // Options PopUp Methods
+        // Extensions to Encrypt
+        public ObservableCollection<string> ExtensionsToEncrypt
+        {
+            get => EasySaveConfiguration<TJob>.Get().ExtensionsToEncrypt;
+            set
+            {
+                EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public ICommand ShowFolderDialogCommand { get; }
+        private string _newExtension;
+        public string NewExtension
+        {
+            get => _newExtension;
+            set
+            {
+                _newExtension = value;
+                OnPropertyChanged();
+            }
+        }
 
+        // Processes to Blacklist
+        public ObservableCollection<string> ProcessesToBlacklist
+        {
+            get => EasySaveConfiguration<TJob>.Get().ProcessesToBlacklist;
+            set
+            {
+                EasySaveConfiguration<BackupJob>.Get().ProcessesToBlacklist = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _newProcess;
+        public string NewProcess
+        {
+            get => _newProcess;
+            set
+            {
+                _newProcess = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }
