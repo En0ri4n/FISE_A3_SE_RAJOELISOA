@@ -44,7 +44,7 @@ namespace EasySaveCore.Models
             Size.Value = new FileInfo(Source.Value).Length;
 
             if (File.Exists(Target.Value)
-                && FilesAreEqual(new FileInfo (Source.Value), new FileInfo(Target.Value))
+                && FilesAreEqual(new FileInfo ((string) Source.Value.ToString()), new FileInfo((string) Target.Value.ToString()))
                 && strategyType == JobExecutionStrategy.StrategyType.Differential)
             {
                     Status = JobExecutionStrategy.ExecutionStatus.Skipped;
@@ -57,7 +57,7 @@ namespace EasySaveCore.Models
 
             try
             {
-                File.Copy(Source.Value, Target.Value, true);
+                File.Copy((string) Source.Value.ToString(), (string) Target.Value.ToString(), true);
             }
             catch (Exception e)
             {
