@@ -1,5 +1,4 @@
-﻿using System;
-using CLEA.EasySaveCore.Models;
+﻿using CLEA.EasySaveCore.Models;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel
@@ -46,8 +45,8 @@ namespace CLEA.EasySaveCore.ViewModel
         {
             InitialName = job.Name;
             Name = job.Name;
-            Source = job.Source.Value;
-            Target = job.Target.Value;
+            Source = job.Source;
+            Target = job.Target;
         }
 
         public override BackupJob Build()

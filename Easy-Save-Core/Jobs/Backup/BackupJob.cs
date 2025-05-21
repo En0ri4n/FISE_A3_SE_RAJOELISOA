@@ -10,13 +10,49 @@ namespace EasySaveCore.Models
 {
     public class BackupJob : IJob
     {
-        public Property<dynamic> Timestamp;
-        public Property<dynamic> Source;
-        public Property<dynamic> Target;
-        public Property<dynamic> StrategyType;
+        private Property<dynamic> _timestamp;
+        private Property<dynamic> _source;
+        private Property<dynamic> _target;
+        private Property<dynamic> _strategyType;
         
-        public Property<dynamic> Size;
-        public Property<dynamic> TransferTime;
+        private Property<dynamic> _size;
+        private Property<dynamic> _transferTime;
+        
+        public DateTime Timestamp
+        {
+            get => (DateTime) _timestamp.Value;
+            set => _timestamp.Value = value;
+        }
+        
+        public string Source
+        {
+            get => (string) _source.Value;
+            set => _source.Value = value;
+        }
+        
+        public string Target
+        {
+            get => (string) _target.Value;
+            set => _target.Value = value;
+        }
+        
+        public JobExecutionStrategy.StrategyType StrategyType
+        {
+            get => (JobExecutionStrategy.StrategyType) _strategyType.Value;
+            set => _strategyType.Value = value;
+        }
+        
+        public long Size
+        {
+            get => (long) _size.Value;
+            set => _size.Value = value;
+        }
+        
+        public long TransferTime
+        {
+            get => (long) _transferTime.Value;
+            set => _transferTime.Value = value;
+        }
 
         public bool IsRunning;
 
@@ -38,21 +74,21 @@ namespace EasySaveCore.Models
         public BackupJob(string name, string source, string target, JobExecutionStrategy.StrategyType strategy)
         {
             Name = name;
-            Timestamp = new Property<dynamic>("timestamp", new DateTime());
-            Source = new Property<dynamic>("source", source);
-            Target = new Property<dynamic>("target", target);
-            StrategyType = new Property<dynamic>("strategyType", strategy);
-            Size = new Property<dynamic>("size", (long) 0);
-            TransferTime = new Property<dynamic>("transferTime", (long) 0);
+            _timestamp = new Property<dynamic>("timestamp", new DateTime());
+            _source = new Property<dynamic>("source", source);
+            _target = new Property<dynamic>("target", target);
+            _strategyType = new Property<dynamic>("strategyType", strategy);
+            _size = new Property<dynamic>("size", (long) 0);
+            _transferTime = new Property<dynamic>("transferTime", (long) 0);
             Properties.AddRange(new List<Property<dynamic>> 
             { 
                 new Property<dynamic>("name", name), 
-                Timestamp, 
-                Source, 
-                Target, 
-                StrategyType,
-                Size, 
-                TransferTime
+                _timestamp, 
+                _source, 
+                _target, 
+                _strategyType,
+                _size, 
+                _transferTime
             });
         }
         
@@ -79,44 +115,44 @@ namespace EasySaveCore.Models
                 return;
             }
 
-            if (string.IsNullOrEmpty(Source.Value.ToString()) || string.IsNullOrEmpty(Target.Value.ToString()))
+            if (string.IsNullOrEmpty(_source.Value.ToString()) || string.IsNullOrEmpty(_target.Value.ToString()))
                 throw new Exception("Source or Target path is not set.");
 
-            if (!Directory.Exists(Source.Value.ToString()))
-                throw new DirectoryNotFoundException($"Source directory '{Source.Value.ToString()}' does not exist.");
+            if (!Directory.Exists(_source.Value.ToString()))
+                throw new DirectoryNotFoundException($"Source directory '{_source.Value.ToString()}' does not exist.");
 
-            if (Source.Value == Target.Value)
+            if (_source.Value == _target.Value)
                 throw new Exception("Source and Target paths cannot be the same.");
         
             BackupJobTasks.Clear();
         
             IsRunning = true;
-            Timestamp.Value = DateTime.Now;
+            _timestamp.Value = DateTime.Now;
         
-            if (!Directory.Exists(Target.Value.ToString()))
-                Directory.CreateDirectory(Target.Value.ToString());
+            if (!Directory.Exists(_target.Value.ToString()))
+                Directory.CreateDirectory(_target.Value.ToString());
 
-            string[] sourceDirectoriesArray = Directory.GetDirectories((string) Source.Value.ToString(), "*", SearchOption.AllDirectories);
+            string[] sourceDirectoriesArray = Directory.GetDirectories((string) _source.Value.ToString(), "*", SearchOption.AllDirectories);
 
             foreach (string directory in sourceDirectoriesArray)
             {
-                string dirToCreate = directory.Replace(Source.Value.ToString(), Target.Value.ToString());
+                string dirToCreate = directory.Replace(_source.Value.ToString(), _target.Value.ToString());
                 Directory.CreateDirectory(dirToCreate);
             }
 
-            string[] sourceFilesArray = Directory.GetFiles((string) Source.Value.ToString(), "*.*", SearchOption.AllDirectories);
+            string[] sourceFilesArray = Directory.GetFiles((string) _source.Value.ToString(), "*.*", SearchOption.AllDirectories);
 
             foreach (string path in sourceFilesArray)
             {
-                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) Source.Value.ToString(), (string) Target.Value.ToString()));
+                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) _source.Value.ToString(), (string) _target.Value.ToString()));
                 BackupJobTasks.Add(jobTask);
             }
 
             foreach(BackupJobTask jobTask in BackupJobTasks)
-                jobTask.ExecuteTask((JobExecutionStrategy.StrategyType) StrategyType.Value);
+                jobTask.ExecuteTask((JobExecutionStrategy.StrategyType) _strategyType.Value);
 
-            TransferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
-            Size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
+            _transferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
+            _size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
 
             IsRunning = false;
 
@@ -128,8 +164,8 @@ namespace EasySaveCore.Models
             JsonObject jsonObject = new JsonObject();
 
             jsonObject.Add("Name", Name);
-            jsonObject.Add("Source", Source.Value);
-            jsonObject.Add("Target", Target.Value);
+            jsonObject.Add("Source", _source.Value);
+            jsonObject.Add("Target", _target.Value);
             return jsonObject;
         }
 
@@ -141,12 +177,12 @@ namespace EasySaveCore.Models
                 throw new Exception("Invalid JSON data: Missing 'Name' property.");
 
             if (data.ContainsKey("Source"))
-                Source.Value = data["Source"]!.ToString();
+                _source.Value = data["Source"]!.ToString();
             else
                 throw new Exception("Invalid JSON data: Missing 'Source' property.");
 
             if (data.ContainsKey("Target"))
-                Target.Value = data["Target"]!.ToString();
+                _target.Value = data["Target"]!.ToString();
             else
                 throw new Exception("Invalid JSON data: Missing 'Target' property.");
         }
@@ -156,8 +192,8 @@ namespace EasySaveCore.Models
             XmlElement jobElement = parent.CreateElement("BackupJob");
 
             jobElement.SetAttribute("Name", Name);
-            jobElement.SetAttribute("Source", Source.Value.ToString());
-            jobElement.SetAttribute("Target", Target.Value.ToString());
+            jobElement.SetAttribute("Source", _source.Value.ToString());
+            jobElement.SetAttribute("Target", _target.Value.ToString());
 
             return jobElement;
         }
@@ -170,12 +206,12 @@ namespace EasySaveCore.Models
                 throw new Exception("Invalid XML data: Missing 'Name' attribute.");
 
             if (data.HasAttribute("Source"))
-                Source.Value = data.GetAttribute("Source");
+                _source.Value = data.GetAttribute("Source");
             else
                 throw new Exception("Invalid XML data: Missing 'Source' attribute.");
 
             if (data.HasAttribute("Target"))
-                Target.Value = data.GetAttribute("Target");
+                _target.Value = data.GetAttribute("Target");
             else
                 throw new Exception("Invalid XML data: Missing 'Target' attribute.");
         }
