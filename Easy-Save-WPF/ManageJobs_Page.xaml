@@ -7,6 +7,7 @@
       mc:Ignorable="d" 
       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
+    <!--TODO DYNAMIC FONT SIZE-->
     <!--Height="1000"
          Width="1920"-->
     <!--FIXME HEIGHT & WIDTH should be this size BUT ARE NOT BECAUSE MICROSFT, hardcoded here for clarity (probably should be removed) -->
