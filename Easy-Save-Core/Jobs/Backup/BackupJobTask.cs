@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
@@ -28,7 +32,14 @@ namespace EasySaveCore.Models
             Size = new Property<dynamic>("size", 0);
             TransferTime = new Property<dynamic>("transferTime", -1);
             EncryptionTime = new Property<dynamic>("encryptionTime", -1);
-            GetProperties().AddRange([Timestamp, Source, Target, Size, TransferTime]);
+            GetProperties().AddRange(new List<Property<dynamic>>()
+            {
+                Timestamp,
+                Source,
+                Target,
+                Size,
+                TransferTime
+            });
         }
 
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
@@ -37,12 +48,12 @@ namespace EasySaveCore.Models
             Size.Value = new FileInfo(Source.Value).Length;
 
             if (File.Exists(Target.Value)
-                && FilesAreEqual(new FileInfo (Source.Value), new FileInfo(Target.Value))
+                && FilesAreEqual(new FileInfo ((string) Source.Value.ToString()), new FileInfo((string) Target.Value.ToString()))
                 && strategyType == JobExecutionStrategy.StrategyType.Differential)
             {
                     Status = JobExecutionStrategy.ExecutionStatus.Skipped;
                     _backupJob.OnTaskCompleted(this);
-                    CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+                    CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
                     return;
             }
 
@@ -59,7 +70,7 @@ namespace EasySaveCore.Models
                 }
                 else
                 {
-                    File.Copy(Source.Value, Target.Value, true);
+                    File.Copy((string) Source.Value.ToString(), (string) Target.Value.ToString(), true);
                 }
             }
             catch (Exception e)
@@ -72,7 +83,7 @@ namespace EasySaveCore.Models
             TransferTime.Value = watch.ElapsedMilliseconds;
             Status = JobExecutionStrategy.ExecutionStatus.Completed;
             _backupJob.OnTaskCompleted(this);
-            CLEA.EasySaveCore.Utilities.Logger<BackupJob>.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+            CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
         }
 
         public override JsonObject JsonSerialize()
