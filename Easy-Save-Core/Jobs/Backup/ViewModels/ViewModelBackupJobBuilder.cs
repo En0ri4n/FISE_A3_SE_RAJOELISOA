@@ -1,4 +1,6 @@
-﻿using EasySaveCore.Models;
+﻿using System;
+using CLEA.EasySaveCore.Models;
+using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
@@ -7,6 +9,7 @@ namespace CLEA.EasySaveCore.ViewModel
         private string _name = string.Empty;
         private string _source = string.Empty;
         private string _target = string.Empty;
+        private JobExecutionStrategy.StrategyType _strategyType = JobExecutionStrategy.StrategyType.Full;
 
         public string Name
         {
@@ -24,6 +27,12 @@ namespace CLEA.EasySaveCore.ViewModel
         {
             get => _target;
             set { _target = value; OnPropertyChanged(); }
+        }
+        
+        public JobExecutionStrategy.StrategyType StrategyType
+        {
+            get => _strategyType;
+            set { _strategyType = value; OnPropertyChanged(); }
         }
 
         public override void Clear()
@@ -43,7 +52,7 @@ namespace CLEA.EasySaveCore.ViewModel
 
         public override BackupJob Build()
         {
-            BackupJob job = new BackupJob(Name, Source, Target);
+            BackupJob job = new BackupJob(Name, Source, Target, StrategyType);
             Clear();
             return job;
         }

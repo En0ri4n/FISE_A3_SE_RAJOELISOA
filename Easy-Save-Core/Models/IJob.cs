@@ -19,6 +19,6 @@ namespace CLEA.EasySaveCore.Models
         bool IsRunning { get; set; }
     
         bool CanRunJob();
-        void RunJob(JobExecutionStrategy.StrategyType strategyType);
+        void RunJob();
     }
 }

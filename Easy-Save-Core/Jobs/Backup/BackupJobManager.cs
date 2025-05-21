@@ -76,7 +76,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 throw new Exception($"Job {job.Name} cannot be run");
 
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-            job.RunJob(Strategy);
+            job.RunJob();
             job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
             
             Logger.Get().SaveDailyLog(job.BackupJobTasks.Select(task => task).Cast<JobTask>().ToList());
@@ -89,7 +89,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 if (job.CanRunJob())
                 {
                     job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-                    job.RunJob(Strategy);
+                    job.RunJob();
                     job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
                 }
             }

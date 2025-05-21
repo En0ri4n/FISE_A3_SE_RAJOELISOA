@@ -13,6 +13,8 @@ namespace EasySaveCore.Models
         public Property<dynamic> Timestamp;
         public Property<dynamic> Source;
         public Property<dynamic> Target;
+        public Property<dynamic> StrategyType;
+        
         public Property<dynamic> Size;
         public Property<dynamic> TransferTime;
 
@@ -29,16 +31,17 @@ namespace EasySaveCore.Models
 
         public readonly List<BackupJobTask> BackupJobTasks = new List<BackupJobTask>();
 
-        public BackupJob() : this(string.Empty, string.Empty, string.Empty)
+        public BackupJob() : this(string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
         {
         }
 
-        public BackupJob(string name, string source, string target)
+        public BackupJob(string name, string source, string target, JobExecutionStrategy.StrategyType strategy)
         {
             Name = name;
             Timestamp = new Property<dynamic>("timestamp", new DateTime());
             Source = new Property<dynamic>("source", source);
             Target = new Property<dynamic>("target", target);
+            StrategyType = new Property<dynamic>("strategyType", strategy);
             Size = new Property<dynamic>("size", (long) 0);
             TransferTime = new Property<dynamic>("transferTime", (long) 0);
             Properties.AddRange(new List<Property<dynamic>> 
@@ -47,8 +50,9 @@ namespace EasySaveCore.Models
                 Timestamp, 
                 Source, 
                 Target, 
+                StrategyType,
                 Size, 
-                TransferTime 
+                TransferTime
             });
         }
         
@@ -67,7 +71,7 @@ namespace EasySaveCore.Models
             return !IsRunning;
         }
 
-        public void RunJob(JobExecutionStrategy.StrategyType strategyType)
+        public void RunJob()
         {
             if (!CanRunJob())
             {
@@ -75,41 +79,41 @@ namespace EasySaveCore.Models
                 return;
             }
 
-        if (string.IsNullOrEmpty(Source.Value.ToString()) || string.IsNullOrEmpty(Target.Value.ToString()))
-            throw new Exception("Source or Target path is not set.");
+            if (string.IsNullOrEmpty(Source.Value.ToString()) || string.IsNullOrEmpty(Target.Value.ToString()))
+                throw new Exception("Source or Target path is not set.");
 
-        if (!Directory.Exists(Source.Value.ToString()))
-            throw new DirectoryNotFoundException($"Source directory '{Source.Value.ToString()}' does not exist.");
+            if (!Directory.Exists(Source.Value.ToString()))
+                throw new DirectoryNotFoundException($"Source directory '{Source.Value.ToString()}' does not exist.");
 
-        if (Source.Value == Target.Value)
-            throw new Exception("Source and Target paths cannot be the same.");
+            if (Source.Value == Target.Value)
+                throw new Exception("Source and Target paths cannot be the same.");
         
-        BackupJobTasks.Clear();
+            BackupJobTasks.Clear();
         
-        IsRunning = true;
-        Timestamp.Value = DateTime.Now;
+            IsRunning = true;
+            Timestamp.Value = DateTime.Now;
         
-        if (!Directory.Exists(Target.Value.ToString()))
-            Directory.CreateDirectory(Target.Value.ToString());
+            if (!Directory.Exists(Target.Value.ToString()))
+                Directory.CreateDirectory(Target.Value.ToString());
 
-        string[] sourceDirectoriesArray = Directory.GetDirectories((string) Source.Value.ToString(), "*", SearchOption.AllDirectories);
+            string[] sourceDirectoriesArray = Directory.GetDirectories((string) Source.Value.ToString(), "*", SearchOption.AllDirectories);
 
-        foreach (string directory in sourceDirectoriesArray)
-        {
-            string dirToCreate = directory.Replace(Source.Value.ToString(), Target.Value.ToString());
-            Directory.CreateDirectory(dirToCreate);
-        }
+            foreach (string directory in sourceDirectoriesArray)
+            {
+                string dirToCreate = directory.Replace(Source.Value.ToString(), Target.Value.ToString());
+                Directory.CreateDirectory(dirToCreate);
+            }
 
-        string[] sourceFilesArray = Directory.GetFiles((string) Source.Value.ToString(), "*.*", SearchOption.AllDirectories);
+            string[] sourceFilesArray = Directory.GetFiles((string) Source.Value.ToString(), "*.*", SearchOption.AllDirectories);
 
-        foreach (string path in sourceFilesArray)
-        {
-            BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) Source.Value.ToString(), (string) Target.Value.ToString()));
-            BackupJobTasks.Add(jobTask);
-        }
+            foreach (string path in sourceFilesArray)
+            {
+                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) Source.Value.ToString(), (string) Target.Value.ToString()));
+                BackupJobTasks.Add(jobTask);
+            }
 
             foreach(BackupJobTask jobTask in BackupJobTasks)
-                jobTask.ExecuteTask(strategyType);
+                jobTask.ExecuteTask((JobExecutionStrategy.StrategyType) StrategyType.Value);
 
             TransferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
             Size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
