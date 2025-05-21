@@ -10,6 +10,7 @@
         Width="1920"
         WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <!--FIXME HEIGHT & WIDTH should be this size, hardcoded here for clarity (probably should be removed) -->
+    <!--CEDRIC : Apparently my max resolution on visual studio is 924,8 & 1548,8 -->
     <Grid x:Name="Main_Grid">
         <Grid>
             <Grid.RowDefinitions>
