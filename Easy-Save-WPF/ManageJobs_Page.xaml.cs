@@ -26,12 +26,13 @@ namespace Easy_Save_WPF
 
     public partial class ManageJobs_Page : Page
     {
-        static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
+        //static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
         public string TitreJobs;
 
         public ManageJobs_Page()
         {
             InitializeComponent();
+            this.DataContext = EasySaveViewModel<BackupJob>.Get();
             this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)

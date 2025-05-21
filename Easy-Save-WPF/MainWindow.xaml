@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1920" Background="#f3f3f3"
+        Title="MainWindow" Background="#f3f3f3"
         WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid x:Name="Main_Grid">
         <Grid>

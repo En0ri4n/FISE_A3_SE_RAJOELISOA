@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="1000" d:DesignWidth="1920"
+      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
 
     <Grid Name="ManageJobs_Grid">
@@ -49,8 +49,8 @@
             <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            
-            <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+
+            <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"  >
                 
             </DataGrid>
             <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>

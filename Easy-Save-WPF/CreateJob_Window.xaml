@@ -17,7 +17,7 @@
             <RowDefinition Height="80"></RowDefinition>
         </Grid.RowDefinitions>
         <Label Name="title"  Content="{Binding Titre}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Name="gridInputs">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>

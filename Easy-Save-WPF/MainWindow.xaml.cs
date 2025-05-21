@@ -22,8 +22,7 @@ namespace Easy_Save_WPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
-    //TODO : lock app window size + make bigger
+
     public partial class MainWindow : Window
     {
 

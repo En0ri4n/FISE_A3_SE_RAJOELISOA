@@ -34,10 +34,11 @@ namespace Easy_Save_WPF
         public CreateJob_Window()
         {
             InitializeComponent();
+            this.gridInputs.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
             title.DataContext = this;
-            jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get();
-            jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get();
-            jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get();
+            //this.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get();
+            //this.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get();
+            //this.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get();
         }
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
@@ -61,7 +62,7 @@ namespace Easy_Save_WPF
                 targetErrorLabel.Visibility = Visibility.Visible;
                 return;
             }
-            EasySaveViewModel<BackupJob>.Get().BuildJobCommand.Execute(null);
+            EasySaveViewModel<BackupJob>.Get().BuildJobCommand.Execute(this);
         }
         public void sourceFolderBTN_CLick(object sender, RoutedEventArgs e)
         {
