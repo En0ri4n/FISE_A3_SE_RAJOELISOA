@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Security.Cryptography;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
@@ -53,7 +53,7 @@ namespace EasySaveCore.Models
             {
                     Status = JobExecutionStrategy.ExecutionStatus.Skipped;
                     _backupJob.OnTaskCompleted(this);
-                    CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+                    Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
                     return;
             }
 
@@ -61,7 +61,7 @@ namespace EasySaveCore.Models
 
             try
             {
-                if (EasySaveConfiguration<BackupJob>.isEncryptorLoaded() && EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
+                if (EasySaveConfiguration<BackupJob>.IsEncryptorLoaded() && EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
                     Encryptor.Get().ProcessFile(Source.Value.ToString(), Target.Value.ToString());
@@ -83,7 +83,7 @@ namespace EasySaveCore.Models
             TransferTime.Value = watch.ElapsedMilliseconds;
             Status = JobExecutionStrategy.ExecutionStatus.Completed;
             _backupJob.OnTaskCompleted(this);
-            CLEA.EasySaveCore.Utilities.Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+            Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
         }
 
         public override JsonObject JsonSerialize()

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -10,7 +12,6 @@ using JsonException = System.Text.Json.JsonException;
 
 namespace CLEA.EasySaveCore.Utilities
 {
-
     /// <summary>
     /// Represents the configuration settings for the EasySave application.
     /// It includes all the necessary settings for the application to run correctly.
@@ -23,53 +24,69 @@ namespace CLEA.EasySaveCore.Utilities
         private static readonly EasySaveConfiguration<TJob> Instance = new EasySaveConfiguration<TJob>();
         private static Logger Logger => Logger.Get();
 
-        private List<string> _extensionsToEncrypt = [];
-    public List<string> ExtensionsToEncrypt
-    {
-        get => _extensionsToEncrypt;
-        set
+        private List<string> _extensionsToEncrypt = new List<string>();
+        public List<string> ExtensionsToEncrypt
         {
-            _extensionsToEncrypt = value;
-            SaveConfiguration();
+            get => _extensionsToEncrypt;
+            set
+            {
+                _extensionsToEncrypt = value;
+                SaveConfiguration();
+            }
         }
-    }
-    
-    public static EasySaveConfiguration<TJob> Get()
-    {
-        return Instance;
-    }
-    
-    public static bool isEncryptorLoaded()
-    {
-        return Type.GetType("CLEA.Encryptor.Encryptor") != null;
-    }
 
-    /// <summary>
-    /// Serialize the configuration to a JSON object.
-    /// All properties have default values and are not null to avoid serialization issues.
-    /// </summary>
-    /// <returns></returns>
-    public JsonObject JsonSerialize()
-    {
-        JsonArray jobs = new JsonArray();
-        foreach (TJob job in EasySaveViewModel<TJob>.Get().JobManager.GetJobs())
-            if (job is IJsonSerializable jsonSerializable)
-                jobs.Add(jsonSerializable.JsonSerialize());
-        
-        JsonArray extensionsToEncrypt = new JsonArray();
-        foreach (string extension in ExtensionsToEncrypt)
-            extensionsToEncrypt.Add(extension);
-        
-        JsonObject data = new JsonObject
+        private ObservableCollection<string> _priorityProcesses = new ObservableCollection<string>();
+        public ObservableCollection<string> PriorityProcesses
         {
-            { "version", EasySaveCore<TJob>.Version.ToString() },
-            { "language", L10N<TJob>.Get().GetLanguage().LangId },
-            { "dailyLogPath", Logger.DailyLogPath },
-            { "statusLogPath", Logger.StatusLogPath },
-            { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
-            { "jobs", jobs },
-            { "extensionsToEncrypt",  extensionsToEncrypt } //TODO test if this works AND TODO Confirm Format with Anthony
-        };
+            get => _priorityProcesses;
+            set
+            {
+                _priorityProcesses = value;
+                SaveConfiguration();
+            }
+        }
+
+        public static EasySaveConfiguration<TJob> Get()
+        {
+            return Instance;
+        }
+        
+        public static bool IsEncryptorLoaded()
+        {
+            return Type.GetType("CLEA.Encryptor.Encryptor") != null;
+        }
+
+        /// <summary>
+        /// Serialize the configuration to a JSON object.
+        /// All properties have default values and are not null to avoid serialization issues.
+        /// </summary>
+        /// <returns></returns>
+        public JsonObject JsonSerialize()
+        {
+            JsonArray jobs = new JsonArray();
+            foreach (TJob job in EasySaveViewModel<TJob>.Get().JobManager.GetJobs())
+                if (job is IJsonSerializable jsonSerializable)
+                    jobs.Add(jsonSerializable.JsonSerialize());
+            
+            JsonArray extensionsToEncrypt = new JsonArray();
+            foreach (string extension in ExtensionsToEncrypt)
+                extensionsToEncrypt.Add(extension);
+            
+            JsonArray priorityProcesses = new JsonArray();
+            foreach (string process in PriorityProcesses)
+                priorityProcesses.Add(process);
+            
+            JsonObject data = new JsonObject
+            {
+                { "version", EasySaveCore<TJob>.Version.ToString() },
+                { "language", L10N<TJob>.Get().GetLanguage().LangId },
+                { "dailyLogPath", Logger.DailyLogPath },
+                { "statusLogPath", Logger.StatusLogPath },
+                { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
+                { "extensionsToEncrypt",  extensionsToEncrypt },
+                { "priorityProcesses", priorityProcesses },
+                { "jobs", jobs }
+            };
 
             return data;
         }
@@ -131,6 +148,20 @@ namespace CLEA.EasySaveCore.Utilities
         }
         else
             throw new JsonException("Encrypted file extensions not found in configuration file");
+        
+        // Priority processes
+        data.TryGetPropertyValue("priorityProcesses", out JsonNode? priorityProcesses);
+        if (priorityProcesses != null)
+        {
+            _priorityProcesses.Clear();
+            foreach(JsonNode? process in priorityProcesses.AsArray())
+            {
+                if (process is JsonValue processValue)
+                    _priorityProcesses.Add(processValue.ToString());
+            }
+        }
+        else
+            throw new JsonException("Priority processes not found in configuration file");
 
             // Language
             // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION
