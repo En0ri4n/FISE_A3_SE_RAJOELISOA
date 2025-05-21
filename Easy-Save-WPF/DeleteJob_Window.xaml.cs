@@ -9,6 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Models;
+
 
 namespace Easy_Save_WPF
 {
@@ -17,7 +20,8 @@ namespace Easy_Save_WPF
     /// </summary>
     public partial class DeleteJob_Window : Window
     {
-        public string jobName { get; set; }
+        static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
+        public string jobName { get; set; } //TODO : get job name from selected datagrid row
         public DeleteJob_Window()
         {
             InitializeComponent();
@@ -26,12 +30,12 @@ namespace Easy_Save_WPF
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            Close();
         }
 
         public void DeleteBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            ViewModel.DeleteJobCommand.Execute(jobName);
         }
     }
 }

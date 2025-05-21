@@ -10,24 +10,29 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.ViewModel;
 using Easy_Save_WPF;
 using EasySaveCore.Models;
+
 
 namespace Easy_Save_WPF
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
     /// </summary>
-    
-    //TODO : dynamic job list binding
+
+
     public partial class ManageJobs_Page : Page
     {
+        static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
+        public string TitreJobs;
 
         public ManageJobs_Page()
         {
             InitializeComponent();
-            //this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.AvailableJobs;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -70,11 +75,11 @@ namespace Easy_Save_WPF
         {
             //TODO
         }
-        
+
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            //ViewModel.RunMultipleJobsCommand.Execute(jobListName);
         }
 
         public void Selected(object sender, RoutedEventArgs e)

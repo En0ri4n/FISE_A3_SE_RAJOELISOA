@@ -9,6 +9,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Models;
+using CLEA.EasySaveCore;
+using CLEA.EasySaveCore.Jobs.Backup;
+using CLEA.EasySaveCore.Utilities;
+using CLEA.EasySaveCore.View;
+using CLEA.EasySaveCore.Models;
+using System.Reflection.Emit;
+using System.Windows.Forms;
 
 namespace Easy_Save_WPF
 {
@@ -20,28 +30,59 @@ namespace Easy_Save_WPF
     public partial class CreateJob_Window : Window
     {
         public string Titre { get; set; }
-        public string jobName { get; set; }
-        public string jobTarget { get; set; }
-        public string jobSource { get; set; }
-
 
         public CreateJob_Window()
         {
             InitializeComponent();
-            this.DataContext = this;
+            title.DataContext = this;
+            jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get();
+            jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get();
+            jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get();
         }
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            Close();
         }
         public void CreateBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            if (!EasySaveViewModel<BackupJob>.Get().IsNameValid(jobNameInput.Text, true))
+            {
+                nameErrorLabel.Visibility = Visibility.Visible;
+                return;
+            }
+            if (!EasySaveViewModel<BackupJob>.Get().DoesDirectoryPathExist(jobSourceInput.Text))
+            {
+                sourceErrorLabel.Visibility = Visibility.Visible;
+                return;
+            }
+            if (!EasySaveViewModel<BackupJob>.Get().IsDirectoryPathValid(jobTargetInput.Text))
+            {
+                targetErrorLabel.Visibility = Visibility.Visible;
+                return;
+            }
+            EasySaveViewModel<BackupJob>.Get().BuildJobCommand.Execute(null);
         }
-        public void folderBTN_CLick(object sender, RoutedEventArgs e)
+        public void sourceFolderBTN_CLick(object sender, RoutedEventArgs e)
         {
-            //TODO
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            var response = dialog.ShowDialog();
+
+            if (response.ToString() != string.Empty)
+            {
+                jobSourceInput.Text = dialog.SelectedPath;
+            }
+        }
+
+        public void targetFolderBTN_CLick(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            var response = dialog.ShowDialog();
+
+            if (response.ToString() != string.Empty)
+            {
+                jobTargetInput.Text = dialog.SelectedPath;
+            }
         }
     }
 }

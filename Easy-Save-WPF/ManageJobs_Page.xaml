@@ -49,12 +49,7 @@
             <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="0,0,1794,0">Name</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="279,0,1409,0">Source path</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="708,0,980,0">Target path</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1546,0,170,0">Encryption</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1120,0,626,0">Progress</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1755,0,3,0">Strategy</Label>
+            
             <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 
             </DataGrid>
