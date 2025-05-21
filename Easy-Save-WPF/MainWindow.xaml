@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
         Title="MainWindow" Background="#f3f3f3"
+        Height="1000"
+        Width="1920"
         WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <!--FIXME HEIGHT & WIDTH should be this size, hardcoded here for clarity (probably should be removed) -->
     <Grid x:Name="Main_Grid">
         <Grid>
             <Grid.RowDefinitions>
@@ -24,6 +27,6 @@
                 </StackPanel>
             </Menu>
         </Grid>
-        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Height="1000" Width="1920"/>
+        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" /> <!-- Incorrect Size while rendering ???? -->
     </Grid>
 </Window>

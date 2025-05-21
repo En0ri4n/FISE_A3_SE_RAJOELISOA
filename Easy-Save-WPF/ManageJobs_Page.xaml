@@ -7,6 +7,9 @@
       mc:Ignorable="d" 
       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
+    <!--Height="1000"
+         Width="1920"-->
+    <!--FIXME HEIGHT & WIDTH should be this size BUT ARE NOT BECAUSE MICROSFT, hardcoded here for clarity (probably should be removed) -->
 
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
@@ -19,8 +22,8 @@
             <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
                 <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
             </Button>
-            <Label VerticalAlignment="Center" FontSize="40" Margin="1651,20,91,0">Daily log</Label>
-            <Label VerticalAlignment="Center" FontSize="40" Margin="1400,20,318,0">Status log</Label>
+            <Label VerticalAlignment="Top" FontSize="40" Margin="0,38,42,0" HorizontalAlignment="Right" Width="179">Daily log</Label>
+            <Label VerticalAlignment="Top" FontSize="40" Margin="0,38,257,0" HorizontalAlignment="Right" Width="203">Status log</Label>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -34,24 +37,24 @@
                     <ScaleTransform ScaleX="4" ScaleY="4" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="846,0,1002,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
                 <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="924,0,924,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
                 <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="1002,0,846,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
                 <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1718,0,128,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,109,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click" HorizontalAlignment="Right">
                 <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,31,0" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click" HorizontalAlignment="Right">
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
 
             <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"  >
-                
+
             </DataGrid>
             <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
             <Border Grid.Row="2" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
