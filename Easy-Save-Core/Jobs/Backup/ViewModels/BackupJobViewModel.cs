@@ -5,32 +5,41 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using System.Xml.Linq;
+using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
+using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
-using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
-namespace CLEA.EasySaveCore.ViewModel
+namespace EasySaveCore.Jobs.Backup.ViewModels
 {
-    public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
+    public class BackupJobViewModel : EasySaveViewModelBase<BackupJob, BackupJobManager>
     {
-        public readonly JobManager<TJob> JobManager;
+        private static readonly BackupJobViewModel Instance = new BackupJobViewModel();
+        public static BackupJobViewModel Get() => Instance;
 
-        public ViewModelJobBuilder<TJob> JobBuilder;
-        public readonly ICommand BuildJobCommand;
+        public ICommand BuildJobCommand;
+        public ICommand SelectedJobCommand;
+        public RelayCommand LoadJobInBuilderCommand;
+
+        public ICommand DeleteJobCommand;
+        public ICommand RunJobCommand;
+        public ICommand RunMultipleJobsCommand;
+        public ICommand RunAllJobsCommand;
+        public ICommand ChangeRunStrategyCommand;
 
         // Languages
         public List<LangIdentifier> AvailableLanguages => Languages.SupportedLangs;
 
         public LangIdentifier CurrentApplicationLang
         {
-            get => L10N<TJob>.Get().GetLanguage();
+            get => L10N<BackupJob>.Get().GetLanguage();
             set
             {
-                L10N<TJob>.Get().SetLanguage(value);
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                L10N<BackupJob>.Get().SetLanguage(value);
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -44,7 +53,7 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().DailyLogFormat = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -55,7 +64,7 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().DailyLogPath = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -66,18 +75,17 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().StatusLogPath = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
 
 
-        public List<TJob> AvailableJobs => JobManager.GetJobs();
+        public List<BackupJob> AvailableJobs => JobManager.GetJobs();
 
-        public ICommand SelectedJobCommand;
-        private TJob _selectedJob;
+        private BackupJob _selectedJob;
 
-        public TJob SelectedJob
+        public BackupJob SelectedJob
         {
             get => _selectedJob;
             set
@@ -87,7 +95,6 @@ namespace CLEA.EasySaveCore.ViewModel
             }
         }
 
-        public RelayCommand LoadJobInBuilderCommand;
 
         private string _userInput;
 
@@ -101,25 +108,15 @@ namespace CLEA.EasySaveCore.ViewModel
             }
         }
 
-        public ICommand DeleteJobCommand;
-        public ICommand RunJobCommand;
-        public ICommand RunMultipleJobsCommand;
-        public ICommand RunAllJobsCommand;
-        public ICommand ChangeRunStrategyCommand;
-
-        private static EasySaveViewModel<TJob> _instance;
-
-        private EasySaveViewModel(JobManager<TJob> jobManager)
+        protected override void InitializeCommand()
         {
-            JobManager = jobManager;
-
             BuildJobCommand = new RelayCommand(_ =>
             {
                 if (JobBuilder == null)
-                    throw new NullReferenceException($"Job Builder for <{typeof(TJob)}> is not defined !");
+                    throw new NullReferenceException($"BackupJob builder is not defined !");
 
                 JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
-                EasySaveConfiguration<TJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
             }, _ => true);
 
             SelectedJobCommand = new RelayCommand(jobName =>
@@ -139,7 +136,7 @@ namespace CLEA.EasySaveCore.ViewModel
                 if (jobName is string name)
                 {
                     JobManager.RemoveJob(name);
-                    EasySaveConfiguration<TJob>.SaveConfiguration();
+                    BackupJobConfiguration.Get().SaveConfiguration();
                 }
             }, _ => true);
 
@@ -165,14 +162,20 @@ namespace CLEA.EasySaveCore.ViewModel
                 {
                     JobManager.Strategy = strategyName switch
                     {
-                        "Full" => StrategyType.Full,
-                        "Differential" => StrategyType.Differential,
+                        "Full" => JobExecutionStrategy.StrategyType.Full,
+                        "Differential" => JobExecutionStrategy.StrategyType.Differential,
                         _ => throw new NotImplementedException()
                     };
                 }
             }, _ => true);
 
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
+        }
+
+        public override event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
@@ -186,11 +189,6 @@ namespace CLEA.EasySaveCore.ViewModel
                 job.ClearTaskCompletedHandler();
                 job.TaskCompletedHandler += callback;
             }
-        }
-
-        public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
-        {
-            JobBuilder = jobBuilder;
         }
 
         public bool DoesDirectoryPathExist(string path)
@@ -215,7 +213,7 @@ namespace CLEA.EasySaveCore.ViewModel
 
         public bool IsNameValid(string name, bool isCreation)
         {
-            TJob existingJob = JobManager.GetJob(name);
+            BackupJob existingJob = JobManager.GetJob(name);
             bool exists = existingJob != null;
 
             return isCreation ? !exists : exists;
@@ -223,33 +221,7 @@ namespace CLEA.EasySaveCore.ViewModel
 
         public void UpdateFromJobBuilder()
         {
-            JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build());
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public static EasySaveViewModel<TJob> Get()
-        {
-            if (_instance == null)
-                throw new Exception("EasySaveViewModel not initialized");
-
-            return _instance;
-        }
-
-        public static void Init(JobManager<TJob> jobManager)
-        {
-            if (_instance != null)
-                throw new Exception("EasySaveViewModel already initialized");
-
-            _instance = new EasySaveViewModel<TJob>(jobManager);
+            JobManager?.UpdateJob(JobBuilder?.InitialName, JobBuilder.Build());
         }
     }
-
-
-    // Options PopUp Methods
 }

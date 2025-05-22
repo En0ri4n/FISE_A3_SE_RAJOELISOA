@@ -7,21 +7,21 @@ using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore
 {
-    public class EasySaveCore<TJob> where TJob : IJob
+    public class EasySaveCore<TJob, TJobManager, TConfiguration> where TJob : IJob where TJobManager : JobManager<TJob> where TConfiguration : EasySaveConfigurationBase
     {
         public static readonly Version Version = new Version(1, 0, 0);
         public const string Name = "EasySave-CLEA";
 
-        private static EasySaveCore<TJob> _instance;
+        private static EasySaveCore<TJob, TJobManager, TConfiguration> _instance;
 
-        private EasySaveCore(JobManager<TJob> jobManager)
+        private EasySaveCore(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
         {
             // Initialize the view model with the job manager
-            EasySaveViewModel<TJob>.Init(jobManager);
+            easySaveViewModelBase.InitializeViewModel(jobManager);
 
             // Load the configuration first, so everything is set up correctly
             // before we start logging.
-            EasySaveConfiguration<TJob>.LoadConfiguration();
+            configuration.LoadConfiguration();
 
             // Set the console output encoding to Unicode
             // This is important for displaying Unicode characters correctly
@@ -29,18 +29,18 @@ namespace CLEA.EasySaveCore
             // like emojis or non-Latin scripts.
             Console.OutputEncoding = Encoding.Unicode;
 
-            Utilities.Logger.Log(LogLevel.Information, "EasySave-CLEA started");
+            Logger.Log(LogLevel.Information, "EasySave-CLEA started");
         }
 
-        public static EasySaveCore<TJob> Init(JobManager<TJob> jobManager)
+        public static EasySaveCore<TJob, TJobManager, TConfiguration> Init(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
         {
             if (_instance != null)
                 throw new InvalidOperationException("EasySaveCore is already initialized.");
 
-            return _instance = new EasySaveCore<TJob>(jobManager);
+            return _instance = new EasySaveCore<TJob, TJobManager, TConfiguration>(easySaveViewModelBase, jobManager, configuration);
         }
 
-        public static EasySaveCore<TJob> Get()
+        public static EasySaveCore<TJob, TJobManager, TConfiguration> Get()
         {
             return _instance;
         }

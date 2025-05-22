@@ -1,7 +1,5 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
-using CLEA.EasySaveCore.ViewModel;
-using EasySaveCore.Models;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using Microsoft.Win32;
 
 namespace Easy_Save_WPF
@@ -12,7 +10,7 @@ namespace Easy_Save_WPF
         {
 
             InitializeComponent();
-            DataContext = EasySaveViewModel<BackupJob>.Get();
+            DataContext = BackupJobViewModel.Get();
         }
 
         private void ChangeDailyLogPath_Click(object sender, RoutedEventArgs e)

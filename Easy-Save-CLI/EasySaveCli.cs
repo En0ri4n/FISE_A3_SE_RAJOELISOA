@@ -4,6 +4,8 @@ using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Jobs.Backup.Configurations;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
@@ -11,7 +13,7 @@ using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCLI;
 
-public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuilder>
+public sealed class EasySaveCli : EasySaveView<BackupJob, BackupJobManager, BackupJobConfiguration, BackupJobViewModel, ViewModelBackupJobBuilder>
 {
     enum Menu
     {
@@ -38,7 +40,10 @@ public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuil
         menuHistory.Add(menuName);
     }
 
-    public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()), new ViewModelBackupJobBuilder())
+    public EasySaveCli() : base(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>
+        .Init(BackupJobViewModel.Get(), new BackupJobManager(), BackupJobConfiguration.Get()),
+        BackupJobViewModel.Get(), 
+        new ViewModelBackupJobBuilder())
     {
         Console.Title = L10N.GetTranslation("main.title");
         AddToMenuHistory(Menu.Main);

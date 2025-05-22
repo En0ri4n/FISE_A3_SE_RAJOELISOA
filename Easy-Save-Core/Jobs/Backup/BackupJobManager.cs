@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
+using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup
@@ -21,7 +22,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             
             Jobs.Add(job);
             if (save)
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
             return true;
         }
 
@@ -42,10 +43,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 return false;
             
             Jobs.Remove(job);
-            EasySaveConfiguration<BackupJob>.SaveConfiguration();
+            BackupJobConfiguration.Get().SaveConfiguration();
             return true;
         }
-        public void UpdateJob(string name, JsonObject? jobJson)
+        public override void UpdateJob(string name, JsonObject? jobJson)
         {
             var job = Jobs.FirstOrDefault(j => j.Name == name);
             if (job == null)
@@ -54,10 +55,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             if (jobJson != null)
                 job.JsonDeserialize(jobJson);
 
-            EasySaveConfiguration<BackupJob>.SaveConfiguration();
+            BackupJobConfiguration.Get().SaveConfiguration();
         }
 
-        public void UpdateJob(string name, BackupJob? job)
+        public override void UpdateJob(string name, BackupJob? job)
         {
             var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
             if (existingJob == null)
@@ -66,11 +67,11 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             if (job != null)
                 existingJob.JsonDeserialize(job.JsonSerialize());
 
-            EasySaveConfiguration<BackupJob>.SaveConfiguration();
+            BackupJobConfiguration.Get().SaveConfiguration();
         }
 
 
-        public override void DoJob(BackupJob job)
+        protected override void DoJob(BackupJob job)
         {
             if (!job.CanRunJob())
                 throw new Exception($"Job {job.Name} cannot be run");
@@ -82,7 +83,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             Logger.Get().SaveDailyLog(job.BackupJobTasks.Select(task => task).Cast<JobTask>().ToList());
         }
 
-        public override void DoMultipleJob(List<BackupJob> jobs)
+        protected override void DoMultipleJob(List<BackupJob> jobs)
         {
             foreach (var job in jobs)
             {
