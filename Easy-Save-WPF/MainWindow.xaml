@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Background="#f3f3f3"
         SizeToContent="Manual"
-        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
+        WindowState="Maximized">
     <!--FIXME HEIGHT & WIDTH should be this size, hardcoded here for clarity (probably should be removed) -->
     <!--CEDRIC : Apparently my max resolution FOR THIS WINDOW SPECIFICALLY on visual studio is 924,8 & 1548,8 -->
     <!--For Anthony it is a bit lower for height so its more manageable afaik-->
