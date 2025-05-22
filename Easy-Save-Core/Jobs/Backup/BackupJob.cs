@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 
 namespace EasySaveCore.Models
 {
@@ -104,7 +105,7 @@ namespace EasySaveCore.Models
         
         public bool CanRunJob()
         {
-            return !IsRunning;
+            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(EasySaveConfiguration<BackupJob>.Get().PriorityProcesses.ToArray());
         }
 
         public void RunJob()

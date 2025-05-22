@@ -10,6 +10,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public class BackupJobManager : JobManager<BackupJob>
     {
+        public delegate void OnJobInterrupted(BackupJob job);
+        public event OnJobInterrupted? JobInterruptedHandler;
+        
         public BackupJobManager() : base(-1)
         {
         }
@@ -91,6 +94,12 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
                     job.RunJob();
                     job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
+                }
+                else
+                {
+                    job.Status = JobExecutionStrategy.ExecutionStatus.InterruptedByProcess;
+                    JobInterruptedHandler?.Invoke(job);
+                    break;
                 }
             }
 
