@@ -46,7 +46,7 @@ namespace CLEA.EasySaveCore.Utilities
         {
             try
             {
-                if (processNames.Any(IsExactProcessRunning))
+                if (processNames.Any(IsProcessRunning))
                     return true;
             }
             catch (Exception ex)
