@@ -8,9 +8,6 @@
       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
     <!--TODO DYNAMIC FONT SIZE-->
-    <!--Height="1000"
-         Width="1920"-->
-    <!--FIXME HEIGHT & WIDTH should be this size BUT ARE NOT BECAUSE MICROSFT, hardcoded here for clarity (probably should be removed) -->
 
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
@@ -23,8 +20,8 @@
             <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
                 <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
             </Button>
-            <Button Width="300" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Daily log" FontSize="40" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
-            <Button Width="300" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Status log" FontSize="40" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
+            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Daily log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
+            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Status log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
