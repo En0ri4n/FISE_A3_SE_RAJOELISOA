@@ -15,4 +15,22 @@
       <PackageReference Include="FamFamFam.Flags.Wpf" Version="1.2.1" />
       <PackageReference Include="FolderBrowserEx" Version="1.0.1" />
     </ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="assets\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="options_popup.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="options_popup.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="assets\options_popup.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	</ItemGroup>
 </Project>

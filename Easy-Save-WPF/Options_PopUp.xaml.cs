@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
 using Microsoft.Win32;
+using System;
 
 namespace Easy_Save_WPF
 {
@@ -15,6 +16,6 @@ namespace Easy_Save_WPF
             DataContext = EasySaveViewModel<BackupJob>.Get();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close();
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
     }
 }

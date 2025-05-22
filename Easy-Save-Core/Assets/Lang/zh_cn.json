@@ -65,5 +65,29 @@
   "job_modify_menu.title_modify_page": "按回车使用默认值(绿色文本)",
 
   "error.path": "错误: 路径错误",
-  "error.path_with": "错误: 任务 {JOBNAME} 的路径错误"
+  "error.path_with": "错误: 任务 {JOBNAME} 的路径错误",
+
+  "options_popup.title": "选项配置菜单",
+  "options_popup.subtitle": "所有内容实时更新",
+  "options_popup.language": "语言: ",
+  "options_popup.log_type": "日志类型: ",
+  "options_popup.daily_log_dir": "每日日志目录: ",
+  "options_popup.status_log_dir": "状态日志目录: ",
+  "options_popup.extensions_encryption": "要加密的扩展名: ",
+  "options_popup.processes_blacklist": "进程黑名单: ",
+
+  "common.browse": "浏览",
+  "common.yes": "是",
+  "common.no": "否",
+  "common.cancel": "取消",
+  "common.ok": "确定",
+  "common.enter": "输入",
+  "common.back": "返回",
+  "common.select": "选择",
+  "common.delete": "删除",
+  "common.modify": "修改",
+  "common.create": "创建",
+  "common.reset": "重置",
+  "common.add": "添加",
+  "common.close": "关闭"
 }
