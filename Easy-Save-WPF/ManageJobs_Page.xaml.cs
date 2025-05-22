@@ -24,7 +24,7 @@ namespace Easy_Save_WPF
     /// Logique d'interaction pour ManageJobs_Page.xaml
     /// </summary>
 
-
+    //TODO select all rows : https://www.youtube.com/watch?app=desktop&v=bxTkTOZV0eQ
     public partial class ManageJobs_Page : Page
     {
         
@@ -42,7 +42,6 @@ namespace Easy_Save_WPF
                 this.stopBTN.Opacity = 0.5;
                 this.deleteBTN.IsEnabled = false;
                 this.deleteBTN.Opacity = 0.5;
-
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -51,8 +50,10 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow window = new MainWindow();
-            window.OptionsBTN_Click(sender, e);
+            
+            Options_PopUp options = new Options_PopUp();
+            options.Owner = Window.GetWindow(App.Current.MainWindow);
+            options.ShowDialog();
         }
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -64,7 +65,7 @@ namespace Easy_Save_WPF
             };
             while (create.ShowDialog() == true)
             {
-
+                create.Owner = Window.GetWindow(App.Current.MainWindow);
             }
             this.jobsDatagrid.ItemsSource = null;
             this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
@@ -81,6 +82,8 @@ namespace Easy_Save_WPF
 
             while (create.ShowDialog() == true)
             {
+                create.Owner = Window.GetWindow(App.Current.MainWindow);
+
                 create.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
                 create.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
                 create.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
@@ -98,6 +101,8 @@ namespace Easy_Save_WPF
 
             while (delete.ShowDialog() == true)
             {
+                delete.Owner = Window.GetWindow(App.Current.MainWindow);
+
                 delete.deleteJobInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
             }
             this.jobsDatagrid.ItemsSource = null;

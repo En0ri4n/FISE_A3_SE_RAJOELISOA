@@ -32,7 +32,7 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="60"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center"  IsChecked="{Binding Selected}">Select/Deselect All
+            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Selected}">Select/Deselect All
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="4" ScaleY="4" />
                 </CheckBox.LayoutTransform>

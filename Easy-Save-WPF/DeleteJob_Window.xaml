@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="DeleteJob_Window" Height="450" Width="800">
+        Title="DeleteJob_Window" Height="500" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100">
