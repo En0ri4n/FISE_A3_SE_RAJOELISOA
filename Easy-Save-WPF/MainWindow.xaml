@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
         Title="MainWindow" Background="#f3f3f3"
-        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" WindowStyle="ToolWindow">
     <Grid x:Name="Main_Grid">
         <Grid>
             <Grid.RowDefinitions>

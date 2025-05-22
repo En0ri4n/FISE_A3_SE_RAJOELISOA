@@ -21,11 +21,11 @@ namespace Easy_Save_WPF
     public partial class DeleteJob_Window : Window
     {
         static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
-        public string jobName { get; set; } //TODO : get job name from selected datagrid row
+
         public DeleteJob_Window()
         {
             InitializeComponent();
-            this.DataContext = this;
+            this.deleteJobInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
         }
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
@@ -35,7 +35,8 @@ namespace Easy_Save_WPF
 
         public void DeleteBTN_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.DeleteJobCommand.Execute(jobName);
+            ViewModel.DeleteJobCommand.Execute(this.deleteJobInput.Text);
+            Close();
         }
     }
 }

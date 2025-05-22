@@ -34,12 +34,12 @@ namespace Easy_Save_WPF
         public CreateJob_Window()
         {
             InitializeComponent();
-            //this.gridInputs.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            this.gridInputs.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
             title.DataContext = this;
             createBTN.DataContext = this;
-            this.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
-            this.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
-            this.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            //this.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            //this.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            //this.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
 
                
         }
@@ -50,10 +50,13 @@ namespace Easy_Save_WPF
         }
         public void CreateBTN_Click(object sender, RoutedEventArgs e)
         {
-            if (!EasySaveViewModel<BackupJob>.Get().IsNameValid(jobNameInput.Text, true))
+            if(this.Titre == "Create Job")
             {
-                nameErrorLabel.Visibility = Visibility.Visible;
-                return;
+                if (!EasySaveViewModel<BackupJob>.Get().IsNameValid(jobNameInput.Text, true))
+                {
+                    nameErrorLabel.Visibility = Visibility.Visible;
+                    return;
+                }
             }
             if (!EasySaveViewModel<BackupJob>.Get().DoesDirectoryPathExist(jobSourceInput.Text))
             {
@@ -65,7 +68,10 @@ namespace Easy_Save_WPF
                 targetErrorLabel.Visibility = Visibility.Visible;
                 return;
             }
-            
+
+            //ViewModelBackupJobBuilder a = (ViewModelBackupJobBuilder) EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            //EasySaveViewModel<BackupJob>.Get().JobBuilder.ToString();
+
             EasySaveViewModel<BackupJob>.Get().BuildJobCommand.Execute(null);
 
             Close();
@@ -77,7 +83,8 @@ namespace Easy_Save_WPF
 
             if (response.ToString() != string.Empty)
             {
-                jobSourceInput.Text = dialog.SelectedPath;
+                this.jobSourceInput.Text = dialog.SelectedPath;
+                return;
             }
         }
 
@@ -88,7 +95,8 @@ namespace Easy_Save_WPF
 
             if (response.ToString() != string.Empty)
             {
-                jobTargetInput.Text = dialog.SelectedPath;
+                this.jobTargetInput.Text = dialog.SelectedPath;
+                return;
             }
         }
     }
