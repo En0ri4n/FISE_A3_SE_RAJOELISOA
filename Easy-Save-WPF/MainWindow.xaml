@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1920" Background="#f3f3f3"
-        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        Title="MainWindow" Background="#f3f3f3"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" WindowStyle="ToolWindow"
+        SizeToContent="Manual"
+        ResizeMode="CanMinimize"
+        >
+    <!--FIXME HEIGHT & WIDTH should be this size, hardcoded here for clarity (probably should be removed) -->
+    <!--CEDRIC : Apparently my max resolution FOR THIS WINDOW SPECIFICALLY on visual studio is 924,8 & 1548,8 -->
+    <!--For Anthony it is a bit lower for height so its more manageable afaik-->
     <Grid x:Name="Main_Grid">
         <Grid>
             <Grid.RowDefinitions>
@@ -24,6 +30,6 @@
                 </StackPanel>
             </Menu>
         </Grid>
-        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Height="1000" Width="1920"/>
+        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" /> <!-- Incorrect Size while rendering ???? -->
     </Grid>
 </Window>
