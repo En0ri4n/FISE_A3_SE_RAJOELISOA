@@ -25,7 +25,17 @@ namespace EasySaveCore.Jobs.Backup.Configurations
 
         private ObservableCollection<string> _processesToBlacklist;
         public ObservableCollection<string> ProcessesToBlacklist => _processesToBlacklist;
-        
+
+        private string _encryptionKey;
+        public string EncryptionKey { 
+            get => _encryptionKey;
+            set
+            {
+                _encryptionKey = value;
+                SaveConfiguration();
+            } 
+        }
+
         private BackupJobConfiguration()
         {
             _extensionsToEncrypt = new ObservableCollection<string>();
@@ -66,6 +76,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 { "dailyLogPath", Logger.DailyLogPath },
                 { "statusLogPath", Logger.StatusLogPath },
                 { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
+                { "encryptionKey", _encryptionKey },
                 { "extensionsToEncrypt",  extensionsToEncrypt},
                 { "processesToBlacklist",  processesToBlacklist},
                 { "jobs", jobs }
@@ -108,6 +119,11 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
             if (!Directory.Exists(Logger.DailyLogPath))
                 Directory.CreateDirectory(Logger.DailyLogPath);
+
+            // Encryption Key
+            data.TryGetPropertyValue("encryptionKey", out JsonNode? encryptionKey);
+            if (encryptionKey != null)
+                _encryptionKey = encryptionKey.ToString();
 
             // Encrypted file extensions
             ObservableCollection<string> extensionsToEncryptList = new ObservableCollection<string>();
