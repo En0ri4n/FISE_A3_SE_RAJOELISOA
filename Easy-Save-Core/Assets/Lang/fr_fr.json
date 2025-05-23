@@ -98,7 +98,8 @@
   "delete_menu.title": "Supprimer un Job",
   "delete_menu.confirm_text": "Etes vous sur de vouloir supprimer ce job ?",
 
-  "create_menu.title": "Créer un Job"
+  "create_menu.title": "Créer un Job",
+  "create_menu.subtitle":"SAMPLE TEXT"
 
 
 }

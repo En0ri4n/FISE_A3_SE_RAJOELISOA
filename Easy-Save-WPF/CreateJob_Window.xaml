@@ -9,38 +9,239 @@
         Title="CreateJob_Window" Height="500" Width="800">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <!-- FROM Options_PopUp.xaml -->
+
+        <!-- Main buttons style -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#357ABD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#2E5C9D"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#B0B0B0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary buttons style -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#4A90E2"/>
+            <Setter Property="BorderBrush" Value="#4A90E2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}" 
+                               CornerRadius="5" 
+                               Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E6F0FF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#C3D6FF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#B0B0B0"/>
+                                <Setter Property="BorderBrush" Value="#B0B0B0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Reset buttons style -->
+        <Style x:Key="ResetButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#A9A9A9"/>
+            <Setter Property="Foreground" Value="#A9A9A9"/>
+            <Setter Property="BorderBrush" Value="#A9A9A9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+               BorderBrush="{TemplateBinding BorderBrush}"
+               BorderThickness="{TemplateBinding BorderThickness}" 
+               CornerRadius="5" 
+               Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="#FAF9F6"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#36454F"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#36454F"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#36454F"/>
+                                <Setter Property="BorderBrush" Value="	#36454F"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBlock for Labels style -->
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="auto"/>
+        </Style>
+
+        <!-- ListBox style -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <!-- TextBox white background -->
+        <Style x:Key="InfoBoxStyle" TargetType="TextBlock">
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Width" Value="400"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+        </Style>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Name="title"  Content="{local:Loc create_menu.title}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
-        <Grid Grid.Row="1" Name="gridInputs">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.name}"/>
-            <Label Name="nameErrorLabel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.invalid_job_name}"/>
-            <TextBox Name="jobNameInput" Grid.Row="0" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.source}"/>
-            <Label Name="sourceErrorLabel" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.path}"/>
-            <TextBox Name="jobSourceInput" Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Button Name="sourceOpenFolder"  Grid.Row="1" Margin="667,46,27,0" Click="sourceFolderBTN_CLick">
-                <Image Source="/assets/folder_icon.png"></Image>
-            </Button>
-            <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.target}"/>
-            <Label Name="targetErrorLabel" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.path}"/>
-            <TextBox Name="jobTargetInput" Grid.Row="2" Text="{Binding Target, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Button Grid.Row="2" Margin="667,46,27,0" Click="targetFolderBTN_CLick">
-                <Image Source="/assets/folder_icon2.png"></Image>
-            </Button>
-        </Grid>
-        <Button Name="createBTN" Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10" Content="{local:Loc common.create}"/>
-        <!--Content="{Binding Titre}" TODO UNDERSTAND WHY WAS THIS HERE ?-->
-        <Button Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,10,0,10" Content="{local:Loc common.cancel}"/>
+        
+        <!--TODO Add back Create Job Features-->
+
+        <!-- Title -->
+        <TextBlock Text="{local:Loc create_menu.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
+
+        <!-- Subtitle -->
+        <TextBlock Text="{local:Loc create_menu.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
+
+        <!-- Body -->
+        <StackPanel Grid.Row="2" VerticalAlignment="Top" Height="521">
+            <!-- Job Name -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Value -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="{local:Loc common.name}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/> <!--TODO Make this a TextBox !!!! Style is not adapted to this currently-->
+                    <!--<TextBox  Text="{Binding Name, Mode=TwoWay}"  Margin="10 0 10 0" Padding="4"/> FIXME : This is a bad idea-->
+                    <!--<TextBlock Name="DailyLogPathText" Text="{Binding DailyLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>-->
+                </StackPanel>
+            </Grid>
+
+            <!-- Source Path -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Path -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="{local:Loc common.source}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
+                <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
+            </Grid>
+
+            <!-- Target Path -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Path -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="{local:Loc common.target}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding StatusLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
+                <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
+            </Grid>
+
+
+            <!--Backup Type-->
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Backup Type" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                <!--TODO-->
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <RadioButton Content="Full" GroupName="Choices" Margin="5,0"/>
+                    <RadioButton Content="Differiencial" GroupName="Choices" Margin="5,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!--Encryption-->
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Encryption" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                <!--TODO-->
+                <CheckBox x:Name="cb1" Checked="HandleCheck" Unchecked="HandleUnchecked" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- Footer -->
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="0 10 0 0" Width="100">
+            <Button Content="{local:Loc common.close}" Width="90" Click="CloseButton_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
