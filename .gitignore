@@ -8,3 +8,6 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 EasySave-CLEA.sln.*
+CLEA-Encryptor/CLEA-Encryptor.csproj.user
+CLEA-Encryptor/Properties/PublishProfiles/FolderProfile.pubxml
+CLEA-Encryptor/Properties/PublishProfiles/FolderProfile.pubxml.user
