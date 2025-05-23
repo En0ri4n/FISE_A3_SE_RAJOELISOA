@@ -6,39 +6,56 @@ using System.Text;
 
 namespace CLEA.Encryptor
 {
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            if (args.Length < 3)
+            {
+                Console.WriteLine("Usage: Encryptor <key> <input> <output> [-file]");
+                return;
+            }
+
+            bool isFile = args.Length >= 4 && args[3] == "-file";
+            
+            string key = args[0];
+            string input = args[1];
+            string output = args[2];
+            
+            if (key.Length < 8)
+            {
+                Console.WriteLine("Key must be at least 8 characters long.");
+                return;
+            }
+
+            if (isFile)
+            {
+                Encryptor.ProcessFile(key, input, output);
+            }
+            else
+            {
+                byte[] encryptedBytes = Encryptor.ProcessString(key, input);
+                Console.WriteLine($"Result:\n{Encoding.UTF8.GetString(encryptedBytes)}");
+            }
+            
+        }
+    }
+    
     /// <summary>
     /// Encryptor is a singleton class helping in encryption and decryption
     /// </summary>
-    public class Encryptor
+    internal static class Encryptor
     {
-        // 8 bytes key for XOR Encryption
-        private byte[] _encryptionKey = Encoding.UTF8.GetBytes("12345678");
-        private static readonly Encryptor Instance = new Encryptor();
-
-        public static Encryptor Get()
+        public static byte[] ProcessString(string key, string input)
         {
-            return Instance;
-        }
-
-        public void SetEncryptionKey(byte[] key)
-        {
-            if (key.Length != 8)
-                throw new ArgumentException("Key must be 8 bytes long");
-
-            _encryptionKey = key;
-        }
-
-        public byte[] GetEncryptionKey()
-        {
-            return _encryptionKey;
-        }
-
-        public byte[] ProcessString(string input)
-        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentNullException(nameof(key), "Key cannot be null or empty.");
+            
+            byte[] encryptionKey = Encoding.UTF8.GetBytes(key);
             byte[] inputBytes = Encoding.UTF8.GetBytes(input);
 
             for (int i = 0; i < inputBytes.Length; i++)
-                inputBytes[i] ^= _encryptionKey[i % _encryptionKey.Length];
+                inputBytes[i] ^= encryptionKey[i % encryptionKey.Length];
 
             return inputBytes;
         }
@@ -48,13 +65,15 @@ namespace CLEA.Encryptor
         /// If the source file doesn't exists, it will throw a <see cref="FileNotFoundException"/><br></br>
         /// If the target file exists, it will overwrite it.<br></br>
         /// </summary>
+        /// <param name="key">The key to encrypt/decrypt the file</param>
         /// <param name="sourceFile">The source file to encrypt</param>
         /// <param name="targetFile">The path of the encrypted source file content</param>
-        public void ProcessFile(string sourceFile, string targetFile)
+        public static void ProcessFile(string key, string sourceFile, string targetFile)
         {
             if (!File.Exists(sourceFile))
                 throw new FileNotFoundException($"The file {sourceFile} doesn't exists.");
 
+            byte[] encryptionKey = Encoding.UTF8.GetBytes(key);
             using FileStream sourceReaderStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
             using FileStream targetWriterStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write);
             using BufferedStream bufferedReader = new BufferedStream(sourceReaderStream);
@@ -66,7 +85,7 @@ namespace CLEA.Encryptor
             while ((bytesRead = bufferedReader.Read(buffer, 0, buffer.Length)) > 0)
             {
                 for (int i = 0; i < bytesRead; i++)
-                    buffer[i] ^= _encryptionKey[i % _encryptionKey.Length]; // XOR operation to encrypt
+                    buffer[i] ^= encryptionKey[i % encryptionKey.Length]; // XOR operation to encrypt
 
                 bufferedWriter.Write(buffer, 0, bytesRead);
             }
@@ -76,13 +95,13 @@ namespace CLEA.Encryptor
         }
     }
 
-    public class SimpleRSA
+    internal class SimpleRsa
     {
         public BigInteger PublicKeyExponent { get; private set; }
         public BigInteger PrivateKeyExponent { get; private set; }
         public BigInteger Modulus { get; private set; }
 
-        public SimpleRSA()
+        public SimpleRsa()
         {
             BigInteger p = 10000019;
             BigInteger q = 10000079;

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Xml;
+using CLEA.EasySaveCore.External;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
-using CLEA.Encryptor;
 using EasySaveCore.Jobs.Backup.Configurations;
 using Microsoft.Extensions.Logging;
 
@@ -91,10 +90,10 @@ namespace EasySaveCore.Models
 
             try
             {
-                if (BackupJobConfiguration.IsEncryptorLoaded() && _backupJob.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
+                if (ExternalEncryptor.IsEncryptorPresent() && _backupJob.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
-                    Encryptor.Get().ProcessFile(Source, Target);
+                    ExternalEncryptor.ProcessFile("", Source, Target);
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
                 }
