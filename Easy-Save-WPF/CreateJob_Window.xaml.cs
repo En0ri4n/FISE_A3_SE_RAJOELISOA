@@ -82,7 +82,7 @@ namespace Easy_Save_WPF
 
             if (response.ToString() != string.Empty)
             {
-                jobSourceInput.Text = dialog.SelectedPath;
+                BackupJobViewModel.Get().GetJobBuilder().Source = dialog.SelectedPath;
                 return;
             }
         }
@@ -94,7 +94,7 @@ namespace Easy_Save_WPF
 
             if (response.ToString() != string.Empty)
             {
-                jobTargetInput.Text = dialog.SelectedPath;
+                BackupJobViewModel.Get().GetJobBuilder().Target = dialog.SelectedPath;
                 return;
             }
         }

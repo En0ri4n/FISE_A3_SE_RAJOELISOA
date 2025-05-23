@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Utilities;
 
@@ -8,50 +6,18 @@ namespace CLEA.EasySaveCore.Models
 {
     public abstract class JobTask : IJsonSerializable, IXmlSerializable
     {
-        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
+        public JobExecutionStrategy.ExecutionStatus Status { get; protected set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
+        private string _name;
         public string Name
         {
-            get
-            {
-                Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
-
-                if (property == null)
-                    throw new Exception("Name property not found");
-            
-                return property.Value;
-            }
-            set
-            {
-                Property<dynamic>? property = _properties.Find(tp => tp.Name == "name");
-
-                if (property == null)
-                    throw new Exception("Name property not found");
-            
-                property.Value = value;
-            }
-        }
-        private readonly List<Property<dynamic>> _properties = new List<Property<dynamic>>();
-    
-        public List<Property<dynamic>> GetProperties()
-        {
-            return _properties;
+            get => _name;
+            set => _name = value;
         }
 
         protected JobTask(string name)
         {
-            _properties.Add(new Property<dynamic>("name", name));
-        }
-
-        public bool UpdadeProperty(string name, dynamic value)
-        {
-            Property<dynamic>? property = _properties.Find(prop => prop.Name == name);
-
-            if (property == null)
-                return false;
-        
-            property.Value = value;
-            return true;
+            _name = name;
         }
     
         public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);

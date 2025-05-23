@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Markup;
-using CLEA.EasySaveCore.L10N;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.L10N
@@ -39,10 +39,10 @@ namespace CLEA.EasySaveCore.L10N
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            var binding = new System.Windows.Data.Binding("Value")
+            var binding = new Binding("Value")
             {
                 Source = this,
-                Mode = System.Windows.Data.BindingMode.OneWay
+                Mode = BindingMode.OneWay
             };
 
             return binding.ProvideValue(serviceProvider);

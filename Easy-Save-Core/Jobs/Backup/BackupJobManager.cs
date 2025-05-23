@@ -90,7 +90,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         {
             foreach (var job in jobs)
             {
-                if (job.CanRunJob())
+                if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
                 {
                     job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
                     job.RunJob();

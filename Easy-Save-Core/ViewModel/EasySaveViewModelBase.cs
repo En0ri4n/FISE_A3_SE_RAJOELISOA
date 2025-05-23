@@ -8,8 +8,6 @@ namespace CLEA.EasySaveCore.ViewModel
         public TJobManager JobManager;
 
         public ViewModelJobBuilder<TJob> JobBuilder;
-        
-        protected EasySaveViewModelBase() { }
 
         public void InitializeViewModel(TJobManager jobManager)
         {

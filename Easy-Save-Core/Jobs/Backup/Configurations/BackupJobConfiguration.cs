@@ -25,6 +25,15 @@ namespace EasySaveCore.Jobs.Backup.Configurations
 
         private ObservableCollection<string> _processesToBlacklist;
         public ObservableCollection<string> ProcessesToBlacklist => _processesToBlacklist;
+        
+        private BackupJobConfiguration()
+        {
+            _extensionsToEncrypt = new ObservableCollection<string>();
+            _processesToBlacklist = new ObservableCollection<string>();
+
+            _extensionsToEncrypt.CollectionChanged += (sender, args) => SaveConfiguration();
+            _processesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
+        }
 
         public static bool IsEncryptorLoaded()
         {
@@ -156,7 +165,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
         public override void SaveConfiguration()
         {
             JsonObject data = Instance.JsonSerialize();
-            File.WriteAllText(ConfigPath, data.ToJsonString(new JsonSerializerOptions() { WriteIndented = true }));
+            File.WriteAllText(ConfigPath, data.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
         }
 
         public override void LoadConfiguration()

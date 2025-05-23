@@ -308,9 +308,9 @@ namespace CLEA.EasySaveCLI
                 BackupJobTask backupTask = (BackupJobTask)task;
                 AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.task_run_information")
                     .Replace("{JOB_NAME}", backupTask.Name)
-                    .Replace("{SOURCE}", backupTask.Source.Value.ToString())
-                    .Replace("{TARGET}", backupTask.Target.Value.ToString())
-                    .Replace("{TIME}", backupTask.TransferTime.Value.ToString())
+                    .Replace("{SOURCE}", backupTask.Source)
+                    .Replace("{TARGET}", backupTask.Target)
+                    .Replace("{TIME}", backupTask.TransferTime.ToString())
                     .Replace("{STATUS}", backupTask.Status.ToString()));
             });
         }

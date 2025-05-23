@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Input;
 using CLEA.EasySaveCore.Jobs.Backup;
@@ -138,7 +139,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             BuildJobCommand = new RelayCommand(_ =>
             {
                 if (JobBuilder == null)
-                    throw new NullReferenceException($"BackupJob builder is not defined !");
+                    throw new NullReferenceException("BackupJob builder is not defined !");
 
                 JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
                 BackupJobConfiguration.Get().SaveConfiguration();
@@ -194,7 +195,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
             }, _ => true);
 
-            ShowFolderDialogCommand = new RelayCommand((input) =>
+            ShowFolderDialogCommand = new RelayCommand(input =>
             {
                 bool isDailyLog = bool.Parse((string)input!);
 
@@ -228,7 +229,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
             }, _ => true);
 
-            ResetFolderLogPathCommand = new RelayCommand((input) =>
+            ResetFolderLogPathCommand = new RelayCommand(input =>
             {
                 bool isDailyLogPath = bool.Parse((string)input!);
 
@@ -246,14 +247,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
             }, _ => true);
 
-            AddExtensionToEncryptCommand = new RelayCommand((input) =>
+            AddExtensionToEncryptCommand = new RelayCommand(input =>
             {
                 string extension = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(extension))
                     return;
 
-                if (!System.Text.RegularExpressions.Regex.IsMatch(extension, @"^\.[\w]+$"))
+                if (!Regex.IsMatch(extension, @"^\.[\w]+$"))
                     return;
 
                 if (!ExtensionsToEncrypt.Contains(extension))
@@ -278,7 +279,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (string.IsNullOrEmpty(process))
                     return;
 
-                if (!System.Text.RegularExpressions.Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
+                if (!Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
                     return;
 
                 if (!ProcessesToBlacklist.Contains(process))
@@ -303,6 +304,11 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public ViewModelBackupJobBuilder GetJobBuilder()
+        {
+            return (ViewModelBackupJobBuilder) JobBuilder;
         }
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
