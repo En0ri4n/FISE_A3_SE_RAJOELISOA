@@ -90,5 +90,9 @@
   "common.create": "Create",
   "common.reset": "Reset",
   "common.add": "Add",
-  "common.close": "Close"
+  "common.close": "Close",
+
+  "manage_job.daily_log": "Daily Log",
+  "manage_job.status_log": "Status Log",
+  "manage_job.select_all": "Select All"
 }
