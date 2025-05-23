@@ -7,6 +7,7 @@ namespace Easy_Save_WPF
     {
         public Options_PopUp()
         {
+            BackupJobViewModel.Get().LoadEncryptionKeyCommand.Execute(null);
             InitializeComponent();
             DataContext = BackupJobViewModel.Get();
         }

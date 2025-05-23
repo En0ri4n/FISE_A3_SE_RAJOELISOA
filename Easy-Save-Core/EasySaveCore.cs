@@ -16,12 +16,13 @@ namespace CLEA.EasySaveCore
 
         private EasySaveCore(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
         {
+            // Initialize the view model with the job manager
+            easySaveViewModelBase.InitializeViewModel(jobManager);
+
+
             // Load the configuration first, so everything is set up correctly
             // before we start logging.
             configuration.LoadConfiguration();
-
-            // Initialize the view model with the job manager
-            easySaveViewModelBase.InitializeViewModel(jobManager);
 
             // Set the console output encoding to Unicode
             // This is important for displaying Unicode characters correctly

@@ -7,6 +7,7 @@ using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Utilities;
+using CLEA.EasySaveCore.External;
 using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
         private ObservableCollection<string> _processesToBlacklist;
         public ObservableCollection<string> ProcessesToBlacklist => _processesToBlacklist;
 
-        private string _encryptionKey;
+        private string _encryptionKey = ExternalEncryptor.ProcessEncryptionKey("SuperProtectedKey-CLEA-@.NET-2025");
         public string EncryptionKey { 
             get => _encryptionKey;
             set
@@ -119,7 +120,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             // Encryption Key
             data.TryGetPropertyValue("encryptionKey", out JsonNode? encryptionKey);
             if (encryptionKey != null)
-                _encryptionKey = encryptionKey.ToString();
+                EncryptionKey = encryptionKey.ToString();
 
             // Encrypted file extensions
             ObservableCollection<string> extensionsToEncryptList = new ObservableCollection<string>();
