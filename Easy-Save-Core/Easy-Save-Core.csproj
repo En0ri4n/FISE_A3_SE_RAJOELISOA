@@ -17,10 +17,5 @@
     <ItemGroup>
       <EmbeddedResource Include="Assets\Lang\*.json" />
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="CLEA-Encryptor">
-        <HintPath>..\build\CLEA-Encryptor.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
+    
 </Project>
