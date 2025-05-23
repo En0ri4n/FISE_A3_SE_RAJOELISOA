@@ -1,23 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.ViewModel;
-using EasySaveCore.Models;
-using CLEA.EasySaveCore;
-using CLEA.EasySaveCore.Jobs.Backup;
-using CLEA.EasySaveCore.Utilities;
-using CLEA.EasySaveCore.View;
-using CLEA.EasySaveCore.Models;
-using System.Reflection.Emit;
+﻿using System.Windows;
 using System.Windows.Forms;
 using EasySaveCore.Jobs.Backup.ViewModels;
 
@@ -35,12 +16,9 @@ namespace Easy_Save_WPF
         public CreateJob_Window()
         {
             InitializeComponent();
-            gridInputs.DataContext = BackupJobViewModel.Get().JobBuilder;
+            gridInputs.DataContext = BackupJobViewModel.Get().GetJobBuilder();
             title.DataContext = this;
             createBTN.DataContext = this;
-            //this.jobTargetInput.DataContext = BackupJobViewModel.Get().JobBuilder;
-            //this.jobSourceInput.DataContext = BackupJobViewModel.Get().JobBuilder;
-            //this.jobNameInput.DataContext = BackupJobViewModel.Get().JobBuilder;
         }
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
