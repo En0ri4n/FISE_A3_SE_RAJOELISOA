@@ -3,21 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Easy_Save_WPF"
+        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="DeleteJob_Window" Height="500" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100">
-            </RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60">Delete Job</Label>
-        <Label Grid.Row="1" HorizontalAlignment="Center" FontSize="30" Margin="0,75,0,193" >Are you sure you want to delete this job :</Label>
-        <TextBox Name="deleteJobInput" Text="{Binding Name}" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30"></TextBox>
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Right" Margin="0,252,25,22" Click="DeleteBTN_Click">Delete</Button>
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Margin="25,252,0,22" Click="CancelBTN_Click">Cancel</Button>
-
+        <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60" Content="{local:Loc delete_menu.title}"/>
+        <Label Grid.Row="1" HorizontalAlignment="Center" FontSize="30" Margin="0,75,0,193" Content="{local:Loc delete_menu.confirm_text}"/>
+        <TextBox Name="deleteJobInput" IsReadOnly="True" Text="{Binding Name}" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30"/>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Right" Margin="0,252,25,22" Click="DeleteBTN_Click" Content="{local:Loc common.delete}"/>
+        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Margin="25,252,0,22" Click="CancelBTN_Click" Content="{local:Loc common.cancel}"/>
     </Grid>
 </Window>

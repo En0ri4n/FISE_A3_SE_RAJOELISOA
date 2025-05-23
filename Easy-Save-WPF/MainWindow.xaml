@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Easy_Save_WPF"
+        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         mc:Ignorable="d"
         Title="MainWindow" Background="#f3f3f3"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" WindowStyle="ToolWindow"
@@ -24,9 +24,9 @@
 
             <Menu Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel  Orientation="Vertical">
-                    <MenuItem Header="Manage jobs" FontSize="80" HorizontalAlignment="Center" Click="ManageJobsBTN_Click"></MenuItem>
-                    <MenuItem Header="Options" FontSize="80" HorizontalAlignment="Center" Click="OptionsBTN_Click"></MenuItem>
-                    <MenuItem Header="Quit" FontSize="80" HorizontalAlignment="Center" Click="QuitBTN_Click"></MenuItem>
+                    <MenuItem Header="{local:Loc main_menu.jobs}" FontSize="80" HorizontalAlignment="Center" Click="ManageJobsBTN_Click"></MenuItem>
+                    <MenuItem Header="{local:Loc main_menu.settings}" FontSize="80" HorizontalAlignment="Center" Click="OptionsBTN_Click"></MenuItem>
+                    <MenuItem Header="{local:Loc common.close}" FontSize="80" HorizontalAlignment="Center" Click="QuitBTN_Click"></MenuItem>
                 </StackPanel>
             </Menu>
         </Grid>

@@ -3,25 +3,27 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Easy_Save_WPF"
+      xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
       mc:Ignorable="d" 
       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
-    <!--TODO DYNAMIC FONT SIZE-->
-
+    <!--TODO DYNAMIC FONT SIZE ? or better size management ? currently size is static and width is auto-->
+    <!--FIXME Using mg_mg OR fr_fr L10N, texts in this page overlap-->
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="120"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Button Height="120" Width="144" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60">Quit</Button>
-            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Manage Jobs</Label>
+            <!--TODO Cedric : Width is automatic and this I'm not a fan. Probably rework this when re-doing design-->
+            <Button Height="120" Width="auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60" Content="{local:Loc common.close}"></Button>
+            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80" Content="{local:Loc main_menu.jobs}"></Label>
             <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
                 <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
             </Button>
-            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Daily log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
-            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Status log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
+            <!--TODO Cedric : Width is automatic and this I'm not a fan. Probably rework this when re-doing design-->
+            <Button Width="auto" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="{local:Loc manage_job.daily_log}" FontSize="30" HorizontalAlignment="Right" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
+            <Button Width="auto" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="{local:Loc manage_job.status_log}" FontSize="30" HorizontalAlignment="Right" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -29,7 +31,7 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="60"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Selected}">Select/Deselect All
+            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Selected}" Content="{local:Loc manage_job.select_all}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="4" ScaleY="4" />
                 </CheckBox.LayoutTransform>
@@ -50,13 +52,14 @@
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
 
-            <DataGrid Name="jobsDatagrid"  Grid.Row="1"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" MouseDoubleClick="ModifyWindow_Click" SelectionUnit="FullRow" SelectionChanged="DataGridSelectionChanged" >
+            <DataGrid Name="jobsDatagrid"  Grid.Row="1"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" MouseDoubleClick="ModifyWindow_Click" SelectionUnit="FullRow" SelectionChanged="DataGridSelectionChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Source"   Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Target"   Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
+            <!--FIXME : Empty line can be selected & cause a crash if user try to delete it-->
             <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
         </Grid>
     </Grid>
