@@ -91,7 +91,8 @@
   "common.add": "Ajouter",
   "common.close": "Fermer",
 
-  "manage_job.daily_log": "Log Journalier",
-  "manage_job.status_log": "Log de Statut",
-  "manage_job.select_all":  "Tout Selectionner"
+  "manage_job.daily_log": "Journaux Quotidiens",
+  "manage_job.status_log": "Journaux de Statut",
+  "manage_job.select_all": "Tout Selectionner"
+
 }
