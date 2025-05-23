@@ -16,6 +16,7 @@ namespace CLEA.EasySaveCore.L10N
     private LangIdentifier _currentLang;
     private Dictionary<string, string> _translations = new Dictionary<string, string>();
 
+    public static event EventHandler? LanguageChanged;
     private L10N()
     {
         _currentLang = Languages.EnUs;
@@ -29,6 +30,7 @@ namespace CLEA.EasySaveCore.L10N
 
         _currentLang = lang;
         LoadTranslations();
+        LanguageChanged?.Invoke(null, EventArgs.Empty);
         Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
     }
     

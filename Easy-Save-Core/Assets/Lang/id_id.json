@@ -65,5 +65,29 @@
   "job_modify_menu.title_modify_page": "Tekan enter untuk menggunakan nilai default (teks hijau)",
 
   "error.path": "Kesalahan: Kesalahan jalur",
-  "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}"
+  "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}",
+
+  "options_popup.title": "Menu Konfigurasi Opsi",
+  "options_popup.subtitle": "Semua diperbarui secara real time",
+  "options_popup.language": "Bahasa: ",
+  "options_popup.log_type": "Tipe Log: ",
+  "options_popup.daily_log_dir": "Direktori Log Harian: ",
+  "options_popup.status_log_dir": "Direktori Log Status: ",
+  "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi: ",
+  "options_popup.processes_blacklist": "Daftar hitam proses: ",
+
+  "common.browse": "Telusuri",
+  "common.yes": "Ya",
+  "common.no": "Tidak",
+  "common.cancel": "Batal",
+  "common.ok": "OK",
+  "common.enter": "Masuk",
+  "common.back": "Kembali",
+  "common.select": "Pilih",
+  "common.delete": "Hapus",
+  "common.modify": "Ubah",
+  "common.create": "Buat",
+  "common.reset": "Atur Ulang",
+  "common.add": "Tambah",
+  "common.close": "Tutup"
 }

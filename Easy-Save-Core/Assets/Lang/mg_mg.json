@@ -65,5 +65,29 @@
   "job_modify_menu.title_modify_page": "Tsindrio enter raha hampiasa sandan’ny mahazatra (teny maitso)",
 
   "error.path": "Hadisoana: Hadisoana amin’ny lalana",
-  "error.path_with": "Hadisoana: Hadisoana amin’ny lalana amin’ny Asa {JOBNAME}"
+  "error.path_with": "Hadisoana: Hadisoana amin’ny lalana amin’ny Asa {JOBNAME}",
+
+  "options_popup.title": "Menu fanamboarana safidy",
+  "options_popup.subtitle": "Ny zava-drehetra dia havaozina amin'ny fotoana tena izy",
+  "options_popup.language": "Fiteny : ",
+  "options_popup.log_type": "Karazan-dahatsoratra : ",
+  "options_popup.daily_log_dir": "Rakitra tatitra isan'andro : ",
+  "options_popup.status_log_dir": "Rakitra tatitra sata : ",
+  "options_popup.extensions_encryption": "Fanitarana hofenoin : ",
+  "options_popup.processes_blacklist": "Lisitra mainty ho an'ny dingana : ",
+
+  "common.browse": "Hitety",
+  "common.yes": "Eny",
+  "common.no": "Tsia",
+  "common.cancel": "Fanafoanana",
+  "common.ok": "OK",
+  "common.enter": "Ampidiro",
+  "common.back": "Miverina",
+  "common.select": "Misafidy",
+  "common.delete": "Fafao",
+  "common.modify": "Hanova",
+  "common.create": "Hamorona",
+  "common.reset": "Hamerenana",
+  "common.add": "Manampy",
+  "common.close": "Hakatona"
 }
