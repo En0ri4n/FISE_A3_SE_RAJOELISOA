@@ -9,7 +9,7 @@ namespace CLEA.EasySaveCore
 {
     public class EasySaveCore<TJob, TJobManager, TConfiguration> where TJob : IJob where TJobManager : JobManager<TJob> where TConfiguration : EasySaveConfigurationBase
     {
-        public static readonly Version Version = new Version(1, 0, 0);
+        public static readonly Version Version = new Version(2, 0, 0);
         public const string Name = "EasySave-CLEA";
 
         private static EasySaveCore<TJob, TJobManager, TConfiguration> _instance;

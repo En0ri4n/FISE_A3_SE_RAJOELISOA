@@ -5,8 +5,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Easy_Save_WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="1000" d:DesignWidth="1920"
+      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
+    <!--TODO DYNAMIC FONT SIZE-->
 
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
@@ -14,52 +15,49 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Button Height="80" Width="144" HorizontalAlignment="Left" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60">Quit</Button>
+            <Button Height="120" Width="144" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60">Quit</Button>
             <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Manage Jobs</Label>
             <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
                 <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
             </Button>
-            <Label VerticalAlignment="Center" FontSize="40" Margin="1651,20,91,0">Daily log</Label>
-            <Label VerticalAlignment="Center" FontSize="40" Margin="1400,20,318,0">Status log</Label>
+            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Daily log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
+            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Status log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"></RowDefinition>
-                <RowDefinition Height="60"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="60"></RowDefinition>
             </Grid.RowDefinitions>
-            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center"  IsChecked="{Binding Selected}">Select/Deselect All
+            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Selected}">Select/Deselect All
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="4" ScaleY="4" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="846,0,1002,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
+            <Button Name="runBTN" Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
                 <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="924,0,924,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
+            <Button Name="pauseBTN" Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
                 <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="1002,0,846,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
+            <Button Name="stopBTN" Height="60" Width="73" VerticalAlignment="Center" Margin="156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
                 <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1718,0,128,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click">
+            <Button Name="deleteBTN" Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,109,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click" HorizontalAlignment="Right">
                 <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Button Grid.Row="0" Height="60" Width="73" VerticalAlignment="Center" Margin="1785,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click">
+            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,31,0" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click" HorizontalAlignment="Right">
                 <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
             </Button>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="0,0,1794,0">Name</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="279,0,1409,0">Source path</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="708,0,980,0">Target path</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1546,0,170,0">Encryption</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1120,0,626,0">Progress</Label>
-            <Label Grid.Row="1" VerticalAlignment="Center" FontSize="40" Margin="1755,0,3,0">Strategy</Label>
-            <DataGrid Name="jobsDatagrid"  Grid.Row="2"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                
+
+            <DataGrid Name="jobsDatagrid"  Grid.Row="1"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" MouseDoubleClick="ModifyWindow_Click" SelectionUnit="FullRow" SelectionChanged="DataGridSelectionChanged" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Source"   Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Target"   Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
+                </DataGrid.Columns>
             </DataGrid>
             <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
-            <Border Grid.Row="2" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
         </Grid>
     </Grid>
 </Page>

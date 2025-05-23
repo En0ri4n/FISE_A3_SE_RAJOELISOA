@@ -1,55 +1,58 @@
+using System;
+using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
+using Xunit;
 
-namespace CLEA_Tests;
-
-public class TranslationSystemUnitTest
+namespace CLEA_Tests
 {
-    private static readonly LangIdentifier FakeLang = new LangIdentifier("fake_lang", "FakeLang");
-    
-    [SkippableFact]
-    public void Get_ShouldReturnSingletonInstance()
+    public class TranslationSystemUnitTest
     {
-        Skip.IfNot(CLEA.EasySaveCore.EasySaveCore<BackupJob>.Version.Major == 1);
-        
-        var instance1 = L10N<BackupJob>.Get();
-        var instance2 = L10N<BackupJob>.Get();
+        private static readonly LangIdentifier FakeLang = new LangIdentifier("fake_lang", "FakeLang", "fk");
 
-        Assert.Same(instance1, instance2);
-    }
+        [SkippableFact]
+        public void Get_ShouldReturnSingletonInstance()
+        {
+            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
 
-    [SkippableFact]
-    public void SetLanguage_ShouldSwitchToEnglish()
-    {
-        Skip.IfNot(CLEA.EasySaveCore.EasySaveCore<BackupJob>.Version.Major == 1);
-        
-        var l10N = L10N<BackupJob>.Get();
-        l10N.SetLanguage(Languages.EnUs);
+            var instance1 = L10N<BackupJob>.Get();
+            var instance2 = L10N<BackupJob>.Get();
 
-        string result = l10N.GetTranslation("language");
-        Assert.Equal("English", result);
-    }
+            Assert.Same(instance1, instance2);
+        }
 
-    [SkippableFact]
-    public void SetLanguage_ShouldThrowIfUnsupported()
-    {
-        Skip.IfNot(CLEA.EasySaveCore.EasySaveCore<BackupJob>.Version.Major == 1);
-        
-        var l10N = L10N<BackupJob>.Get();
+        [SkippableFact]
+        public void SetLanguage_ShouldSwitchToEnglish()
+        {
+            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
 
-        var ex = Assert.Throws<ArgumentException>(() => l10N.SetLanguage(FakeLang));
-        Assert.Equal("Translation lang not found", ex.Message);
-    }
+            var l10N = L10N<BackupJob>.Get();
+            l10N.SetLanguage(Languages.EnUs);
 
-    [SkippableFact]
-    public void GetTranslation_ShouldThrowIfKeyNotFound()
-    {
-        Skip.IfNot(CLEA.EasySaveCore.EasySaveCore<BackupJob>.Version.Major == 1);
-        
-        var l10N = L10N<BackupJob>.Get();
-        l10N.SetLanguage(Languages.EnUs);
+            string result = l10N.GetTranslation("language");
+            Assert.Equal("English", result);
+        }
 
-        Assert.Equal("nonexistent.key", l10N.GetTranslation("nonexistent.key"));
+        [SkippableFact]
+        public void SetLanguage_ShouldThrowIfUnsupported()
+        {
+            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+
+            var l10N = L10N<BackupJob>.Get();
+
+            var ex = Assert.Throws<ArgumentException>(() => l10N.SetLanguage(FakeLang));
+            Assert.Equal("Translation lang not found", ex.Message);
+        }
+
+        [SkippableFact]
+        public void GetTranslation_ShouldThrowIfKeyNotFound()
+        {
+            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+
+            var l10N = L10N<BackupJob>.Get();
+            l10N.SetLanguage(Languages.EnUs);
+
+            Assert.Equal("nonexistent.key", l10N.GetTranslation("nonexistent.key"));
+        }
     }
 }

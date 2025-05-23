@@ -1,21 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
-using EasySaveCore.Jobs.Backup.Configurations;
-using EasySaveCore.Jobs.Backup.ViewModels;
+using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Models;
 
 namespace Easy_Save_WPF
@@ -23,15 +10,14 @@ namespace Easy_Save_WPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
-    //TODO : lock app window size + make bigger
+
     public partial class MainWindow : Window
     {
 
         public MainWindow()
         {
-            EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>
-                .Init(BackupJobViewModel.Get(), new BackupJobManager(), BackupJobConfiguration.Get());
+            EasySaveCore<BackupJob>.Init(new BackupJobManager());
+            EasySaveViewModel<BackupJob>.Get().SetJobBuilder(new ViewModelBackupJobBuilder());
             InitializeComponent();
         }
 

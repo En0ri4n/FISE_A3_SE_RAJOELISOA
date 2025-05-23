@@ -27,7 +27,7 @@
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Sélectionnez aucun pour quitter)",
   "job_menu.title_all": "Lancer tous les Jobs",
   "job_menu.option_all": "Lancer Tout",
-  
+
   "job_menu.task_run_information": "[{JOB_NAME}] {SOURCE} a été copié vers {TARGET} en {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Le job a été lancé sans erreurs",
   "job_menu.many_jobs_success": "Les {JOBNUMBER} Jobs ont été lancés sans erreurs",
@@ -38,7 +38,7 @@
   "job_menu.column.name": "Nom du Job",
   "job_menu.column.source": "Source",
   "job_menu.column.target": "Cible",
-  
+
   "loader.running.text": "Un job est en cours d'exécution. Veuillez patienter...",
 
   "information.target_directory": "Quel est le répertoire cible ?",
@@ -65,5 +65,29 @@
   "job_modify_menu.title_modify_page": "Appuyez sur Entrée pour utiliser la valeur par défaut (texte en vert)",
 
   "error.path": "Erreur : Erreur de chemin",
-  "error.path_with": "Erreur : Le chemin '{PATH}' du job '{JOBNAME}' est introuvable"
+  "error.path_with": "Erreur : Le chemin '{PATH}' du job '{JOBNAME}' est introuvable",
+
+  "options_popup.title": "Menu de configuration des options",
+  "options_popup.subtitle": "Tout se met à jour en temps réel",
+  "options_popup.language": "Langue : ",
+  "options_popup.log_type": "Type de journal : ",
+  "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
+  "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
+  "options_popup.extensions_encryption": "Extensions à chiffrer : ",
+  "options_popup.processes_blacklist": "Liste noire des processus : ",
+
+  "common.browse": "Parcourir",
+  "common.yes": "Oui",
+  "common.no": "Non",
+  "common.cancel": "Annuler",
+  "common.ok": "OK",
+  "common.enter": "Entrer",
+  "common.back": "Retour",
+  "common.select": "Sélectionner",
+  "common.delete": "Supprimer",
+  "common.modify": "Modifier",
+  "common.create": "Créer",
+  "common.reset": "Réinitialiser",
+  "common.add": "Ajouter",
+  "common.close": "Fermer"
 }

@@ -27,7 +27,7 @@
   "job_menu.title_multiple": "Run multiple Jobs (select none to Leave)",
   "job_menu.title_all": "Run all Jobs",
   "job_menu.option_all": "Run all",
-  
+
   "job_menu.task_run_information": "[{JOB_NAME}] Copied {SOURCE} to {TARGET} in {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "The Job runned without issues",
   "job_menu.many_jobs_success": "The {JOBNUMBER} Jobs runned without issues",
@@ -39,7 +39,7 @@
   "job_menu.column.name": "Job Name",
   "job_menu.column.source": "Source",
   "job_menu.column.target": "Target",
-  
+
   "loader.running.text": "Job is running. Please wait...",
 
   "information.target_directory": "What is the target directory?",
@@ -66,5 +66,29 @@
   "job_modify_menu.title_modify_page": "Press enter to use default value (green text)",
 
   "error.path": "Error: Path Error",
-  "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist"
+  "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist",
+
+  "options_popup.title": "Options Configuration Menu",
+  "options_popup.subtitle": "Everything updates in real time",
+  "options_popup.language": "Language: ",
+  "options_popup.log_type": "Log Type: ",
+  "options_popup.daily_log_dir": "Daily Log Directory: ",
+  "options_popup.status_log_dir": "Status Log Directory: ",
+  "options_popup.extensions_encryption": "Extensions to Encrypt: ",
+  "options_popup.processes_blacklist": "Processes to Blacklist: ",
+
+  "common.browse": "Browse",
+  "common.yes": "Yes",
+  "common.no": "No",
+  "common.cancel": "Cancel",
+  "common.ok": "OK",
+  "common.enter": "Enter",
+  "common.back": "Back",
+  "common.select": "Select",
+  "common.delete": "Delete",
+  "common.modify": "Modify",
+  "common.create": "Create",
+  "common.reset": "Reset",
+  "common.add": "Add",
+  "common.close": "Close"
 }

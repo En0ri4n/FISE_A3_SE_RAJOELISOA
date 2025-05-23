@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,24 +11,37 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.ViewModel;
 using Easy_Save_WPF;
 using EasySaveCore.Models;
+
 
 namespace Easy_Save_WPF
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
     /// </summary>
-    
-    //TODO : dynamic job list binding
+
+    //TODO select all rows : https://www.youtube.com/watch?app=desktop&v=bxTkTOZV0eQ
     public partial class ManageJobs_Page : Page
     {
-
+        
         public ManageJobs_Page()
         {
             InitializeComponent();
-            //this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.AvailableJobs;
+            this.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+
+                this.runBTN.IsEnabled = false;
+                this.runBTN.Opacity = 0.5;
+                this.pauseBTN.IsEnabled = false;
+                this.pauseBTN.Opacity = 0.5;
+                this.stopBTN.IsEnabled = false;
+                this.stopBTN.Opacity = 0.5;
+                this.deleteBTN.IsEnabled = false;
+                this.deleteBTN.Opacity = 0.5;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -36,17 +50,25 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow window = new MainWindow();
-            window.OptionsBTN_Click(sender, e);
+            
+            Options_PopUp options = new Options_PopUp();
+            options.Owner = Window.GetWindow(App.Current.MainWindow);
+            options.ShowDialog();
         }
-
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
+            EasySaveViewModel<BackupJob>.Get().JobBuilder.Clear();
+
             CreateJob_Window create = new CreateJob_Window()
             {
                 Titre = "Create Job"
             };
-            create.Show();
+            while (create.ShowDialog() == true)
+            {
+                create.Owner = Window.GetWindow(App.Current.MainWindow);
+            }
+            this.jobsDatagrid.ItemsSource = null;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -54,14 +76,39 @@ namespace Easy_Save_WPF
             {
                 Titre = "Modify Job"
             };
-            create.Show();
+
+            var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
+            EasySaveViewModel<BackupJob>.Get().LoadJobInBuilderCommand.Execute(selectedJob);
+
+            while (create.ShowDialog() == true)
+            {
+                create.Owner = Window.GetWindow(App.Current.MainWindow);
+
+                create.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+                create.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+                create.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            }
+            this.jobsDatagrid.ItemsSource = null;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {
-            DeleteJob_Window create = new DeleteJob_Window();
-            create.Show();
-        }
+            DeleteJob_Window delete = new DeleteJob_Window();
 
+            var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
+            EasySaveViewModel<BackupJob>.Get().LoadJobInBuilderCommand.Execute(selectedJob);
+
+            while (delete.ShowDialog() == true)
+            {
+                delete.Owner = Window.GetWindow(App.Current.MainWindow);
+
+                delete.deleteJobInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            }
+            this.jobsDatagrid.ItemsSource = null;
+            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+
+        }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
         {
             //TODO
@@ -70,18 +117,39 @@ namespace Easy_Save_WPF
         {
             //TODO
         }
-        
-
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            var selectedJobs = ((BackupJob)this.jobsDatagrid.SelectedItems).Name;
+            EasySaveViewModel<BackupJob>.Get().RunMultipleJobsCommand.Execute(selectedJobs);
         }
-
-        public void Selected(object sender, RoutedEventArgs e)
+        public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO select all job
-            //https://stackoverflow.com/questions/14441273/how-to-handle-checkbox-checked-unchecked-event-with-command-in-viewmodel-in-silv/14442515
-        }
+            var path = EasySaveViewModel<BackupJob>.Get().DailyLogPath.ToString();
 
+            using Process myProcess = new Process();
+            myProcess.StartInfo.FileName = path;
+            myProcess.StartInfo.Verb = "open";
+            myProcess.Start();
+        }
+        public void statusLogBTN_Click(object sender, RoutedEventArgs e)
+        {
+            var path = EasySaveViewModel<BackupJob>.Get().StatusLogPath.ToString();
+
+            using Process myProcess = new Process();
+            myProcess.StartInfo.FileName = path;
+            myProcess.StartInfo.Verb = "open";
+            myProcess.Start();
+        }
+        private void DataGridSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            this.runBTN.IsEnabled = true;
+            this.runBTN.Opacity = 1;
+            this.pauseBTN.IsEnabled = true;
+            this.pauseBTN.Opacity = 1;
+            this.stopBTN.IsEnabled = true;
+            this.stopBTN.Opacity = 1;
+            this.deleteBTN.IsEnabled = true;
+            this.deleteBTN.Opacity = 1;
+        }
     }
 }

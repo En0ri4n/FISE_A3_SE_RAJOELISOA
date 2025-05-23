@@ -12,6 +12,7 @@ using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
+using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace EasySaveCore.Jobs.Backup.ViewModels
 {
@@ -108,6 +109,18 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
+        public ICommand DeleteJobCommand;
+        public ICommand RunJobCommand;
+        public ICommand RunMultipleJobsCommand;
+        public ICommand RunAllJobsCommand;
+        public ICommand ChangeRunStrategyCommand;
+        public ICommand ShowFolderDialogCommand { get; }
+        public ICommand ResetFolderLogPathCommand { get; }
+        public ICommand AddProcessToBlacklistCommand { get; }
+        public ICommand RemoveProcessToBlacklistCommand { get; }
+        public ICommand AddExtensionToEncryptCommand { get; }
+        public ICommand RemoveExtensionToEncryptCommand { get; }
+
         protected override void InitializeCommand()
         {
             BuildJobCommand = new RelayCommand(_ =>
@@ -166,6 +179,108 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         "Differential" => JobExecutionStrategy.StrategyType.Differential,
                         _ => throw new NotImplementedException()
                     };
+                }
+            }, _ => true);
+
+            ShowFolderDialogCommand = new RelayCommand((input) =>
+            {
+                bool isDailyLog = bool.Parse((string)input);
+
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                string title = "Select Status Log Folder";
+
+                folderBrowserDialog.Title = title;
+                string path = StatusLogPath;
+
+                if (isDailyLog) {
+                    folderBrowserDialog.Title = "Select Daily Log Folder";
+                    path = DailyLogPath;
+                }
+
+                string fullPath = Path.IsPathRooted(path) ? path
+                : Path.GetFullPath(Path.Combine(".", path));
+
+                folderBrowserDialog.InitialFolder = fullPath;
+                folderBrowserDialog.AllowMultiSelect = false;
+
+                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                if (isDailyLog)
+                {
+                    DailyLogPath = folderBrowserDialog.SelectedFolder;
+                }
+                else
+                {
+                    StatusLogPath = folderBrowserDialog.SelectedFolder;
+                }
+            }, _ => true);
+
+            ResetFolderLogPathCommand = new RelayCommand((input) =>
+            {
+                bool isDailyLogPath = bool.Parse((string)input);
+
+                string path = @"logs\";
+
+                if (isDailyLogPath)
+                {
+                    path += @"daily\";
+                    DailyLogPath = path;
+                }
+                else
+                {
+                    path += @"status\"; 
+                    StatusLogPath = path;
+                }
+            }, _ => true);
+
+            AddExtensionToEncryptCommand = new RelayCommand((input) =>
+            {
+                string extension = (input as string)?.Trim();
+
+                if (string.IsNullOrEmpty(extension))
+                    return;
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(extension, @"^\.[\w]+$"))
+                    return;
+
+                if (!ExtensionsToEncrypt.Contains(extension))
+                {
+                    ExtensionsToEncrypt.Add(extension);
+                }
+            }, _ => true);
+
+            RemoveExtensionToEncryptCommand = new RelayCommand((input) =>
+            {
+                string extensionToRemove = (input as string);
+                if (extensionToRemove != null && ExtensionsToEncrypt.Contains(extensionToRemove))
+                {
+                    ExtensionsToEncrypt.Remove(extensionToRemove);
+                }
+            }, _ => true);
+
+            AddProcessToBlacklistCommand = new RelayCommand((input) =>
+            {
+                string process = (input as string)?.Trim();
+
+                if (string.IsNullOrEmpty(process))
+                    return;
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
+                    return;
+
+                if (!ProcessesToBlacklist.Contains(process))
+                {
+                    ProcessesToBlacklist.Add(process);
+                }
+            }, _ => true);
+
+            RemoveProcessToBlacklistCommand = new RelayCommand((input) =>
+            {
+                string processToRemove = (input as string);
+                if (processToRemove != null && ProcessesToBlacklist.Contains(processToRemove))
+                {
+                    ProcessesToBlacklist.Remove(processToRemove);
                 }
             }, _ => true);
 
