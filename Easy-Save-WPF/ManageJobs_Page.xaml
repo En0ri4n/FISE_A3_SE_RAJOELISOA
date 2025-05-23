@@ -54,9 +54,9 @@
 
             <DataGrid Name="jobsDatagrid"  Grid.Row="1"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" MouseDoubleClick="ModifyWindow_Click" SelectionUnit="FullRow" SelectionChanged="DataGridSelectionChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{local:Loc job_menu.column.name}" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="{local:Loc job_menu.column.source}"   Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="{local:Loc job_menu.column.target}"   Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
             <!--FIXME : Empty line can be selected & cause a crash if user try to delete it-->
