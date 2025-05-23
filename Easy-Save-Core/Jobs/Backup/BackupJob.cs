@@ -105,7 +105,7 @@ namespace EasySaveCore.Models
         
         public bool CanRunJob()
         {
-            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(EasySaveConfiguration<BackupJob>.Get().PriorityProcesses.ToArray());
+            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(EasySaveConfiguration<BackupJob>.Get().ProcessesToBlacklist.ToArray());
         }
 
         public void RunJob()

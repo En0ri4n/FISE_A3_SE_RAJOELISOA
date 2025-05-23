@@ -37,10 +37,6 @@ namespace CLEA.EasySaveCore.Utilities
         }
 
         private static Logger Logger => Logger.Get();
-        public static EasySaveConfiguration<TJob> Get()
-        {
-            return Instance;
-        }
 
         private ObservableCollection<string> _extensionsToEncrypt = new ObservableCollection<string>();
 
@@ -62,28 +58,6 @@ namespace CLEA.EasySaveCore.Utilities
             set
             {
                 _processesToBlacklist = value;
-                SaveConfiguration();
-            }
-        }
-
-        private List<string> _extensionsToEncrypt = new List<string>();
-        public List<string> ExtensionsToEncrypt
-        {
-            get => _extensionsToEncrypt;
-            set
-            {
-                _extensionsToEncrypt = value;
-                SaveConfiguration();
-            }
-        }
-
-        private ObservableCollection<string> _priorityProcesses = new ObservableCollection<string>();
-        public ObservableCollection<string> PriorityProcesses
-        {
-            get => _priorityProcesses;
-            set
-            {
-                _priorityProcesses = value;
                 SaveConfiguration();
             }
         }
@@ -206,34 +180,6 @@ namespace CLEA.EasySaveCore.Utilities
             }
             else
                 throw new JsonException("Jobs not found in configuration file");
-        
-        // Encrypted file extensions
-        data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
-        if (extensionsToEncrypt != null)
-        {
-            _extensionsToEncrypt.Clear();
-            foreach(JsonNode? format in extensionsToEncrypt.AsArray())
-            {
-                if (format is JsonValue formatValue)
-                    _extensionsToEncrypt.Add(formatValue.ToString());
-            }
-        }
-        else
-            throw new JsonException("Encrypted file extensions not found in configuration file");
-        
-        // Priority processes
-        data.TryGetPropertyValue("priorityProcesses", out JsonNode? priorityProcesses);
-        if (priorityProcesses != null)
-        {
-            _priorityProcesses.Clear();
-            foreach(JsonNode? process in priorityProcesses.AsArray())
-            {
-                if (process is JsonValue processValue)
-                    _priorityProcesses.Add(processValue.ToString());
-            }
-        }
-        else
-            throw new JsonException("Priority processes not found in configuration file");
 
             // Language
             // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION
