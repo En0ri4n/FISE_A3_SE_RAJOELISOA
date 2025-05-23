@@ -35,14 +35,14 @@ namespace Easy_Save_WPF
             this.DataContext = BackupJobViewModel.Get().JobBuilder;
             this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
 
-                this.runBTN.IsEnabled = false;
-                this.runBTN.Opacity = 0.5;
-                this.pauseBTN.IsEnabled = false;
-                this.pauseBTN.Opacity = 0.5;
-                this.stopBTN.IsEnabled = false;
-                this.stopBTN.Opacity = 0.5;
-                this.deleteBTN.IsEnabled = false;
-                this.deleteBTN.Opacity = 0.5;
+            // this.runBTN.IsEnabled = false;
+            // this.runBTN.Opacity = 0.5;
+            // this.pauseBTN.IsEnabled = false;
+            // this.pauseBTN.Opacity = 0.5;
+            // this.stopBTN.IsEnabled = false;
+            // this.stopBTN.Opacity = 0.5;
+            // this.deleteBTN.IsEnabled = false;
+            // this.deleteBTN.Opacity = 0.5;
         }
         public void QuitBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -145,14 +145,14 @@ namespace Easy_Save_WPF
         }
         private void DataGridSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            this.runBTN.IsEnabled = true;
-            this.runBTN.Opacity = 1;
-            this.pauseBTN.IsEnabled = true;
-            this.pauseBTN.Opacity = 1;
-            this.stopBTN.IsEnabled = true;
-            this.stopBTN.Opacity = 1;
-            this.deleteBTN.IsEnabled = true;
-            this.deleteBTN.Opacity = 1;
+            // this.runBTN.IsEnabled = true;
+            // this.runBTN.Opacity = 1;
+            // this.pauseBTN.IsEnabled = true;
+            // this.pauseBTN.Opacity = 1;
+            // this.stopBTN.IsEnabled = true;
+            // this.stopBTN.Opacity = 1;
+            // this.deleteBTN.IsEnabled = true;
+            // this.deleteBTN.Opacity = 1;
         }
     }
 }

@@ -1,64 +1,210 @@
 ﻿<Page x:Class="Easy_Save_WPF.ManageJobs_Page"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:local="clr-namespace:Easy_Save_WPF"
-      mc:Ignorable="d" 
-      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-      Title="ManageJobs_Page" Background="#f3f3f3">
-    <!--TODO DYNAMIC FONT SIZE-->
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      Background="{DynamicResource MaterialDesignPaper}"
+      Title="ManageJobs_Page">
 
-    <Grid Name="ManageJobs_Grid">
+    <Page.Resources>
+        <!-- Couleurs -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#A4C4F6"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#10C2FF"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
+
+        <!-- Style bouton icône -->
+        <Style x:Key="ColoredIconButton" TargetType="Button">
+            <Setter Property="Width" Value="48"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#C51162"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style bouton texte -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#C51162"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style label header -->
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="48"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Style DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#222"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="24">
         <Grid.RowDefinitions>
-            <RowDefinition Height="120"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"/>  <!-- Header -->
+            <RowDefinition Height="Auto"/>  <!-- Controls -->
+            <RowDefinition Height="*"/>     <!-- DataGrid fills remaining -->
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Button Height="120" Width="144" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="42,20,0,20" Click="QuitBTN_Click" Background="#f3f3f3" BorderThickness="0" Foreground="Red" FontSize="60">Quit</Button>
-            <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="80">Manage Jobs</Label>
-            <Button Height="70" Width="70" HorizontalAlignment="Left" Margin="241,20,0,20" Background="#f3f3f3" BorderThickness="0" Click="OptionsBTN_Click">
-                <Image Source="/assets/options_icon.png" Height="70" Width="70"></Image>
-            </Button>
-            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Daily log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,42,0" Click="dailyLogBTN_Click"></Button>
-            <Button Width="150" Background="#f3f3f3" BorderBrush="#f3f3f3" Content="Status log" FontSize="30" HorizontalAlignment="Right" Margin="0,38,257,0" Click="statusLogBTN_Click"></Button>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="80"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="60"></RowDefinition>
-            </Grid.RowDefinitions>
-            <CheckBox Grid.Row="0" Margin="10,0,-10,0" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding Selected}">Select/Deselect All
-                <CheckBox.LayoutTransform>
-                    <ScaleTransform ScaleX="4" ScaleY="4" />
-                </CheckBox.LayoutTransform>
-            </CheckBox>
-            <Button Name="runBTN" Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="-156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="RunJob_Click">
-                <Image Source="/assets/play_icon.png" RenderTransformOrigin="-0.558,0.568" Height="48" Width="48"></Image>
-            </Button>
-            <Button Name="pauseBTN" Height="60" Width="73" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="PauseBTN_Click">
-                <Image Source="/assets/pause_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
-            </Button>
-            <Button Name="stopBTN" Height="60" Width="73" VerticalAlignment="Center" Margin="156,0,0,0" Background="#f3f3f3" BorderThickness="0" Click="StopBTN_Click">
-                <Image Source="/assets/stop_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
-            </Button>
-            <Button Name="deleteBTN" Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,109,0" Background="#f3f3f3" BorderThickness="0" Click="DeleteWindow_Click" HorizontalAlignment="Right">
-                <Image Source="/assets/delete_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
-            </Button>
-            <Button Height="60" Width="73" VerticalAlignment="Center" Margin="0,0,31,0" Background="#f3f3f3" BorderThickness="0" Click="CreateWindow_Click" HorizontalAlignment="Right">
-                <Image Source="/assets/add_icon.png" RenderTransformOrigin="-0.558,0.568"></Image>
-            </Button>
 
-            <DataGrid Name="jobsDatagrid"  Grid.Row="1"  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" MouseDoubleClick="ModifyWindow_Click" SelectionUnit="FullRow" SelectionChanged="DataGridSelectionChanged" >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Source"   Binding="{Binding Source}" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Target"   Binding="{Binding Target}" Width="*" IsReadOnly="True"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Margin="3"></Border>
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0 0 0 24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Quit" Style="{StaticResource ActionButton}" Foreground="{DynamicResource DangerBrush}" Click="QuitBTN_Click" Width="100"/>
+
+            <Label Grid.Column="1" Content="Manage Jobs"/>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
+                    <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
+                </Button>
+                <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click" Margin="12,10">Status Log</Button>
+                <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click" Margin="12, 10">Daily Log</Button>
+            </StackPanel>
         </Grid>
+
+        <!-- Controls (Select + Actions) -->
+        <Grid Grid.Row="1" Margin="0 0 0 12" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Select/Deselect All -->
+            <CheckBox Content="Select/Deselect All" VerticalAlignment="Center" FontSize="16" Margin="0,0,20,0"/>
+
+            <!-- Boutons d'action alignés à droite -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
+                    <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
+                </Button>
+                <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="Pause">
+                    <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
+                </Button>
+                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
+                    <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
+                </Button>
+                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Delete" Background="{DynamicResource DangerBrush}">
+                    <materialDesign:PackIcon Kind="Delete" Width="24" Height="24"/>
+                </Button>
+                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add" Background="#04A404">
+                    <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="2" Name="jobsDatagrid"
+          AutoGenerateColumns="False"
+          SelectionMode="Extended"
+          SelectionUnit="FullRow"
+          MouseDoubleClick="ModifyWindow_Click"
+          SelectionChanged="DataGridSelectionChanged"
+          CanUserAddRows="False"
+          CanUserSortColumns="True"
+          Margin="0"
+          VerticalAlignment="Stretch"
+          HorizontalAlignment="Stretch"
+          HeadersVisibility="Column"
+          ColumnHeaderHeight="36"
+          GridLinesVisibility="Horizontal"
+          >
+    <DataGrid.Resources>
+        <!-- Style en-tête -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+    </DataGrid.Resources>
+
+    <DataGrid.Columns>
+        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" IsReadOnly="True"/>
+        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="2*" IsReadOnly="True"/>
+        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="2*" IsReadOnly="True"/>
+        <DataGridTextColumn Header="Strategy" Binding="{Binding Strategy}" Width="1.5*" IsReadOnly="True"/>
+        <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="Auto" IsReadOnly="True" />
+        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="1.5*" IsReadOnly="True"/>
+    </DataGrid.Columns>
+</DataGrid>
+
     </Grid>
 </Page>
