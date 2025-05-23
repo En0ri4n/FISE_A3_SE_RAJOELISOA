@@ -89,5 +89,9 @@
   "common.create": "Créer",
   "common.reset": "Réinitialiser",
   "common.add": "Ajouter",
-  "common.close": "Fermer"
+  "common.close": "Fermer",
+
+  "manage_job.daily_log": "Log Journalier",
+  "manage_job.status_log": "Log de Statut",
+  "manage_job.select_all":  "Tout Selectionner"
 }
