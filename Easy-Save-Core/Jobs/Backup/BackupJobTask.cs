@@ -63,12 +63,12 @@ namespace EasySaveCore.Models
         public BackupJobTask(BackupJob backupJob, string source, string target) : base(backupJob.Name)
         {
             _backupJob = backupJob;
-            Timestamp = DateTime.Now;
-            Source = source;
-            Target = target;
-            Size = -1L;
-            TransferTime = -1L;
-            EncryptionTime = -1L;
+            _timestamp = DateTime.Now;
+            _source = source;
+            _target = target;
+            _size = -1L;
+            _transferTime = -1L;
+            _encryptionTime = -1L;
         }
 
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
@@ -93,7 +93,7 @@ namespace EasySaveCore.Models
                 if (ExternalEncryptor.IsEncryptorPresent() && _backupJob.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
-                    ExternalEncryptor.ProcessFile("", Source, Target);
+                    ExternalEncryptor.ProcessFile("", Source, Target); // TODO: Add key from configuration
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
                 }
