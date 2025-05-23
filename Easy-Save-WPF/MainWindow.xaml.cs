@@ -3,6 +3,8 @@ using System.Windows;
 using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Jobs.Backup.Configurations;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 
 namespace Easy_Save_WPF
@@ -16,8 +18,8 @@ namespace Easy_Save_WPF
 
         public MainWindow()
         {
-            EasySaveCore<BackupJob>.Init(new BackupJobManager());
-            EasySaveViewModel<BackupJob>.Get().SetJobBuilder(new ViewModelBackupJobBuilder());
+            EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Init(BackupJobViewModel.Get(), new BackupJobManager(), BackupJobConfiguration.Get());
+            BackupJobViewModel.Get().SetJobBuilder(new ViewModelBackupJobBuilder());
             InitializeComponent();
         }
 

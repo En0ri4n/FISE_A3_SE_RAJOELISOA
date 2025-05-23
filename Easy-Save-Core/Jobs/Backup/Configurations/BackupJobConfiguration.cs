@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Utilities;
@@ -18,44 +17,15 @@ namespace EasySaveCore.Jobs.Backup.Configurations
     {
         private const string ConfigPath = "config.json";
         private static readonly BackupJobConfiguration Instance = new BackupJobConfiguration();
-        public BackupJobConfiguration()
-        {
-            ExtensionsToEncrypt.CollectionChanged += (sender, args) =>
-            {
-                SaveConfiguration();
-            };
 
-            ProcessesToBlacklist.CollectionChanged += (sender, args) =>
-            {
-                SaveConfiguration();
-            };
-        }
         private static Logger Logger => Logger.Get();
-        
-        private ObservableCollection<string> _extensionsToEncrypt = new ObservableCollection<string>();
 
-        public ObservableCollection<string> ExtensionsToEncrypt
-        {
-            get => _extensionsToEncrypt;
-            set
-            {
-                _extensionsToEncrypt = value;
-                SaveConfiguration();
-            }
-        }
+        private ObservableCollection<string> _extensionsToEncrypt;
+        public ObservableCollection<string> ExtensionsToEncrypt => _extensionsToEncrypt;
 
-        private ObservableCollection<string> _processesToBlacklist = new ObservableCollection<string>();
+        private ObservableCollection<string> _processesToBlacklist;
+        public ObservableCollection<string> ProcessesToBlacklist => _processesToBlacklist;
 
-        public ObservableCollection<string> ProcessesToBlacklist
-        {
-            get => _processesToBlacklist;
-            set
-            {
-                _processesToBlacklist = value;
-                SaveConfiguration();
-            }
-        }
-        
         public static bool IsEncryptorLoaded()
         {
             return Type.GetType("CLEA.Encryptor.Encryptor") != null;
@@ -82,7 +52,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
 
             JsonObject data = new JsonObject
             {
-                { "version", CLEA.EasySaveCore.EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString() },
+                { "version", EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString() },
                 { "language", L10N<BackupJob>.Get().GetLanguage().LangId },
                 { "dailyLogPath", Logger.DailyLogPath },
                 { "statusLogPath", Logger.StatusLogPath },
@@ -106,7 +76,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             data.TryGetPropertyValue("version", out JsonNode? version);
             if (version == null)
                 throw new JsonException("Version not found in configuration file");
-            if (version.ToString() != CLEA.EasySaveCore.EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString())
+            if (version.ToString() != EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString())
                 throw new JsonException("Version mismatch in configuration file");
 
             // Daily log path
@@ -131,29 +101,31 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 Directory.CreateDirectory(Logger.DailyLogPath);
 
             // Encrypted file extensions
+            ObservableCollection<string> extensionsToEncryptList = new ObservableCollection<string>();
             data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
             if (extensionsToEncrypt != null)
             {
-                _extensionsToEncrypt.Clear();
                 foreach (JsonNode? format in extensionsToEncrypt.AsArray())
-                {
                     if (format is JsonValue formatValue)
-                        _extensionsToEncrypt.Add(formatValue.ToString());
-                }
+                        extensionsToEncryptList.Add(formatValue.ToString());
+
+                extensionsToEncryptList.CollectionChanged += (sender, args) => SaveConfiguration();
+                _extensionsToEncrypt = extensionsToEncryptList;
             }
             else
                 throw new JsonException("Encrypted file extensions not found in configuration file");
 
             // Processes to blacklist
+            ObservableCollection<string> processesToBlacklistList = new ObservableCollection<string>();
             data.TryGetPropertyValue("processesToBlacklist", out JsonNode? processesToBlacklist);
             if (processesToBlacklist != null)
             {
-                _processesToBlacklist.Clear();
                 foreach (JsonNode? process in processesToBlacklist.AsArray())
-                {
                     if (process is JsonValue processValue)
-                        _processesToBlacklist.Add(processValue.ToString());
-                }
+                        processesToBlacklistList.Add(processValue.ToString());
+
+                processesToBlacklistList.CollectionChanged += (sender, args) => SaveConfiguration();
+                _processesToBlacklist = processesToBlacklistList;
             }
             else
                 throw new JsonException("Processes to Blacklist not found in configuration file");
@@ -188,7 +160,6 @@ namespace EasySaveCore.Jobs.Backup.Configurations
         }
 
         public override void LoadConfiguration()
-        
         {
             FileStream fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
             StreamReader streamReader = new StreamReader(fileStream);

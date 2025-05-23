@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.ViewModel;
 using Easy_Save_WPF;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 
 
@@ -31,8 +32,8 @@ namespace Easy_Save_WPF
         public ManageJobs_Page()
         {
             InitializeComponent();
-            this.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
-            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+            this.DataContext = BackupJobViewModel.Get().JobBuilder;
+            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
 
                 this.runBTN.IsEnabled = false;
                 this.runBTN.Opacity = 0.5;
@@ -57,7 +58,7 @@ namespace Easy_Save_WPF
         }
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
-            EasySaveViewModel<BackupJob>.Get().JobBuilder.Clear();
+            BackupJobViewModel.Get().JobBuilder.Clear();
 
             CreateJob_Window create = new CreateJob_Window()
             {
@@ -68,7 +69,7 @@ namespace Easy_Save_WPF
                 create.Owner = Window.GetWindow(App.Current.MainWindow);
             }
             this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -78,18 +79,18 @@ namespace Easy_Save_WPF
             };
 
             var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
-            EasySaveViewModel<BackupJob>.Get().LoadJobInBuilderCommand.Execute(selectedJob);
+            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJob);
 
             while (create.ShowDialog() == true)
             {
                 create.Owner = Window.GetWindow(App.Current.MainWindow);
 
-                create.jobTargetInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
-                create.jobSourceInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
-                create.jobNameInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+                create.jobTargetInput.DataContext = BackupJobViewModel.Get().JobBuilder;
+                create.jobSourceInput.DataContext = BackupJobViewModel.Get().JobBuilder;
+                create.jobNameInput.DataContext = BackupJobViewModel.Get().JobBuilder;
             }
             this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
 
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
@@ -97,16 +98,16 @@ namespace Easy_Save_WPF
             DeleteJob_Window delete = new DeleteJob_Window();
 
             var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
-            EasySaveViewModel<BackupJob>.Get().LoadJobInBuilderCommand.Execute(selectedJob);
+            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJob);
 
             while (delete.ShowDialog() == true)
             {
                 delete.Owner = Window.GetWindow(App.Current.MainWindow);
 
-                delete.deleteJobInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+                delete.deleteJobInput.DataContext = BackupJobViewModel.Get().JobBuilder;
             }
             this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = EasySaveViewModel<BackupJob>.Get().AvailableJobs;
+            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
 
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
@@ -119,25 +120,27 @@ namespace Easy_Save_WPF
         }
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            var selectedJobs = ((BackupJob)this.jobsDatagrid.SelectedItems).Name;
-            EasySaveViewModel<BackupJob>.Get().RunMultipleJobsCommand.Execute(selectedJobs);
+            var selectedJobs = ((BackupJob)jobsDatagrid.SelectedItems)?.Name;
+            BackupJobViewModel.Get().RunMultipleJobsCommand.Execute(selectedJobs);
         }
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {
-            var path = EasySaveViewModel<BackupJob>.Get().DailyLogPath.ToString();
+            var path = BackupJobViewModel.Get().DailyLogFilePath;
 
             using Process myProcess = new Process();
-            myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.Verb = "open";
+            myProcess.StartInfo.FileName = path;
+            myProcess.StartInfo.UseShellExecute = true;
             myProcess.Start();
         }
         public void statusLogBTN_Click(object sender, RoutedEventArgs e)
         {
-            var path = EasySaveViewModel<BackupJob>.Get().StatusLogPath.ToString();
+            var path = BackupJobViewModel.Get().StatusLogFilePath;
 
             using Process myProcess = new Process();
             myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.Verb = "open";
+            myProcess.StartInfo.UseShellExecute = true;
             myProcess.Start();
         }
         private void DataGridSelectionChanged(object sender, SelectionChangedEventArgs args)

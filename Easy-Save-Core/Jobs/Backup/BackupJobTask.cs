@@ -9,6 +9,7 @@ using System.Xml;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.Encryptor;
+using EasySaveCore.Jobs.Backup.Configurations;
 using Microsoft.Extensions.Logging;
 
 namespace EasySaveCore.Models
@@ -61,7 +62,7 @@ namespace EasySaveCore.Models
 
             try
             {
-                if (EasySaveConfiguration<BackupJob>.IsEncryptorLoaded() && EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
+                if (BackupJobConfiguration.IsEncryptorLoaded() && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
                     Encryptor.Get().ProcessFile(Source.Value.ToString(), Target.Value.ToString());

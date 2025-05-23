@@ -290,8 +290,8 @@
                 </ListBox>
 
                 <StackPanel Orientation="Horizontal" Margin="0 6 0 0">
-                    <TextBox Text="{Binding NewExtension, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
-                    <Button Content="{local:Loc common.add}" Command="{Binding AddExtensionToEncryptCommand}" CommandParameter="{Binding NewExtension}" Style="{StaticResource SecondaryButtonStyle}"/>
+                    <TextBox Text="{Binding NewExtensionToEncrypt, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
+                    <Button Content="{local:Loc common.add}" Command="{Binding AddExtensionToEncryptCommand}" CommandParameter="{Binding NewExtensionToEncrypt}" Style="{StaticResource SecondaryButtonStyle}"/>
                 </StackPanel>
             </StackPanel>
 
@@ -320,8 +320,8 @@
                 </ListBox>
 
                 <StackPanel Orientation="Horizontal" Margin="0 6 0 0">
-                    <TextBox Text="{Binding NewProcess, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
-                    <Button Content="{local:Loc common.add}" Command="{Binding AddProcessToBlacklistCommand}" CommandParameter="{Binding NewProcess}" Style="{StaticResource SecondaryButtonStyle}"/>
+                    <TextBox Text="{Binding NewProcessToBlacklist, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
+                    <Button Content="{local:Loc common.add}" Command="{Binding AddProcessToBlacklistCommand}" CommandParameter="{Binding NewProcessToBlacklist}" Style="{StaticResource SecondaryButtonStyle}"/>
                 </StackPanel>
             </StackPanel>
 

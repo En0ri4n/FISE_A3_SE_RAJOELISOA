@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using CLEA.EasySaveCore.ViewModel;
-using EasySaveCore.Models;
-
+﻿using System.Windows;
+using EasySaveCore.Jobs.Backup.ViewModels;
 
 namespace Easy_Save_WPF
 {
@@ -20,12 +8,12 @@ namespace Easy_Save_WPF
     /// </summary>
     public partial class DeleteJob_Window : Window
     {
-        static EasySaveViewModel<BackupJob> ViewModel => EasySaveViewModel<BackupJob>.Get();
+        static BackupJobViewModel ViewModel => BackupJobViewModel.Get();
 
         public DeleteJob_Window()
         {
             InitializeComponent();
-            this.deleteJobInput.DataContext = EasySaveViewModel<BackupJob>.Get().JobBuilder;
+            this.deleteJobInput.DataContext = ViewModel.JobBuilder;
         }
 
         public void CancelBTN_Click(object sender, RoutedEventArgs e)
