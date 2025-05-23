@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -13,7 +13,6 @@ using JsonException = System.Text.Json.JsonException;
 
 namespace CLEA.EasySaveCore.Utilities
 {
-
     /// <summary>
     /// Represents the configuration settings for the EasySave application.
     /// It includes all the necessary settings for the application to run correctly.
@@ -65,6 +64,38 @@ namespace CLEA.EasySaveCore.Utilities
                 _processesToBlacklist = value;
                 SaveConfiguration();
             }
+        }
+
+        private List<string> _extensionsToEncrypt = new List<string>();
+        public List<string> ExtensionsToEncrypt
+        {
+            get => _extensionsToEncrypt;
+            set
+            {
+                _extensionsToEncrypt = value;
+                SaveConfiguration();
+            }
+        }
+
+        private ObservableCollection<string> _priorityProcesses = new ObservableCollection<string>();
+        public ObservableCollection<string> PriorityProcesses
+        {
+            get => _priorityProcesses;
+            set
+            {
+                _priorityProcesses = value;
+                SaveConfiguration();
+            }
+        }
+
+        public static EasySaveConfiguration<TJob> Get()
+        {
+            return Instance;
+        }
+        
+        public static bool IsEncryptorLoaded()
+        {
+            return Type.GetType("CLEA.Encryptor.Encryptor") != null;
         }
 
         /// <summary>
@@ -175,6 +206,34 @@ namespace CLEA.EasySaveCore.Utilities
             }
             else
                 throw new JsonException("Jobs not found in configuration file");
+        
+        // Encrypted file extensions
+        data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
+        if (extensionsToEncrypt != null)
+        {
+            _extensionsToEncrypt.Clear();
+            foreach(JsonNode? format in extensionsToEncrypt.AsArray())
+            {
+                if (format is JsonValue formatValue)
+                    _extensionsToEncrypt.Add(formatValue.ToString());
+            }
+        }
+        else
+            throw new JsonException("Encrypted file extensions not found in configuration file");
+        
+        // Priority processes
+        data.TryGetPropertyValue("priorityProcesses", out JsonNode? priorityProcesses);
+        if (priorityProcesses != null)
+        {
+            _priorityProcesses.Clear();
+            foreach(JsonNode? process in priorityProcesses.AsArray())
+            {
+                if (process is JsonValue processValue)
+                    _priorityProcesses.Add(processValue.ToString());
+            }
+        }
+        else
+            throw new JsonException("Priority processes not found in configuration file");
 
             // Language
             // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION

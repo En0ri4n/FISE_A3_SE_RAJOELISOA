@@ -6,34 +6,40 @@
         xmlns:local="clr-namespace:Easy_Save_WPF"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="CreateJob_Window" Height="450" Width="800">
+        Title="CreateJob_Window" Height="500" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="80"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="{Binding Titre}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
-        <Grid Grid.Row="1">
+        <Label Name="title"  Content="{Binding Titre}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
+        <Grid Grid.Row="1" Name="gridInputs">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Job name :</Label>
-            <TextBox Grid.Row="0" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
+            <Label Name="nameErrorLabel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Job name is not valid</Label>
+            <TextBox Name="jobNameInput" Grid.Row="0" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
             <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Source directory path :</Label>
-            <TextBox Grid.Row="1" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Button Grid.Row="1" Margin="667,46,27,0" Click="folderBTN_CLick">
+            <Label Name="sourceErrorLabel" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Source path is not valid</Label>
+            <TextBox Name="jobSourceInput" Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
+            <Button Name="sourceOpenFolder"  Grid.Row="1" Margin="667,46,27,0" Click="sourceFolderBTN_CLick">
                 <Image Source="/assets/folder_icon.png"></Image>
             </Button>
             <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Target directory path :</Label>
-            <TextBox Grid.Row="2" Text="{Binding jobName, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Button Grid.Row="2" Margin="667,46,27,0" Click="folderBTN_CLick">
+            <Label Name="targetErrorLabel" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Target path is not valid</Label>
+            <TextBox Name="jobTargetInput" Grid.Row="2" Text="{Binding Target, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
+            <Button Grid.Row="2" Margin="667,46,27,0" Click="targetFolderBTN_CLick">
                 <Image Source="/assets/folder_icon2.png"></Image>
             </Button>
         </Grid>
-        <Button Grid.Row="1" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,274,0,0" Grid.RowSpan="2"></Button>
-        <Button Grid.Row="1" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,274,0,0" Grid.RowSpan="2">Cancel</Button>
+        <Button Name="createBTN" Grid.Row="2" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10"/>
+        <Button Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,10,0,10">Cancel</Button>
     </Grid>
 </Window>

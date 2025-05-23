@@ -32,16 +32,18 @@ namespace CLEA.EasySaveCore.Utilities
         public Format DailyLogFormat { get => _dailyLogFormat; set => _dailyLogFormat = value; }
         
         private static readonly Logger Instance = new Logger();
-        
-        /// <summary>
-        /// Singleton instance of the Logger class.
-        /// </summary>
-        private Logger()
-        {
-            _dailyLogPath = @"logs\daily\";
-            _statusLogPath = @"logs\status\";
-            _dailyLogFormat = Format.Json;
-        }
+    
+    /// <summary>
+    /// Singleton instance of the Logger class.
+    /// </summary>
+    private Logger()
+    {
+        _dailyLogPath = @"logs\daily\";
+        _statusLogPath = @"logs\status\";
+        _dailyLogFormat = Format.Json;
+
+
+            }
 
         /// <summary>
         /// Logs a message to the status log file.

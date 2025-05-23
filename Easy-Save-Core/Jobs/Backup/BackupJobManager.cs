@@ -10,13 +10,16 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public class BackupJobManager : JobManager<BackupJob>
     {
-        public BackupJobManager() : base(5)
+        public delegate void OnJobInterrupted(BackupJob job);
+        public event OnJobInterrupted? JobInterruptedHandler;
+        
+        public BackupJobManager() : base(-1)
         {
         }
 
         public override bool AddJob(BackupJob job, bool save)
         {
-            if (job == null || Jobs.Count >= Size || Jobs.Any(j => j.Name == job.Name))
+            if (job == null || (Jobs.Count >= Size && Size!= -1) || Jobs.Any(j => j.Name == job.Name))
                 return false;
             
             Jobs.Add(job);
@@ -76,7 +79,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 throw new Exception($"Job {job.Name} cannot be run");
 
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-            job.RunJob(Strategy);
+            job.RunJob();
             job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
             
             Logger.Get().SaveDailyLog(job.BackupJobTasks.Select(task => task).Cast<JobTask>().ToList());
@@ -89,8 +92,14 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 if (job.CanRunJob())
                 {
                     job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-                    job.RunJob(Strategy);
+                    job.RunJob();
                     job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
+                }
+                else
+                {
+                    job.Status = JobExecutionStrategy.ExecutionStatus.InterruptedByProcess;
+                    JobInterruptedHandler?.Invoke(job);
+                    break;
                 }
             }
 
