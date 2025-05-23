@@ -8,6 +8,7 @@
       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
       Title="ManageJobs_Page" Background="#f3f3f3">
     <!--TODO DYNAMIC FONT SIZE ? or better size management ? currently size is static and width is auto-->
+    <!--FIXME Using mg_mg L10N, texts in this page overlap-->
     <Grid Name="ManageJobs_Grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="120"></RowDefinition>

@@ -89,5 +89,9 @@
   "common.create": "创建",
   "common.reset": "重置",
   "common.add": "添加",
-  "common.close": "关闭"
+  "common.close": "关闭",
+
+  "manage_job.daily_log": "每日日志",
+  "manage_job.status_log": "状态日志",
+  "manage_job.select_all": "全选"
 }

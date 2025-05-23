@@ -89,5 +89,9 @@
   "common.create": "Buat",
   "common.reset": "Atur Ulang",
   "common.add": "Tambah",
-  "common.close": "Tutup"
+  "common.close": "Tutup",
+
+  "manage_job.daily_log": "Log Harian",
+  "manage_job.status_log": "Log Status",
+  "manage_job.select_all": "Pilih Semua"
 }

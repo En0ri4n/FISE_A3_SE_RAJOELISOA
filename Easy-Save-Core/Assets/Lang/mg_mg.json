@@ -89,5 +89,9 @@
   "common.create": "Hamorona",
   "common.reset": "Hamerenana",
   "common.add": "Manampy",
-  "common.close": "Hakatona"
+  "common.close": "Hakatona",
+
+  "manage_job.daily_log": "Tatitry ny Asa Isan’andro",
+  "manage_job.status_log": "Tatitry ny Toe-javatra",
+  "manage_job.select_all": "Fidio Rehetra"
 }
