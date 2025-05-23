@@ -35,10 +35,6 @@
   "job_menu.name_question": "任务名称是什么?",
   "job_menu.select_option": "你想选择哪个任务?",
 
-  "job_menu.column.name": "任务名称",
-  "job_menu.column.source": "源路径",
-  "job_menu.column.target": "目标路径",
-
   "loader.running.text": "任务正在运行, 请稍候...",
 
   "information.target_directory": "目标文件夹是?",
@@ -63,6 +59,7 @@
 
   "job_modify_menu.title": "更新任务(选择任务后按回车)",
   "job_modify_menu.title_modify_page": "按回车使用默认值(绿色文本)",
+  "error.invalid_job_name": "错误：任务名称无效",
 
   "error.path": "错误: 路径错误",
   "error.path_with": "错误: 任务 {JOBNAME} 的路径错误",
@@ -90,8 +87,16 @@
   "common.reset": "重置",
   "common.add": "添加",
   "common.close": "关闭",
+  "common.name": "任务名称",
+  "common.source": "来源",
+  "common.target": "目标",
 
   "manage_job.daily_log": "每日日志",
   "manage_job.status_log": "状态日志",
-  "manage_job.select_all": "全选"
+  "manage_job.select_all": "全选",
+
+  "delete_menu.title": "删除任务",
+  "delete_menu.confirm_text": "您确定要删除这个任务吗？",
+
+  "create_menu.title": "创建任务"
 }

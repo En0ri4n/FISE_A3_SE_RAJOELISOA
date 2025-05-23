@@ -35,10 +35,6 @@
   "job_menu.name_question": "Inona no anaran’ny Asa?",
   "job_menu.select_option": "Asa inona no tianao hofidiana?",
 
-  "job_menu.column.name": "Anaran’ny Asa",
-  "job_menu.column.source": "Loharano",
-  "job_menu.column.target": "Tanjona",
-
   "loader.running.text": "Mandeha ilay Asa. Miandrasa azafady...",
 
   "information.target_directory": "Aiza ny lahatahiry tanjona?",
@@ -66,6 +62,7 @@
 
   "error.path": "Hadisoana: Hadisoana amin’ny lalana",
   "error.path_with": "Hadisoana: Hadisoana amin’ny lalana amin’ny Asa {JOBNAME}",
+  "error.invalid_job_name": "Hadisoana: Tsy manankery ny anaran'ny asa",
 
   "options_popup.title": "Menu fanamboarana safidy",
   "options_popup.subtitle": "Ny zava-drehetra dia havaozina amin'ny fotoana tena izy",
@@ -90,8 +87,16 @@
   "common.reset": "Hamerenana",
   "common.add": "Manampy",
   "common.close": "Hakatona",
+  "common.name": "Anaran'ny Asa",
+  "common.source": "Loharanon-kevitra",
+  "common.target": "Kendrena",
 
   "manage_job.daily_log": "Tatitry ny Asa Isan’andro",
   "manage_job.status_log": "Tatitry ny Toe-javatra",
-  "manage_job.select_all": "Fidio Rehetra"
+  "manage_job.select_all": "Fidio Rehetra",
+
+  "delete_menu.title": "Fafao ny Asa",
+  "delete_menu.confirm_text": "Azonao antoka ve fa tianao hofafana ity asa ity?",
+
+  "create_menu.title": "Mamòna Asa"
 }
