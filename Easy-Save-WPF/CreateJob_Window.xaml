@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Easy_Save_WPF"
+        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="CreateJob_Window" Height="500" Width="800">
@@ -16,30 +16,31 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="80"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Name="title"  Content="{Binding Titre}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
+        <Label Name="title"  Content="{local:Loc create_menu.title}" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60"></Label>
         <Grid Grid.Row="1" Name="gridInputs">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Job name :</Label>
-            <Label Name="nameErrorLabel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Job name is not valid</Label>
+            <Label Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.name}"/>
+            <Label Name="nameErrorLabel" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.invalid_job_name}"/>
             <TextBox Name="jobNameInput" Grid.Row="0" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
-            <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Source directory path :</Label>
-            <Label Name="sourceErrorLabel" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Source path is not valid</Label>
+            <Label Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.source}"/>
+            <Label Name="sourceErrorLabel" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.path}"/>
             <TextBox Name="jobSourceInput" Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
             <Button Name="sourceOpenFolder"  Grid.Row="1" Margin="667,46,27,0" Click="sourceFolderBTN_CLick">
                 <Image Source="/assets/folder_icon.png"></Image>
             </Button>
-            <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" >Target directory path :</Label>
-            <Label Name="targetErrorLabel" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden">Target path is not valid</Label>
+            <Label Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="30" Content="{local:Loc common.target}"/>
+            <Label Name="targetErrorLabel" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="20" Foreground="Red" Visibility="Hidden" Content="{local:Loc error.path}"/>
             <TextBox Name="jobTargetInput" Grid.Row="2" Text="{Binding Target, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="30" Width="642" Margin="0,0,0,4"/>
             <Button Grid.Row="2" Margin="667,46,27,0" Click="targetFolderBTN_CLick">
                 <Image Source="/assets/folder_icon2.png"></Image>
             </Button>
         </Grid>
-        <Button Name="createBTN" Grid.Row="2" Content="{Binding Titre}" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10"/>
-        <Button Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,10,0,10">Cancel</Button>
+        <Button Name="createBTN" Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CreateBTN_Click" Margin="531,10,0,10" Content="{local:Loc common.create}"/>
+        <!--Content="{Binding Titre}" TODO UNDERSTAND WHY WAS THIS HERE ?-->
+        <Button Grid.Row="2" Height="60" Width="100" HorizontalAlignment="Left" Click="CancelBTN_Click" Margin="206,10,0,10" Content="{local:Loc common.cancel}"/>
     </Grid>
 </Window>

@@ -45,10 +45,6 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             _processesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
         }
 
-        public static bool IsEncryptorLoaded()
-        {
-            return Type.GetType("CLEA.Encryptor.Encryptor") != null;
-        }
         /// <summary>
         /// Serialize the configuration to a JSON object.
         /// All properties have default values and are not null to avoid serialization issues.

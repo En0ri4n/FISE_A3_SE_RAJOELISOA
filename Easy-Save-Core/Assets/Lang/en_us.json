@@ -36,10 +36,6 @@
 
   "job_menu.select_option": "Which Job do you want to select?",
 
-  "job_menu.column.name": "Job Name",
-  "job_menu.column.source": "Source",
-  "job_menu.column.target": "Target",
-
   "loader.running.text": "Job is running. Please wait...",
 
   "information.target_directory": "What is the target directory?",
@@ -67,6 +63,7 @@
 
   "error.path": "Error: Path Error",
   "error.path_with": "Error: The path '{PATH}' from the job '{JOBNAME}' does not exist",
+  "error.invalid_job_name": "Error : Job name is not valid",
 
   "options_popup.title": "Options Configuration Menu",
   "options_popup.subtitle": "Everything updates in real time",
@@ -92,5 +89,19 @@
   "common.reset": "Reset",
   "common.add": "Add",
   "common.close": "Close",
+
   "common.save": "Save",
+
+  "common.name": "Job Name",
+  "common.source": "Source",
+  "common.target": "Target",
+
+  "manage_job.daily_log": "Daily Log",
+  "manage_job.status_log": "Status Log",
+  "manage_job.select_all": "Select All",
+
+  "delete_menu.title": "Delete Job",
+  "delete_menu.confirm_text": "Are you sure you want to delete this job ?",
+
+  "create_menu.title": "Create Job"
 }
