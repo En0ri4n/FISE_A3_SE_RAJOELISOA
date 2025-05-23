@@ -120,7 +120,7 @@ namespace CLEA.EasySaveCore.Utilities
         /// <summary>
         /// Retrieves the path to the status log file.
         /// </summary>
-        private string GetStatusLogFilePath()
+        public string GetStatusLogFilePath()
         {
             if (!Directory.Exists(_statusLogPath))
                 Directory.CreateDirectory(_statusLogPath);
@@ -131,7 +131,7 @@ namespace CLEA.EasySaveCore.Utilities
         /// <summary>
         /// Retrieves the path to the daily log file.
         /// </summary>
-        private string GetDailyLogFilePath()
+        public string GetDailyLogFilePath()
         {
             if (!Directory.Exists(_dailyLogPath))
                 Directory.CreateDirectory(_dailyLogPath);

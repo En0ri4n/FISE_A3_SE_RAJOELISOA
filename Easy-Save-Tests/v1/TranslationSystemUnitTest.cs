@@ -1,6 +1,8 @@
 using System;
 using CLEA.EasySaveCore;
+using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
+using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
 using Xunit;
 
@@ -13,7 +15,7 @@ namespace CLEA_Tests
         [SkippableFact]
         public void Get_ShouldReturnSingletonInstance()
         {
-            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+            Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
             var instance1 = L10N<BackupJob>.Get();
             var instance2 = L10N<BackupJob>.Get();
@@ -24,7 +26,7 @@ namespace CLEA_Tests
         [SkippableFact]
         public void SetLanguage_ShouldSwitchToEnglish()
         {
-            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+            Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
             var l10N = L10N<BackupJob>.Get();
             l10N.SetLanguage(Languages.EnUs);
@@ -36,7 +38,7 @@ namespace CLEA_Tests
         [SkippableFact]
         public void SetLanguage_ShouldThrowIfUnsupported()
         {
-            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+            Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
             var l10N = L10N<BackupJob>.Get();
 
@@ -47,7 +49,7 @@ namespace CLEA_Tests
         [SkippableFact]
         public void GetTranslation_ShouldThrowIfKeyNotFound()
         {
-            Skip.IfNot(EasySaveCore<BackupJob>.Version.Major == 1);
+            Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
             var l10N = L10N<BackupJob>.Get();
             l10N.SetLanguage(Languages.EnUs);

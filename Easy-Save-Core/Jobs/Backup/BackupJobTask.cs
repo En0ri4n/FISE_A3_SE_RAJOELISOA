@@ -9,6 +9,7 @@ using System.Xml;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.Encryptor;
+using EasySaveCore.Jobs.Backup.Configurations;
 using Microsoft.Extensions.Logging;
 
 namespace EasySaveCore.Models
@@ -16,44 +17,73 @@ namespace EasySaveCore.Models
     public class BackupJobTask : JobTask
     {
         private readonly BackupJob _backupJob;
-        public Property<dynamic> Timestamp;
-        public Property<dynamic> Source;
-        public Property<dynamic> Target;
-        public Property<dynamic> Size;
-        public Property<dynamic> TransferTime;
-        public Property<dynamic> EncryptionTime;
+        private DateTime _timestamp;
+        private string _source;
+        private string _target;
+        private long _size;
+        private long _transferTime;
+        private long _encryptionTime;
+        
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set => _timestamp = value;
+        }
+        
+        public string Source
+        {
+            get => _source;
+            set => _source = value;
+        }
+        
+        public string Target
+        {
+            get => _target;
+            set => _target = value;
+        }
+        
+        public long Size
+        {
+            get => _size;
+            set => _size = value;
+        }
+        
+        public long TransferTime
+        {
+            get => _transferTime;
+            set => _transferTime = value;
+        }
+        
+        public long EncryptionTime
+        {
+            get => _encryptionTime;
+            set => _encryptionTime = value;
+        }
+        
 
         public BackupJobTask(BackupJob backupJob, string source, string target) : base(backupJob.Name)
         {
             _backupJob = backupJob;
-            Timestamp = new Property<dynamic>("timestamp", new DateTime());
-            Source = new Property<dynamic>("source", source);
-            Target = new Property<dynamic>("target", target);
-            Size = new Property<dynamic>("size", 0);
-            TransferTime = new Property<dynamic>("transferTime", -1);
-            EncryptionTime = new Property<dynamic>("encryptionTime", -1);
-            GetProperties().AddRange(new List<Property<dynamic>>()
-            {
-                Timestamp,
-                Source,
-                Target,
-                Size,
-                TransferTime
-            });
+            Timestamp = DateTime.Now;
+            Source = source;
+            Target = target;
+            Size = -1L;
+            TransferTime = -1L;
+            EncryptionTime = -1L;
         }
 
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
         {
-            Timestamp.Value = DateTime.Now;
-            Size.Value = new FileInfo(Source.Value).Length;
+            Timestamp = DateTime.Now;
+            Size = new FileInfo(Source).Length;
 
-            if (File.Exists(Target.Value)
-                && FilesAreEqual(new FileInfo ((string) Source.Value.ToString()), new FileInfo((string) Target.Value.ToString()))
+            if (File.Exists(Target)
+                && FilesAreEqual(new FileInfo (Source), new FileInfo(Target))
                 && strategyType == JobExecutionStrategy.StrategyType.Differential)
             {
                     Status = JobExecutionStrategy.ExecutionStatus.Skipped;
                     _backupJob.OnTaskCompleted(this);
-                    Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+                    Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
                     return;
             }
 
@@ -61,16 +91,16 @@ namespace EasySaveCore.Models
 
             try
             {
-                if (EasySaveConfiguration<BackupJob>.IsEncryptorLoaded() && EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt.Any(ext => Source.Value.EndsWith(ext)))
+                if (BackupJobConfiguration.IsEncryptorLoaded() && _backupJob.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
-                    Encryptor.Get().ProcessFile(Source.Value.ToString(), Target.Value.ToString());
+                    Encryptor.Get().ProcessFile(Source, Target);
                     encryptionWatch.Stop();
-                    EncryptionTime.Value = encryptionWatch.ElapsedMilliseconds;
+                    EncryptionTime = encryptionWatch.ElapsedMilliseconds;
                 }
                 else
                 {
-                    File.Copy((string) Source.Value.ToString(), (string) Target.Value.ToString(), true);
+                    File.Copy(Source, Target, true);
                 }
             }
             catch (Exception e)
@@ -80,10 +110,10 @@ namespace EasySaveCore.Models
             }
 
             watch.Stop();
-            TransferTime.Value = watch.ElapsedMilliseconds;
+            TransferTime = watch.ElapsedMilliseconds;
             Status = JobExecutionStrategy.ExecutionStatus.Completed;
             _backupJob.OnTaskCompleted(this);
-            Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source.Value} to {Target.Value} completed in {TransferTime.Value}ms ({Status})");
+            Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
         }
 
         public override JsonObject JsonSerialize()
@@ -91,12 +121,12 @@ namespace EasySaveCore.Models
             JsonObject json = new JsonObject
             {
                 ["Name"] = Name,
-                ["Timestamp"] = ((DateTime) Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss"),
-                ["Source"] = Source.Value,
-                ["Target"] = Target.Value,
-                ["Size"] = (long) Size.Value,
-                ["FileTransferTime"] = (double) TransferTime.Value / 1000D,
-                ["EncryptionTime"] = (double) EncryptionTime.Value / 1000D
+                ["Timestamp"] = Timestamp.ToString("dd/MM/yyyy HH:mm:ss"),
+                ["Source"] = Source,
+                ["Target"] = Target,
+                ["Size"] = Size,
+                ["FileTransferTime"] = TransferTime / 1000D,
+                ["EncryptionTime"] = EncryptionTime / 1000D
             };
             return json;
         }
@@ -115,27 +145,27 @@ namespace EasySaveCore.Models
             jobElement.AppendChild(nameElement);
 
             XmlElement sourceElement = document.CreateElement("Source");
-            sourceElement.InnerText = Source.Value;
+            sourceElement.InnerText = Source;
             jobElement.AppendChild(sourceElement);
 
             XmlElement targetElement = document.CreateElement("Target");
-            targetElement.InnerText = Target.Value;
+            targetElement.InnerText = Target;
             jobElement.AppendChild(targetElement);
 
             XmlElement sizeElement = document.CreateElement("Size");
-            sizeElement.InnerText = Size.Value.ToString();
+            sizeElement.InnerText = Size.ToString();
             jobElement.AppendChild(sizeElement);
 
             XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
-            fileTransferTimeElement.InnerText = ((double)TransferTime.Value / 1000D).ToString(CultureInfo.InvariantCulture);
+            fileTransferTimeElement.InnerText = (TransferTime / 1000D).ToString(CultureInfo.InvariantCulture);
             jobElement.AppendChild(fileTransferTimeElement);
 
             XmlElement timestampElement = document.CreateElement("Timestamp");
-            timestampElement.InnerText = ((DateTime)Timestamp.Value).ToString("dd/MM/yyyy HH:mm:ss");
+            timestampElement.InnerText = Timestamp.ToString("dd/MM/yyyy HH:mm:ss");
             jobElement.AppendChild(timestampElement);
             
             XmlElement encryptionTimeElement = document.CreateElement("EncryptionTime");
-            encryptionTimeElement.InnerText = ((double)EncryptionTime.Value / 1000D).ToString(CultureInfo.InvariantCulture);
+            encryptionTimeElement.InnerText = (EncryptionTime / 1000D).ToString(CultureInfo.InvariantCulture);
             jobElement.AppendChild(encryptionTimeElement);
 
             return jobElement;

@@ -6,53 +6,68 @@ using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
+using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
     public class BackupJob : IJob
     {
-        private Property<dynamic> _timestamp;
-        private Property<dynamic> _source;
-        private Property<dynamic> _target;
-        private Property<dynamic> _strategyType;
+        private DateTime _timestamp;
+        private string _source;
+        private string _target;
+        private JobExecutionStrategy.StrategyType _strategyType;
+        private bool _isEncrypted;
         
-        private Property<dynamic> _size;
-        private Property<dynamic> _transferTime;
+        private long _size;
+        private long _transferTime;
+        private long _encryptionTime;
         
         public DateTime Timestamp
         {
-            get => (DateTime) _timestamp.Value;
-            set => _timestamp.Value = value;
+            get => _timestamp;
+            set => _timestamp = value;
         }
         
         public string Source
         {
-            get => (string) _source.Value;
-            set => _source.Value = value;
+            get => _source;
+            set => _source = value;
         }
         
         public string Target
         {
-            get => (string) _target.Value;
-            set => _target.Value = value;
+            get => _target;
+            set => _target = value;
         }
         
         public JobExecutionStrategy.StrategyType StrategyType
         {
-            get => (JobExecutionStrategy.StrategyType) _strategyType.Value;
-            set => _strategyType.Value = value;
+            get => _strategyType;
+            set => _strategyType = value;
+        }
+        
+        public bool IsEncrypted
+        {
+            get => _isEncrypted;
+            set => _isEncrypted = value;
         }
         
         public long Size
         {
-            get => (long) _size.Value;
-            set => _size.Value = value;
+            get => _size;
+            set => _size = value;
         }
         
         public long TransferTime
         {
-            get => (long) _transferTime.Value;
-            set => _transferTime.Value = value;
+            get => _transferTime;
+            set => _transferTime = value;
+        }
+        
+        public long EncryptionTime
+        {
+            get => _encryptionTime;
+            set => _encryptionTime = value;
         }
 
         public bool IsRunning;
@@ -62,7 +77,6 @@ namespace EasySaveCore.Models
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
-        public List<Property<dynamic>> Properties => new List<Property<dynamic>>();
 
         bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
 
@@ -75,22 +89,14 @@ namespace EasySaveCore.Models
         public BackupJob(string name, string source, string target, JobExecutionStrategy.StrategyType strategy)
         {
             Name = name;
-            _timestamp = new Property<dynamic>("timestamp", new DateTime());
-            _source = new Property<dynamic>("source", source);
-            _target = new Property<dynamic>("target", target);
-            _strategyType = new Property<dynamic>("strategyType", strategy);
-            _size = new Property<dynamic>("size", (long) 0);
-            _transferTime = new Property<dynamic>("transferTime", (long) 0);
-            Properties.AddRange(new List<Property<dynamic>> 
-            { 
-                new Property<dynamic>("name", name), 
-                _timestamp, 
-                _source, 
-                _target, 
-                _strategyType,
-                _size, 
-                _transferTime
-            });
+            _timestamp = DateTime.Now;
+            _source = source;
+            _target = target;
+            _strategyType = strategy;
+            _isEncrypted = false;
+            _size = -1L;
+            _transferTime = -1L;
+            _encryptionTime = -1L;
         }
         
         public void OnTaskCompleted(dynamic task)
@@ -105,7 +111,7 @@ namespace EasySaveCore.Models
         
         public bool CanRunJob()
         {
-            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(EasySaveConfiguration<BackupJob>.Get().ProcessesToBlacklist.ToArray());
+            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray());
         }
 
         public void RunJob()
@@ -116,44 +122,54 @@ namespace EasySaveCore.Models
                 return;
             }
 
-            if (string.IsNullOrEmpty(_source.Value.ToString()) || string.IsNullOrEmpty(_target.Value.ToString()))
-                throw new Exception("Source or Target path is not set.");
+            if (!Directory.Exists(Source))
+            {
+                Status = JobExecutionStrategy.ExecutionStatus.SourceNotFound;
+                return;
+            }
 
-            if (!Directory.Exists(_source.Value.ToString()))
-                throw new DirectoryNotFoundException($"Source directory '{_source.Value.ToString()}' does not exist.");
+            if (string.IsNullOrEmpty(Source) || string.IsNullOrEmpty(Target))
+            {
+                Status = JobExecutionStrategy.ExecutionStatus.DirectoriesNotSpecified;
+                return;
+            }
 
-            if (_source.Value == _target.Value)
-                throw new Exception("Source and Target paths cannot be the same.");
-        
+            if (Source.Equals(Target))
+            {
+                Status = JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget;
+                return;
+            }
+
             BackupJobTasks.Clear();
         
             IsRunning = true;
-            _timestamp.Value = DateTime.Now;
+            Timestamp = DateTime.Now;
         
-            if (!Directory.Exists(_target.Value.ToString()))
-                Directory.CreateDirectory(_target.Value.ToString());
+            if (!Directory.Exists(Target))
+                Directory.CreateDirectory(Target);
 
-            string[] sourceDirectoriesArray = Directory.GetDirectories((string) _source.Value.ToString(), "*", SearchOption.AllDirectories);
+            string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
 
             foreach (string directory in sourceDirectoriesArray)
             {
-                string dirToCreate = directory.Replace(_source.Value.ToString(), _target.Value.ToString());
+                string dirToCreate = directory.Replace(Source, Target);
                 Directory.CreateDirectory(dirToCreate);
             }
 
-            string[] sourceFilesArray = Directory.GetFiles((string) _source.Value.ToString(), "*.*", SearchOption.AllDirectories);
+            string[] sourceFilesArray = Directory.GetFiles(Source, "*.*", SearchOption.AllDirectories);
 
             foreach (string path in sourceFilesArray)
             {
-                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace((string) _source.Value.ToString(), (string) _target.Value.ToString()));
+                BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
                 BackupJobTasks.Add(jobTask);
             }
 
             foreach(BackupJobTask jobTask in BackupJobTasks)
-                jobTask.ExecuteTask((JobExecutionStrategy.StrategyType) _strategyType.Value);
+                jobTask.ExecuteTask(_strategyType);
 
-            _transferTime.Value = BackupJobTasks.Select(x => (long)x.TransferTime.Value).Sum();
-            _size.Value = BackupJobTasks.FindAll(x=>x.TransferTime.Value != -1).Select(x => (long)x.Size.Value).Sum();
+            TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
+            Size = BackupJobTasks.FindAll(x=>x.TransferTime != -1).Select(x => x.Size).Sum();
+            EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
 
             IsRunning = false;
 
@@ -165,8 +181,11 @@ namespace EasySaveCore.Models
             JsonObject jsonObject = new JsonObject();
 
             jsonObject.Add("Name", Name);
-            jsonObject.Add("Source", _source.Value);
-            jsonObject.Add("Target", _target.Value);
+            jsonObject.Add("Source", Source);
+            jsonObject.Add("Target", Target);
+            jsonObject.Add("StrategyType", StrategyType.ToString());
+            jsonObject.Add("IsEncrypted", IsEncrypted.ToString());
+            
             return jsonObject;
         }
 
@@ -175,17 +194,27 @@ namespace EasySaveCore.Models
             if (data.ContainsKey("Name"))
                 Name = data["Name"]!.ToString();
             else
-                throw new Exception("Invalid JSON data: Missing 'Name' property.");
+                throw new KeyNotFoundException("Invalid JSON data: Missing 'Name' property.");
 
             if (data.ContainsKey("Source"))
-                _source.Value = data["Source"]!.ToString();
+                Source = data["Source"]!.ToString();
             else
-                throw new Exception("Invalid JSON data: Missing 'Source' property.");
+                throw new KeyNotFoundException("Invalid JSON data: Missing 'Source' property.");
 
             if (data.ContainsKey("Target"))
-                _target.Value = data["Target"]!.ToString();
+                Target = data["Target"]!.ToString();
             else
-                throw new Exception("Invalid JSON data: Missing 'Target' property.");
+                throw new KeyNotFoundException("Invalid JSON data: Missing 'Target' property.");
+            
+            if (data.ContainsKey("StrategyType"))
+                StrategyType = (JobExecutionStrategy.StrategyType)Enum.Parse(typeof(JobExecutionStrategy.StrategyType), data["StrategyType"]!.ToString());
+            else
+                throw new KeyNotFoundException("Invalid JSON data: Missing 'StrategyType' property.");
+            
+            if (data.ContainsKey("IsEncrypted"))
+                IsEncrypted = bool.Parse(data["IsEncrypted"]!.ToString());
+            else
+                throw new KeyNotFoundException("Invalid JSON data: Missing 'IsEncrypted' property.");
         }
 
         public XmlElement XmlSerialize(XmlDocument parent)
@@ -193,8 +222,10 @@ namespace EasySaveCore.Models
             XmlElement jobElement = parent.CreateElement("BackupJob");
 
             jobElement.SetAttribute("Name", Name);
-            jobElement.SetAttribute("Source", _source.Value.ToString());
-            jobElement.SetAttribute("Target", _target.Value.ToString());
+            jobElement.SetAttribute("Source", Source);
+            jobElement.SetAttribute("Target", Target);
+            jobElement.SetAttribute("StrategyType", StrategyType.ToString());
+            jobElement.SetAttribute("IsEncrypted", IsEncrypted.ToString());
 
             return jobElement;
         }
@@ -204,17 +235,27 @@ namespace EasySaveCore.Models
             if (data.HasAttribute("Name"))
                 Name = data.GetAttribute("Name");
             else
-                throw new Exception("Invalid XML data: Missing 'Name' attribute.");
+                throw new KeyNotFoundException("Invalid XML data: Missing 'Name' attribute.");
 
             if (data.HasAttribute("Source"))
-                _source.Value = data.GetAttribute("Source");
+                Source = data.GetAttribute("Source");
             else
-                throw new Exception("Invalid XML data: Missing 'Source' attribute.");
+                throw new KeyNotFoundException("Invalid XML data: Missing 'Source' attribute.");
 
             if (data.HasAttribute("Target"))
-                _target.Value = data.GetAttribute("Target");
+                Target = data.GetAttribute("Target");
             else
-                throw new Exception("Invalid XML data: Missing 'Target' attribute.");
+                throw new KeyNotFoundException("Invalid XML data: Missing 'Target' attribute.");
+            
+            if (data.HasAttribute("StrategyType"))
+                StrategyType = (JobExecutionStrategy.StrategyType)Enum.Parse(typeof(JobExecutionStrategy.StrategyType), data.GetAttribute("StrategyType"));
+            else
+                throw new KeyNotFoundException("Invalid XML data: Missing 'StrategyType' attribute.");
+            
+            if (data.HasAttribute("IsEncrypted"))
+                IsEncrypted = bool.Parse(data.GetAttribute("IsEncrypted"));
+            else
+                throw new KeyNotFoundException("Invalid XML data: Missing 'IsEncrypted' attribute.");
         }
     }
 }

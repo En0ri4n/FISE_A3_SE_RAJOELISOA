@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models
@@ -13,8 +12,6 @@ namespace CLEA.EasySaveCore.Models
         public delegate void TaskCompletedDelegate(dynamic task);
         public event TaskCompletedDelegate TaskCompletedHandler;
         public void ClearTaskCompletedHandler();
-    
-        List<Property<dynamic>> Properties { get; }
     
         bool IsRunning { get; set; }
     

@@ -8,6 +8,8 @@ using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.View;
 using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Jobs.Backup.Configurations;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
@@ -15,7 +17,7 @@ using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 
 namespace CLEA.EasySaveCLI
 {
-    public sealed class EasySaveCli : EasySaveView<BackupJob, ViewModelBackupJobBuilder>
+    public sealed class EasySaveCli : EasySaveView<BackupJob, BackupJobManager, BackupJobConfiguration, BackupJobViewModel, ViewModelBackupJobBuilder>
     {
         enum Menu
         {
@@ -42,26 +44,28 @@ namespace CLEA.EasySaveCLI
             menuHistory.Add(menuName);
         }
 
-        public EasySaveCli() : base(EasySaveCore<BackupJob>.Init(new BackupJobManager()),
-            new ViewModelBackupJobBuilder())
-        {
-            Console.Title = L10N.GetTranslation("main.title");
-            AddToMenuHistory(Menu.Main);
-            DisplayMainMenu();
-        }
-
-        protected override void DisplayMainMenu()
-        {
-            AnsiConsole.Clear();
-            AnsiConsole.Write(new FigletText(L10N.GetTranslation("main.title")).Color(Color.Green3).Centered());
-            string choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title(L10N.GetTranslation("main_menu.title"))
-                    .AddChoices(
-                        L10N.GetTranslation("main_menu.jobs"),
-                        L10N.GetTranslation("main_menu.settings"),
-                        L10N.GetTranslation("main_menu.exit")
-                    ));
+        public EasySaveCli() : base(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>
+        .Init(BackupJobViewModel.Get(), new BackupJobManager(), BackupJobConfiguration.Get()),
+        BackupJobViewModel.Get(), 
+        new ViewModelBackupJobBuilder())
+    {
+        Console.Title = L10N.GetTranslation("main.title");
+        AddToMenuHistory(Menu.Main);
+        DisplayMainMenu();
+    }
+    
+    protected override void DisplayMainMenu()
+    {
+        AnsiConsole.Clear();
+        AnsiConsole.Write(new FigletText(L10N.GetTranslation("main.title")).Color(Color.Green3).Centered());
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title(L10N.GetTranslation("main_menu.title"))
+                .AddChoices(
+                    L10N.GetTranslation("main_menu.jobs"),
+                    L10N.GetTranslation("main_menu.settings"),
+                    L10N.GetTranslation("main_menu.exit")
+                ));
 
             if (choice == L10N.GetTranslation("main_menu.jobs"))
             {
@@ -304,9 +308,9 @@ namespace CLEA.EasySaveCLI
                 BackupJobTask backupTask = (BackupJobTask)task;
                 AnsiConsole.WriteLine(L10N.GetTranslation("job_menu.task_run_information")
                     .Replace("{JOB_NAME}", backupTask.Name)
-                    .Replace("{SOURCE}", backupTask.Source.Value.ToString())
-                    .Replace("{TARGET}", backupTask.Target.Value.ToString())
-                    .Replace("{TIME}", backupTask.TransferTime.Value.ToString())
+                    .Replace("{SOURCE}", backupTask.Source)
+                    .Replace("{TARGET}", backupTask.Target)
+                    .Replace("{TIME}", backupTask.TransferTime.ToString())
                     .Replace("{STATUS}", backupTask.Status.ToString()));
             });
         }

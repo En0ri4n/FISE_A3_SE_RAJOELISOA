@@ -49,7 +49,10 @@
             Completed,
             Skipped,
             InterruptedByProcess,
-            Failed
+            Failed,
+            SourceNotFound,
+            DirectoriesNotSpecified,
+            SameSourceAndTarget
         }
     }
 }

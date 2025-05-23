@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CLEA.EasySaveCore.Utilities;
 using System.Text.Json.Nodes;
 
 namespace CLEA.EasySaveCore.Models
@@ -27,33 +26,10 @@ namespace CLEA.EasySaveCore.Models
         public abstract bool AddJob(JsonObject? jobJson);
 
         public abstract bool RemoveJob(TJob job);
-        
-        public void UpdateJob(string name, JsonObject? jobJson)
-        {
-            var job = Jobs.FirstOrDefault(j => j.Name == name);
-            if (job == null)
-                throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
 
-            if (jobJson != null)
-            {
-                job.JsonDeserialize(jobJson);
-                EasySaveConfiguration<TJob>.SaveConfiguration();
-            }
+        public abstract void UpdateJob(string name, JsonObject? jobJson);
 
-        }
-        
-        public void UpdateJob(string name, TJob job)
-        {
-            var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
-            if (existingJob == null)
-                throw new Exception($"IJob[{typeof(TJob)}] with name {name} not found");
-
-            if (job != null)
-            {
-                existingJob.JsonDeserialize(job.JsonSerialize());
-                EasySaveConfiguration<TJob>.SaveConfiguration();
-            }
-        }
+        public abstract void UpdateJob(string name, TJob job);
 
         public bool RemoveJob(string name)
         {
@@ -77,9 +53,7 @@ namespace CLEA.EasySaveCore.Models
 
         public TJob GetJob(string name)
         {
-            TJob job = Jobs.FirstOrDefault(j => j.Name == name);
-            
-            return job;
+            return Jobs.FirstOrDefault(j => j.Name == name);
         }
         
         public List<TJob> GetJobs()
@@ -99,13 +73,13 @@ namespace CLEA.EasySaveCore.Models
             DoJob(job);
         }
 
-        public abstract void DoJob(TJob job);
+        protected abstract void DoJob(TJob job);
 
         public void DoMultipleJob(List<string> jobs)
         {
             DoMultipleJob(jobs.Select(GetJob).ToList());
         }
 
-        public abstract void DoMultipleJob(List<TJob> jobs);
+        protected abstract void DoMultipleJob(List<TJob> jobs);
     }
 }

@@ -1,43 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Windows.Input;
-using System.Xml.Linq;
+using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
+using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
-using FolderBrowserEx;
-using System.Windows.Forms;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
-using System.Windows.Shapes;
-using Path = System.IO.Path;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 
-namespace CLEA.EasySaveCore.ViewModel
+namespace EasySaveCore.Jobs.Backup.ViewModels
 {
-    public class EasySaveViewModel<TJob> : INotifyPropertyChanged where TJob : IJob
+    public class BackupJobViewModel : EasySaveViewModelBase<BackupJob, BackupJobManager>
     {
-        public readonly JobManager<TJob> JobManager;
+        private static readonly BackupJobViewModel Instance = new BackupJobViewModel();
+        public static BackupJobViewModel Get() => Instance;
 
-        public ViewModelJobBuilder<TJob> JobBuilder;
-        public readonly ICommand BuildJobCommand;
 
         // Languages
         public List<LangIdentifier> AvailableLanguages => Languages.SupportedLangs;
 
         public LangIdentifier CurrentApplicationLang
         {
-            get => L10N<TJob>.Get().GetLanguage();
+            get => L10N<BackupJob>.Get().GetLanguage();
             set
             {
-                L10N<TJob>.Get().SetLanguage(value);
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                L10N<BackupJob>.Get().SetLanguage(value);
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -51,7 +49,7 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().DailyLogFormat = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -62,7 +60,7 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().DailyLogPath = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -73,18 +71,20 @@ namespace CLEA.EasySaveCore.ViewModel
             set
             {
                 Logger.Get().StatusLogPath = value;
-                EasySaveConfiguration<BackupJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
         }
+        
+        public string StatusLogFilePath => Logger.Get().GetStatusLogFilePath();
+        public string DailyLogFilePath => Logger.Get().GetDailyLogFilePath();
 
 
-        public List<TJob> AvailableJobs => JobManager.GetJobs();
+        public List<BackupJob> AvailableJobs => JobManager.GetJobs();
 
-        public ICommand SelectedJobCommand;
-        private TJob _selectedJob;
+        private BackupJob _selectedJob;
 
-        public TJob SelectedJob
+        public BackupJob SelectedJob
         {
             get => _selectedJob;
             set
@@ -94,46 +94,55 @@ namespace CLEA.EasySaveCore.ViewModel
             }
         }
 
-        public RelayCommand LoadJobInBuilderCommand;
+        public ObservableCollection<string> ExtensionsToEncrypt => BackupJobConfiguration.Get().ExtensionsToEncrypt;
+        public ObservableCollection<string> ProcessesToBlacklist => BackupJobConfiguration.Get().ProcessesToBlacklist;
 
-        private string _userInput;
-
-        public string UserInput
+        private string _newExtensionToEncrypt;
+        public string NewExtensionToEncrypt
         {
-            get => _userInput;
+            get => _newExtensionToEncrypt;
             set
             {
-                _userInput = value;
+                _newExtensionToEncrypt = value;
                 OnPropertyChanged();
             }
         }
 
-        public ICommand DeleteJobCommand;
-        public ICommand RunJobCommand;
-        public ICommand RunMultipleJobsCommand;
-        public ICommand RunAllJobsCommand;
-        public ICommand ChangeRunStrategyCommand;
-        public ICommand ShowFolderDialogCommand { get; }
-        public ICommand ResetFolderLogPathCommand { get; }
-        public ICommand AddProcessToBlacklistCommand { get; }
-        public ICommand RemoveProcessToBlacklistCommand { get; }
-        public ICommand AddExtensionToEncryptCommand { get; }
-        public ICommand RemoveExtensionToEncryptCommand { get; }
-
-
-        private static EasySaveViewModel<TJob> _instance;
-
-        private EasySaveViewModel(JobManager<TJob> jobManager)
+        private string _newProcessToBlacklist;
+        public string NewProcessToBlacklist
         {
-            JobManager = jobManager;
+            get => _newProcessToBlacklist;
+            set
+            {
+                _newProcessToBlacklist = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public ICommand BuildJobCommand { get; set; }
+        public ICommand SelectedJobCommand { get; set; }
+        public ICommand LoadJobInBuilderCommand { get; set; }
+        public ICommand DeleteJobCommand { get; set; }
+        public ICommand RunJobCommand { get; set; }
+        public ICommand RunMultipleJobsCommand { get; set; }
+        public ICommand RunAllJobsCommand { get; set; }
+        public ICommand ChangeRunStrategyCommand { get; set; }
+        public ICommand ShowFolderDialogCommand { get; set; }
+        public ICommand ResetFolderLogPathCommand { get; set; }
+        public ICommand AddProcessToBlacklistCommand { get; set; }
+        public ICommand RemoveProcessToBlacklistCommand { get; set; }
+        public ICommand AddExtensionToEncryptCommand { get; set; }
+        public ICommand RemoveExtensionToEncryptCommand { get; set; }
+
+        protected override void InitializeCommand()
+        {
             BuildJobCommand = new RelayCommand(_ =>
             {
                 if (JobBuilder == null)
-                    throw new NullReferenceException($"Job Builder for <{typeof(TJob)}> is not defined !");
+                    throw new NullReferenceException("BackupJob builder is not defined !");
 
                 JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
-                EasySaveConfiguration<TJob>.SaveConfiguration();
+                BackupJobConfiguration.Get().SaveConfiguration();
             }, _ => true);
 
             SelectedJobCommand = new RelayCommand(jobName =>
@@ -153,7 +162,7 @@ namespace CLEA.EasySaveCore.ViewModel
                 if (jobName is string name)
                 {
                     JobManager.RemoveJob(name);
-                    EasySaveConfiguration<TJob>.SaveConfiguration();
+                    BackupJobConfiguration.Get().SaveConfiguration();
                 }
             }, _ => true);
 
@@ -186,9 +195,9 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
-            ShowFolderDialogCommand = new RelayCommand((input) =>
+            ShowFolderDialogCommand = new RelayCommand(input =>
             {
-                bool isDailyLog = bool.Parse((string)input);
+                bool isDailyLog = bool.Parse((string)input!);
 
                 FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
                 string title = "Select Status Log Folder";
@@ -220,9 +229,9 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
-            ResetFolderLogPathCommand = new RelayCommand((input) =>
+            ResetFolderLogPathCommand = new RelayCommand(input =>
             {
-                bool isDailyLogPath = bool.Parse((string)input);
+                bool isDailyLogPath = bool.Parse((string)input!);
 
                 string path = @"logs\";
 
@@ -238,14 +247,14 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
-            AddExtensionToEncryptCommand = new RelayCommand((input) =>
+            AddExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                string extension = (input as string)?.Trim();
+                string extension = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(extension))
                     return;
 
-                if (!System.Text.RegularExpressions.Regex.IsMatch(extension, @"^\.[\w]+$"))
+                if (!Regex.IsMatch(extension, @"^\.[\w]+$"))
                     return;
 
                 if (!ExtensionsToEncrypt.Contains(extension))
@@ -254,23 +263,23 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
-            RemoveExtensionToEncryptCommand = new RelayCommand((input) =>
+            RemoveExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                string extensionToRemove = (input as string);
-                if (extensionToRemove != null && ExtensionsToEncrypt.Contains(extensionToRemove))
+                string extensionToRemove = (input as string ?? string.Empty);
+                if (string.IsNullOrEmpty(extensionToRemove) && ExtensionsToEncrypt.Contains(extensionToRemove))
                 {
                     ExtensionsToEncrypt.Remove(extensionToRemove);
                 }
             }, _ => true);
 
-            AddProcessToBlacklistCommand = new RelayCommand((input) =>
+            AddProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                string process = (input as string)?.Trim();
+                string process = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(process))
                     return;
 
-                if (!System.Text.RegularExpressions.Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
+                if (!Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
                     return;
 
                 if (!ProcessesToBlacklist.Contains(process))
@@ -279,16 +288,27 @@ namespace CLEA.EasySaveCore.ViewModel
                 }
             }, _ => true);
 
-            RemoveProcessToBlacklistCommand = new RelayCommand((input) =>
+            RemoveProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                string processToRemove = (input as string);
-                if (processToRemove != null && ProcessesToBlacklist.Contains(processToRemove))
+                string processToRemove = input as string ?? string.Empty;
+                if (string.IsNullOrEmpty(processToRemove) && ProcessesToBlacklist.Contains(processToRemove))
                 {
                     ProcessesToBlacklist.Remove(processToRemove);
                 }
             }, _ => true);
 
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
+        }
+
+        public override event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public ViewModelBackupJobBuilder GetJobBuilder()
+        {
+            return (ViewModelBackupJobBuilder) JobBuilder;
         }
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
@@ -302,11 +322,6 @@ namespace CLEA.EasySaveCore.ViewModel
                 job.ClearTaskCompletedHandler();
                 job.TaskCompletedHandler += callback;
             }
-        }
-
-        public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
-        {
-            JobBuilder = jobBuilder;
         }
 
         public bool DoesDirectoryPathExist(string path)
@@ -331,7 +346,7 @@ namespace CLEA.EasySaveCore.ViewModel
 
         public bool IsNameValid(string name, bool isCreation)
         {
-            TJob existingJob = JobManager.GetJob(name);
+            BackupJob existingJob = JobManager.GetJob(name);
             bool exists = existingJob != null;
 
             return isCreation ? !exists : exists;
@@ -339,74 +354,7 @@ namespace CLEA.EasySaveCore.ViewModel
 
         public void UpdateFromJobBuilder()
         {
-            JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build());
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public static EasySaveViewModel<TJob> Get()
-        {
-            if (_instance == null)
-                throw new Exception("EasySaveViewModel not initialized");
-
-            return _instance;
-        }
-
-        public static void Init(JobManager<TJob> jobManager)
-        {
-            if (_instance != null)
-                throw new Exception("EasySaveViewModel already initialized");
-
-            _instance = new EasySaveViewModel<TJob>(jobManager);
-        }
-
-        // Extensions to Encrypt
-        public ObservableCollection<string> ExtensionsToEncrypt
-        {
-            get => EasySaveConfiguration<TJob>.Get().ExtensionsToEncrypt;
-            set
-            {
-                EasySaveConfiguration<BackupJob>.Get().ExtensionsToEncrypt = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _newExtension;
-        public string NewExtension
-        {
-            get => _newExtension;
-            set
-            {
-                _newExtension = value;
-                OnPropertyChanged();
-            }
-        }
-
-        // Processes to Blacklist
-        public ObservableCollection<string> ProcessesToBlacklist
-        {
-            get => EasySaveConfiguration<TJob>.Get().ProcessesToBlacklist;
-            set
-            {
-                EasySaveConfiguration<BackupJob>.Get().ProcessesToBlacklist = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _newProcess;
-        public string NewProcess
-        {
-            get => _newProcess;
-            set
-            {
-                _newProcess = value;
-                OnPropertyChanged();
-            }
+            JobManager?.UpdateJob(JobBuilder?.InitialName, JobBuilder.Build());
         }
     }
 }
