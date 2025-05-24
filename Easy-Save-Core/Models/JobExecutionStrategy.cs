@@ -48,6 +48,7 @@
             InProgress,
             Completed,
             Skipped,
+            JobAlreadyRunning,
             InterruptedByProcess,
             Failed,
             SourceNotFound,

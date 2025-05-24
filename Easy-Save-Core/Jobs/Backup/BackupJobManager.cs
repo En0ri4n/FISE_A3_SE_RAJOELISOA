@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Jobs.Backup.Configurations;
@@ -13,7 +14,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
     {
         public delegate void OnJobInterrupted(BackupJob job);
         public event OnJobInterrupted? JobInterruptedHandler;
-        
+
+        public BackupJob? CurrentRunningJob { get; private set; }
+
         public BackupJobManager() : base(-1)
         {
         }
@@ -88,23 +91,28 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         protected override void DoMultipleJob(List<BackupJob> jobs)
         {
-            foreach (var job in jobs)
+            foreach (BackupJob job in jobs)
+                job.ClearTasksAndProgress();
+            
+            Task.Run(() =>
             {
-                if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+                foreach (BackupJob job in jobs)
                 {
-                    job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-                    job.RunJob();
-                    job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
+                    CurrentRunningJob = job;
+                    if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+                    {
+                        job.RunJob();
+                    }
+                    else
+                    {
+                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
+                        JobInterruptedHandler?.Invoke(job);
+                    }
                 }
-                else
-                {
-                    job.Status = JobExecutionStrategy.ExecutionStatus.InterruptedByProcess;
-                    JobInterruptedHandler?.Invoke(job);
-                    break;
-                }
-            }
+                CurrentRunningJob = null;
 
-            Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+                Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+            });
         }
 
         public override void DoAllJobs()
