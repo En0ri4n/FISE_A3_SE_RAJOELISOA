@@ -28,10 +28,11 @@ namespace Easy_Save_WPF
     /// </summary>
 
     //TODO : File explorer
-    //TODO : Update logic
     public partial class CreateJob_Window : Window
     {
         public string Titre { get; set; }
+
+        /*TODO FIX THIS
 
         public CreateJob_Window()
         {
@@ -101,6 +102,17 @@ namespace Easy_Save_WPF
                 BackupJobViewModel.Get().GetJobBuilder().Target = dialog.SelectedPath;
                 return;
             }
+        }
+        */
+        public void CreateButton_Click(object sender, RoutedEventArgs e) { }
+        public void CloseButton_Click(object sender, RoutedEventArgs e) { }
+        public CreateJob_Window()
+        {
+
+            InitializeComponent();
+            //this.jobTargetInput.DataContext = BackupJobViewModel.Get().JobBuilder;
+            //this.jobSourceInput.DataContext = BackupJobViewModel.Get().JobBuilder;
+            //this.jobNameInput.DataContext = BackupJobViewModel.Get().JobBuilder;
         }
     }
 }

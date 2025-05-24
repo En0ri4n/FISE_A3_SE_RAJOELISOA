@@ -91,6 +91,11 @@
   "common.source": "Source",
   "common.target": "Cible",
 
+  "common.backup.type": "Type de Sauvegarde",
+  "common.backup.full": "Complete",
+  "common.backup.differencial": "Différentielle",
+  "common.encryption": "Chiffrement",
+
   "manage_job.daily_log": "Journaux Quotidiens",
   "manage_job.status_log": "Journaux de Statut",
   "manage_job.select_all": "Tout Selectionner",
@@ -99,7 +104,7 @@
   "delete_menu.confirm_text": "Etes vous sur de vouloir supprimer ce job ?",
 
   "create_menu.title": "Créer un Job",
-  "create_menu.subtitle":"SAMPLE TEXT"
+  "create_menu.subtitle": "Entrez les informations de votre Job"
 
 
 }
