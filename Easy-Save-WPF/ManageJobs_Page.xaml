@@ -10,18 +10,18 @@
 
     <Page.Resources>
         <!-- Couleurs -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#A4C4F6"/>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
         <SolidColorBrush x:Key="AccentBrush" Color="#10C2FF"/>
         <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
+        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"></SolidColorBrush>
 
         <!-- Style bouton icône -->
         <Style x:Key="ColoredIconButton" TargetType="Button">
             <Setter Property="Width" Value="48"/>
             <Setter Property="Height" Value="48"/>
-            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="{x:Null}"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -37,10 +37,15 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
+                                <Setter Property="Button.Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#C51162"/>
+                                <Setter Property="Background" Value="{StaticResource PressedBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Background" Value="#BDBDBD"/>
@@ -58,12 +63,12 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Padding" Value="12,0"/>
-            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="16"/>
-            <Setter Property="BorderBrush" Value="{x:Null}"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <!-- <Setter Property="BorderBrush" Value="{x:Null}"/> -->
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -71,15 +76,25 @@
                         <Border Background="{TemplateBinding Background}" 
                                 CornerRadius="6"
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                BorderBrush="{TemplateBinding BorderBrush}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Margin}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
+                                <Setter Property="Button.Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#C51162"/>
+                                <Setter Property="Background" Value="{StaticResource PressedBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Background" Value="#BDBDBD"/>
@@ -136,8 +151,12 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
                     <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
                 </Button>
-                <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click" Margin="12,10">Status Log</Button>
-                <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click" Margin="12, 10">Daily Log</Button>
+                <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click">
+                    Status Log
+                </Button>
+                <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click">
+                    Daily Log
+                </Button>
             </StackPanel>
         </Grid>
 
@@ -149,8 +168,14 @@
             </Grid.ColumnDefinitions>
 
             <!-- Select/Deselect All -->
-            <CheckBox Content="Select/Deselect All" VerticalAlignment="Center" FontSize="16" Margin="0,0,20,0"/>
-
+            <CheckBox Content="Select/Deselect All" 
+                      VerticalAlignment="Center" 
+                      FontSize="16" 
+                      Margin="0,0,20,0"
+                      Foreground="Black"
+                      Background="DodgerBlue"/>
+            
+            
             <!-- Boutons d'action alignés à droite -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
@@ -162,10 +187,10 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Delete" Background="{DynamicResource DangerBrush}">
+                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Delete" Background="#ec6a6a">
                     <materialDesign:PackIcon Kind="Delete" Width="24" Height="24"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add" Background="#04A404">
+                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add" Background="#8ac36a">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
                 </Button>
             </StackPanel>
