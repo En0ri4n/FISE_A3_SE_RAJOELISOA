@@ -26,14 +26,16 @@ namespace Easy_Save_WPF
     /// <summary>
     /// Logique d'interaction pour CreateJob_Window.xaml
     /// </summary>
-    
+
     //TODO : File explorer
+    //TODO : Update logic
     public partial class CreateJob_Window : Window
     {
         public string Titre { get; set; }
 
         public CreateJob_Window()
         {
+
             InitializeComponent();
             gridInputs.DataContext = BackupJobViewModel.Get().JobBuilder;
             title.DataContext = this;
@@ -47,6 +49,8 @@ namespace Easy_Save_WPF
         {
             Close();
         }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
         public void CreateBTN_Click(object sender, RoutedEventArgs e)
         {
             if(Titre == "Create Job")

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="CreateJob_Window" Height="500" Width="800">
+        Title="CreateJob_Window" Height="350" Width="800">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
@@ -161,7 +161,7 @@
         <TextBlock Text="{local:Loc create_menu.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
 
         <!-- Body -->
-        <StackPanel Grid.Row="2" VerticalAlignment="Top" Height="521">
+        <StackPanel Grid.Row="2" VerticalAlignment="Top" Height="202" Grid.RowSpan="2">
             <!-- Job Name -->
             <Grid Margin="0 0 0 18">
                 <Grid.ColumnDefinitions>
@@ -173,9 +173,7 @@
                 <!-- Label + Value -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <TextBlock Text="{local:Loc common.name}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding StatusLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/> <!--TODO Make this a TextBox !!!! Style is not adapted to this currently-->
-                    <!--<TextBox  Text="{Binding Name, Mode=TwoWay}"  Margin="10 0 10 0" Padding="4"/> FIXME : This is a bad idea-->
-                    <!--<TextBlock Name="DailyLogPathText" Text="{Binding DailyLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>-->
+                    <TextBox Text="{Binding StatusLogPath}" VerticalAlignment="Center" Width="150" Margin="10,0,0,0"/>
                 </StackPanel>
             </Grid>
 
@@ -211,32 +209,23 @@
                     <TextBlock Text="{local:Loc common.target}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding StatusLogPath}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
-
                 <!-- Buttons -->
                 <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
                 <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
             </Grid>
 
 
-            <!--Backup Type-->
+            <!--Backup Type & Encryption -->
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <TextBlock Text="Backup Type" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <!--TODO-->
                 <StackPanel Orientation="Horizontal" Margin="10">
-                    <RadioButton Content="Full" GroupName="Choices" Margin="5,0"/>
-                    <RadioButton Content="Differiencial" GroupName="Choices" Margin="5,0"/>
+                    <RadioButton Content="{local:Loc common.backup.full}" GroupName="Choices" Margin="5,0" VerticalAlignment="Center"/>
+                    <RadioButton Content="{local:Loc common.backup.differencial}" GroupName="Choices" Margin="5,0" VerticalAlignment="Center"/>
                 </StackPanel>
+                <TextBlock Text="{local:Loc common.encryption}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                <CheckBox x:Name="Encryption_checkbox" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
-
-            <!--Encryption-->
-
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <TextBlock Text="Encryption" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <!--TODO-->
-                <CheckBox x:Name="cb1" Checked="HandleCheck" Unchecked="HandleUnchecked" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            </StackPanel>
-
         </StackPanel>
 
         <!-- Footer -->
