@@ -11,9 +11,8 @@
     <Page.Resources>
         <!-- Couleurs -->
         <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#10C2FF"/>
         <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
-        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"></SolidColorBrush>
+        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"/>
 
         <!-- Style bouton icône -->
         <Style x:Key="ColoredIconButton" TargetType="Button">
@@ -37,7 +36,6 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
                                 <Setter Property="Button.Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
@@ -67,7 +65,6 @@
             <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="16"/>
-            <!-- <Setter Property="BorderBrush" Value="{x:Null}"/> -->
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -86,7 +83,6 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
                                 <Setter Property="Button.Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
@@ -126,6 +122,35 @@
             <Setter Property="Foreground" Value="#222"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
+
+        <!-- Style ProgressBar -->
+        <Style TargetType="ProgressBar" x:Key="ModernProgressBar">
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="#4CAF50"/>
+            <Setter Property="Background" Value="#808080"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4" 
+                                SnapsToDevicePixels="true">
+                            <Grid>
+                                <Rectangle x:Name="PART_Track" Fill="{TemplateBinding Background}" RadiusX="4" RadiusY="4"/>
+                                <Rectangle x:Name="PART_Indicator" Fill="{TemplateBinding Foreground}" RadiusX="4" RadiusY="4"
+                                           HorizontalAlignment="Left" Width="0"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Page.Resources>
 
     <Grid Margin="24">
@@ -175,7 +200,6 @@
                       Foreground="Black"
                       Background="DodgerBlue"/>
             
-            
             <!-- Boutons d'action alignés à droite -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
@@ -187,49 +211,55 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Delete" Background="#ec6a6a">
-                    <materialDesign:PackIcon Kind="Delete" Width="24" Height="24"/>
+                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Remove Job">
+                    <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add" Background="#8ac36a">
+                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add Job">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
                 </Button>
             </StackPanel>
         </Grid>
 
         <!-- DataGrid -->
-        <DataGrid Grid.Row="2" Name="jobsDatagrid"
-          AutoGenerateColumns="False"
-          SelectionMode="Extended"
-          SelectionUnit="FullRow"
-          MouseDoubleClick="ModifyWindow_Click"
-          SelectionChanged="DataGridSelectionChanged"
-          CanUserAddRows="False"
-          CanUserSortColumns="True"
-          Margin="0"
-          VerticalAlignment="Stretch"
-          HorizontalAlignment="Stretch"
-          HeadersVisibility="Column"
-          ColumnHeaderHeight="36"
-          GridLinesVisibility="Horizontal"
-          >
-    <DataGrid.Resources>
-        <!-- Style en-tête -->
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="8,4"/>
-        </Style>
-    </DataGrid.Resources>
+        <DataGrid Grid.Row="2" Name="jobsDatagrid" ItemsSource="{Binding JobList}" AutoGenerateColumns="False" SelectionMode="Extended" Margin="0"
+                  CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" HeadersVisibility="Column" FontSize="14">
 
-    <DataGrid.Columns>
-        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Strategy" Binding="{Binding Strategy}" Width="1.5*" IsReadOnly="True"/>
-        <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="Auto" IsReadOnly="True" />
-        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="1.5*" IsReadOnly="True"/>
-    </DataGrid.Columns>
-</DataGrid>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Strategy" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="80" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Progress" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" 
+                                           Text="{Binding Progress, Mode=OneWay, StringFormat={}{0:F1}%}"
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           Margin="0,0,5,0"
+                                           FontWeight="SemiBold"/>
+
+                                <ProgressBar Grid.Column="1" 
+                                             Value="{Binding Progress, Mode=OneWay}"
+                                             Style="{StaticResource ModernProgressBar}" 
+                                             VerticalAlignment="Center"
+                                             Height="16"/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
 
     </Grid>
 </Page>
