@@ -19,6 +19,8 @@ using EasySaveCore.Models;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 using System.Windows;
+using Microsoft.Extensions.Logging;
+using MessageBox = System.Windows.MessageBox;
 
 namespace EasySaveCore.Jobs.Backup.ViewModels
 {
@@ -209,6 +211,12 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             {
                 if (jobNameList is List<string> jobNames)
                 {
+                    List<BackupJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+                    if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
+                    {
+                        Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
+                        MessageBox.Show("CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                     JobManager.DoMultipleJob(jobNames);
                 }
             }, _ => true);
@@ -325,7 +333,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (string.IsNullOrEmpty(process))
                     return;
 
-                if (!Regex.IsMatch(process, @"^[\w\-]+\.[\w\-]+$"))
+                if (!Regex.IsMatch(process, @"^[\w\-]+$"))
                     return;
 
                 if (!ProcessesToBlacklist.Contains(process))
