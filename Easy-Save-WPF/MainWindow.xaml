@@ -7,7 +7,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
       Background="{DynamicResource MaterialDesignPaper}"
-      Title="ManageJobs_Page">
+      Title="Easy Save">
 
     <Window.Resources>
         <!-- Couleurs -->
@@ -114,7 +114,7 @@
         </Style>
 
         <!-- Style DataGrid -->
-        <Style TargetType="DataGrid">
+        <Style TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
             <Setter Property="RowBackground" Value="White"/>
             <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
@@ -124,6 +124,31 @@
             <Setter Property="FontSize" Value="14"/>
         </Style>
 
+        <!-- Style DataGridRow -->
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#85aded"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- Style DataGridCell -->
+        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#afc8f0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style DataGridColumnHeader -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+        
         <!-- Style ProgressBar -->
         <Style TargetType="ProgressBar" x:Key="ModernProgressBar">
             <Setter Property="Height" Value="16"/>
@@ -202,12 +227,12 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
                     <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="Pause">
+                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="Pause">
                     <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
-                </Button>
+                </Button> -->
                 <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Remove Job">
                     <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
                 </Button>
