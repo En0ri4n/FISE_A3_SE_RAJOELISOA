@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -120,8 +121,8 @@ namespace Easy_Save_WPF
         }
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            var selectedJobs = ((BackupJob)jobsDatagrid.SelectedItems)?.Name;
-            BackupJobViewModel.Get().RunMultipleJobsCommand.Execute(selectedJobs);
+            BackupJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<BackupJob>().ToArray();
+            BackupJobViewModel.Get().RunMultipleJobsCommand.Execute(selectedJobs.Select(bj => bj.Name).ToList());
         }
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {

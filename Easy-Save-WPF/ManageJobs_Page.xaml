@@ -12,7 +12,6 @@
     <Page.Resources>
         <!-- Couleurs -->
         <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#10C2FF"/>
         <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
         <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"/>
 
@@ -124,6 +123,35 @@
             <Setter Property="Foreground" Value="#222"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
+
+        <!-- Style ProgressBar -->
+        <Style TargetType="ProgressBar" x:Key="ModernProgressBar">
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="#4CAF50"/>
+            <Setter Property="Background" Value="#808080"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4" 
+                                SnapsToDevicePixels="true">
+                            <Grid>
+                                <Rectangle x:Name="PART_Track" Fill="{TemplateBinding Background}" RadiusX="4" RadiusY="4"/>
+                                <Rectangle x:Name="PART_Indicator" Fill="{TemplateBinding Foreground}" RadiusX="4" RadiusY="4"
+                                           HorizontalAlignment="Left" Width="0"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Page.Resources>
 
     <Grid Margin="24">
@@ -182,10 +210,10 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Delete" Background="#ec6a6a">
-                    <materialDesign:PackIcon Kind="Delete" Width="24" Height="24"/>
+                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Remove Job">
+                    <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add" Background="#8ac36a">
+                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add Job">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
                 </Button>
             </StackPanel>
@@ -215,13 +243,40 @@
             </DataGrid.Resources>
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="2*" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="2*" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="2*" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.strategy}" Binding="{Binding Strategy}" Width="1.5*" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="{local:Loc common.encrypted}" Binding="{Binding IsEncrypted}" Width="Auto" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.status}" Binding="{Binding Status}" Width="1.5*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="150" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.strategy}" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="{local:Loc common.encrypted}" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.status}" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Progress" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" 
+                                           Text="{Binding Progress, Mode=OneWay, StringFormat={}{0:F1}%}"
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           Margin="0,0,5,0"
+                                           FontWeight="SemiBold"/>
+
+                                <ProgressBar Grid.Column="1" 
+                                             Value="{Binding Progress, Mode=OneWay}"
+                                             Style="{StaticResource ModernProgressBar}" 
+                                             VerticalAlignment="Center"
+                                             Height="16"/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
+
         </DataGrid>
     </Grid>
 </Page>
