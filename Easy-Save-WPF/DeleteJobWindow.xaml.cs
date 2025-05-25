@@ -6,11 +6,11 @@ namespace Easy_Save_WPF
     /// <summary>
     /// Logique d'interaction pour DeleteJob_Window.xaml
     /// </summary>
-    public partial class DeleteJob_Window : Window
+    public partial class DeleteJobWindow : Window
     {
         static BackupJobViewModel ViewModel => BackupJobViewModel.Get();
 
-        public DeleteJob_Window()
+        public DeleteJobWindow()
         {
             InitializeComponent();
             this.deleteJobInput.DataContext = ViewModel.JobBuilder;
