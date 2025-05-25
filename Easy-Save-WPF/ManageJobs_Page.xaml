@@ -229,14 +229,14 @@
                 <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Strategy" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="80" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Progress" Width="120">
+                <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Progress" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="60"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
