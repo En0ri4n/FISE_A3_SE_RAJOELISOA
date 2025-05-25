@@ -279,7 +279,7 @@
 
         <!-- Title -->
             <Button HorizontalAlignment="Right" ToolTip="Config_File" Style="{StaticResource ColoredIconButton}" Click="configFileBTN_Click">
-            <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
+            <materialDesign:PackIcon Kind="File" Width="24" Height="24"/>
         </Button>
         <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="406"/>
             
