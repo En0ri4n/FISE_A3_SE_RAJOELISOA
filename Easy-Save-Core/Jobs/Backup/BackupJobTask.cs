@@ -90,10 +90,13 @@ namespace EasySaveCore.Models
 
             try
             {
+                if (!_backupJob.IsEncrypted)
+                    EncryptionTime = 0L;
+                
                 if (ExternalEncryptor.IsEncryptorPresent() && _backupJob.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
-                    ExternalEncryptor.ProcessFile("", Source, Target); // TODO: Add key from configuration
+                    ExternalEncryptor.ProcessFile(ExternalEncryptor.GetEncryptionKey(), Source, $"{Target}.encrypted"); // TODO: Add key from configuration
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
                 }
@@ -124,8 +127,8 @@ namespace EasySaveCore.Models
                 ["Source"] = Source,
                 ["Target"] = Target,
                 ["Size"] = Size,
-                ["FileTransferTime"] = TransferTime == -1 ? -1 : TransferTime / 1000D,
-                ["EncryptionTime"] = EncryptionTime == -1 ? -1 : EncryptionTime / 1000D
+                ["FileTransferTime"] = TransferTime == -1 ? -1D : TransferTime / 1000D,
+                ["EncryptionTime"] = EncryptionTime == -1 ? -1D : EncryptionTime / 1000D
             };
             return json;
         }
@@ -156,7 +159,7 @@ namespace EasySaveCore.Models
             jobElement.AppendChild(sizeElement);
 
             XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
-            fileTransferTimeElement.InnerText = (TransferTime == -1 ? -1 : TransferTime / 1000D).ToString(CultureInfo.InvariantCulture);
+            fileTransferTimeElement.InnerText = TransferTime == -1 ? "-1" : $"{TransferTime / 1000D:F3}";
             jobElement.AppendChild(fileTransferTimeElement);
 
             XmlElement timestampElement = document.CreateElement("Timestamp");
@@ -164,7 +167,7 @@ namespace EasySaveCore.Models
             jobElement.AppendChild(timestampElement);
             
             XmlElement encryptionTimeElement = document.CreateElement("EncryptionTime");
-            encryptionTimeElement.InnerText = (EncryptionTime == -1 ? -1 : EncryptionTime / 1000D).ToString(CultureInfo.InvariantCulture);
+            encryptionTimeElement.InnerText = (EncryptionTime == -1 ? "-1" : $"{EncryptionTime / 1000D:F3}");
             jobElement.AppendChild(encryptionTimeElement);
 
             return jobElement;
