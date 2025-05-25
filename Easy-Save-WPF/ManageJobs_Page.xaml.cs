@@ -61,38 +61,18 @@ namespace Easy_Save_WPF
         {
             BackupJobViewModel.Get().JobBuilder.Clear();
 
-            CreateJob_Window create = new CreateJob_Window()
-            {
-                Titre = "Create Job"
-            };
-            while (create.ShowDialog() == true)
-            {
-                create.Owner = Window.GetWindow(App.Current.MainWindow);
-            }
-            this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
+            CreateJob_Window createJobWindow = new CreateJob_Window("create_job");
+            createJobWindow.Owner = Window.GetWindow(App.Current.MainWindow);
+            createJobWindow.ShowDialog();
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            CreateJob_Window create = new CreateJob_Window()
-            {
-                Titre = "Modify Job"
-            };
+            string selectedJobName = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
+            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJobName);
 
-            var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
-            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJob);
-
-            while (create.ShowDialog() == true)
-            {
-                create.Owner = Window.GetWindow(App.Current.MainWindow);
-
-                create.jobTargetInput.DataContext = BackupJobViewModel.Get().JobBuilder;
-                create.jobSourceInput.DataContext = BackupJobViewModel.Get().JobBuilder;
-                create.jobNameInput.DataContext = BackupJobViewModel.Get().JobBuilder;
-            }
-            this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
-
+            CreateJob_Window modifyJobWindow = new CreateJob_Window("edit_job");
+            modifyJobWindow.Owner = Window.GetWindow(App.Current.MainWindow);
+            modifyJobWindow.ShowDialog();
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {

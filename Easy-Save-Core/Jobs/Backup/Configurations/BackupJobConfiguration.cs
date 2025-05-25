@@ -120,7 +120,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             // Encryption Key
             data.TryGetPropertyValue("encryptionKey", out JsonNode? encryptionKey);
             if (encryptionKey != null)
-                EncryptionKey = encryptionKey.ToString();
+                _encryptionKey = encryptionKey.ToString();
 
             // Encrypted file extensions
             ObservableCollection<string> extensionsToEncryptList = new ObservableCollection<string>();
@@ -131,7 +131,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                     if (format is JsonValue formatValue)
                         extensionsToEncryptList.Add(formatValue.ToString());
 
-                extensionsToEncryptList.CollectionChanged += (sender, args) => SaveConfiguration();
+                _extensionsToEncrypt.CollectionChanged += (sender, args) => SaveConfiguration();
                 _extensionsToEncrypt = extensionsToEncryptList;
             }
             else
@@ -146,7 +146,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                     if (process is JsonValue processValue)
                         processesToBlacklistList.Add(processValue.ToString());
 
-                processesToBlacklistList.CollectionChanged += (sender, args) => SaveConfiguration();
+                _processesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
                 _processesToBlacklist = processesToBlacklistList;
             }
             else
@@ -164,7 +164,6 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 throw new JsonException("Jobs not found in configuration file");
 
             // Language
-            // ALWAYS AT THE END, BECAUSE IT CALLS SAVE CONFIGURATION
             data.TryGetPropertyValue("language", out JsonNode? lang);
             if (lang == null)
                 throw new JsonException("Language property not found in configuration file");
