@@ -52,7 +52,11 @@ namespace Easy_Save_WPF
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            string selectedJobName = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
+            string selectedJobName = ((BackupJob)this.jobsDatagrid.SelectedItem)?.Name;
+
+            if (selectedJobName == null)
+                return;
+
             BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJobName);
 
             JobFormWindow modifyJobFormWindow = new JobFormWindow("edit_job");
