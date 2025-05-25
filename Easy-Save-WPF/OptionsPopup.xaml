@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         Title="Options" Height="750" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
         ResizeMode="NoResize"
@@ -177,6 +178,53 @@
             </Setter>
         </Style>
 
+        <!-- Couleurs -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
+        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"/>
+
+        <!-- Style bouton icône -->
+        <Style x:Key="ColoredIconButton" TargetType="Button">
+            <Setter Property="Width" Value="48"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Button.Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PressedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <!-- TextBlock for Labels style -->
         <Style TargetType="TextBlock" x:Key="LabelStyle">
             <Setter Property="FontSize" Value="16"/>
@@ -230,8 +278,11 @@
         </Grid.RowDefinitions>
 
         <!-- Title -->
+            <Button HorizontalAlignment="Right" ToolTip="Config_File" Style="{StaticResource ColoredIconButton}" Click="configFileBTN_Click">
+            <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
+        </Button>
         <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="406"/>
-
+            
         <!-- Subtitle -->
         <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="246"/>
 
