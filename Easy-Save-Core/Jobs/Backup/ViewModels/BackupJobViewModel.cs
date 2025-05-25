@@ -13,6 +13,7 @@ using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
+using CLEA.EasySaveCore.External;
 using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
@@ -94,6 +95,17 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
+        private string _tempEncryptionKey;
+        public string TempEncryptionKey
+        {
+            get => _tempEncryptionKey;
+            set
+            {
+                _tempEncryptionKey = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<string> ExtensionsToEncrypt => BackupJobConfiguration.Get().ExtensionsToEncrypt;
         public ObservableCollection<string> ProcessesToBlacklist => BackupJobConfiguration.Get().ProcessesToBlacklist;
 
@@ -133,9 +145,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand RemoveProcessToBlacklistCommand { get; set; }
         public ICommand AddExtensionToEncryptCommand { get; set; }
         public ICommand RemoveExtensionToEncryptCommand { get; set; }
+        public ICommand LoadEncryptionKeyCommand { get; set; }
+        public ICommand SaveEncryptionKeyCommand { get; set; }
 
         protected override void InitializeCommand()
         {
+            //_tempEncryptionKey = ExternalEncryptor.GetEncryptionKey();
+            _tempEncryptionKey = BackupJobConfiguration.Get().EncryptionKey;
+
             BuildJobCommand = new RelayCommand(_ =>
             {
                 if (JobBuilder == null)
@@ -246,6 +263,21 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     StatusLogPath = path;
                 }
             }, _ => true);
+
+            LoadEncryptionKeyCommand = new RelayCommand(input =>
+            {
+                TempEncryptionKey = ExternalEncryptor.GetEncryptionKey();
+            });
+
+            SaveEncryptionKeyCommand = new RelayCommand(input =>
+            {
+                string encryptionKey = (input as string)?.Trim() ?? string.Empty;
+
+                if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length > 30)
+                    return;
+
+                BackupJobConfiguration.Get().EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
+            });
 
             AddExtensionToEncryptCommand = new RelayCommand(input =>
             {
