@@ -61,20 +61,21 @@ namespace Easy_Save_WPF
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {
-            DeleteJobWindow delete = new DeleteJobWindow();
-
-            var selectedJob = ((BackupJob)this.jobsDatagrid.SelectedItem).Name;
-            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJob);
-
-            while (delete.ShowDialog() == true)
+            if (jobsDatagrid.SelectedItem == null)
             {
-                delete.Owner = Window.GetWindow(App.Current.MainWindow);
-
-                delete.deleteJobInput.DataContext = BackupJobViewModel.Get().JobBuilder;
+                MessageBox.Show("Please select a job to delete.", "No Job Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            this.jobsDatagrid.ItemsSource = null;
-            this.jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
-
+            
+            MessageBoxResult result = MessageBox.Show("Deleting a job will remove it from the list and all its associated tasks. Are you sure you want to proceed?", "Delete Job Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+            
+            BackupJob selectedJob = (BackupJob)jobsDatagrid.SelectedItem;
+            BackupJobViewModel.Get().DeleteJobCommand.Execute(selectedJob.Name);
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
         {

@@ -225,6 +225,7 @@
                   MouseDoubleClick="ModifyWindow_Click"
                   CanUserAddRows="False"
                   CanUserSortColumns="True"
+                  CanUserDeleteRows="False"
                   Margin="0"
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"
