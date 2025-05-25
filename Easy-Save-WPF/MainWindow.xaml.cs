@@ -39,32 +39,5 @@ namespace Easy_Save_WPF
         {
             MainFrame.Navigate(new ManageJobs_Page());
         }
-
-        public void LanguageBTN_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Options_Language_Page());
-
-        }
-        public void LogTypeBTN_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Options_LogType_Page());
-
-        }
-        public void DailyLogBTN_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Options_DailyLog_Page());
-
-        }
-        public void StatusLogBTN_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Options_StatusLog_Page());
-
-        }
-        public void ReturnBTN_Click(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Options_Page());
-
-        }
-
     }
 }
