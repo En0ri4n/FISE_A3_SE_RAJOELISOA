@@ -19,6 +19,7 @@ namespace CLEA.EasySaveCore
             // Initialize the view model with the job manager
             easySaveViewModelBase.InitializeViewModel(jobManager);
 
+
             // Load the configuration first, so everything is set up correctly
             // before we start logging.
             configuration.LoadConfiguration();

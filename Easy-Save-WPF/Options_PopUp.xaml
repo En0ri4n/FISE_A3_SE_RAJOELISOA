@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
-        Title="Options" Height="725" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
+        Title="Options" Height="750" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
         ResizeMode="NoResize"
         FontFamily="Segoe UI" Icon="/Options_PopUp.ico">
 
@@ -110,6 +110,39 @@
             </Setter>
         </Style>
 
+        <!-- Save buttons style -->
+        <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#228B22"/>
+            <Setter Property="Foreground" Value="#228B22"/>
+            <Setter Property="BorderBrush" Value="	#228B22"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}" 
+                CornerRadius="5" 
+                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="#FAF9F6"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#355E3B"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#355E3B"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#355E3B"/>
+                                <Setter Property="BorderBrush" Value="	#355E3B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Delete buttons style -->
         <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="#FF0000"/>
@@ -160,7 +193,7 @@
             <Setter Property="Margin" Value="0,5"/>
         </Style>
 
-        <!-- TextBox white background -->
+        <!-- TextBlock white background -->
         <Style x:Key="InfoBoxStyle" TargetType="TextBlock">
             <Setter Property="Background" Value="#F0F0F0"/>
             <Setter Property="Padding" Value="6"/>
@@ -170,9 +203,19 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
         </Style>
+
+        <!-- TextBox white background -->
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Width" Value="400"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+        </Style>
     </Window.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="20,20,20,20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="0*"/>
@@ -180,18 +223,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto" MinHeight="0"/>
         </Grid.RowDefinitions>
 
         <!-- Title -->
-        <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
+        <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="406"/>
 
         <!-- Subtitle -->
-        <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
+        <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="246"/>
 
         <!-- Body -->
-        <StackPanel Grid.Row="2" VerticalAlignment="Top" Height="521">
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="559">
             <!-- Language -->
             <StackPanel Orientation="Horizontal" Margin="0 0 0 18">
                 <TextBlock Text="{local:Loc options_popup.language}" Style="{StaticResource LabelStyle}" Width="auto"/>
@@ -265,9 +308,26 @@
                 <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
             </Grid>
 
+            <!-- Encryption Key -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Path -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="{local:Loc options_popup.encryption_key}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                    <TextBox Name="EncryptionKeyText" Text="{Binding TempEncryptionKey}" Style="{StaticResource TextBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <Button Grid.Column="1" Content="{local:Loc common.save}" Command="{Binding SaveEncryptionKeyCommand}" CommandParameter="{Binding TempEncryptionKey}" Style="{StaticResource SaveButtonStyle}" Margin="10,0,0,0"/>
+            </Grid>
+
             <!-- Extensions -->
             <StackPanel Margin="0 0 0 18">
-                <TextBlock Text="{local:Loc options_popup.extensions_encryption}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 6"/>
+                <TextBlock Text="{local:Loc options_popup.extensions_encryption}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 0"/>
 
                 <ListBox ItemsSource="{Binding ExtensionsToEncrypt}" Height="80" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
@@ -297,7 +357,7 @@
 
             <!-- Processes blacklist -->
             <StackPanel Margin="0 0 0 18">
-                <TextBlock Text="{local:Loc options_popup.processes_blacklist}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 6"/>
+                <TextBlock Text="{local:Loc options_popup.processes_blacklist}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 0"/>
 
                 <ListBox ItemsSource="{Binding ProcessesToBlacklist}" Height="80" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
@@ -324,11 +384,10 @@
                     <Button Content="{local:Loc common.add}" Command="{Binding AddProcessToBlacklistCommand}" CommandParameter="{Binding NewProcessToBlacklist}" Style="{StaticResource SecondaryButtonStyle}"/>
                 </StackPanel>
             </StackPanel>
-
         </StackPanel>
 
         <!-- Footer -->
-        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="0 10 0 0" Width="100">
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="0,0,0,0" Width="100">
             <Button Content="{local:Loc common.close}" Width="90" Click="CloseButton_Click"/>
         </StackPanel>
     </Grid>
