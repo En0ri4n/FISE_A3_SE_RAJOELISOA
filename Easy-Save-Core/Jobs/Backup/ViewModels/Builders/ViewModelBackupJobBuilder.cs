@@ -114,10 +114,11 @@ namespace CLEA.EasySaveCore.ViewModel
             IsEncrypted = job.IsEncrypted;
         }
 
-        public override BackupJob Build()
+        public override BackupJob Build(bool clear = true)
         {
             BackupJob job = new BackupJob(Name, Source, Target, StrategyType, IsEncrypted);
-            Clear();
+            if (clear)
+                Clear();
             return job;
         }
     }

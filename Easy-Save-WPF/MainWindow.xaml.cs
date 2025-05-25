@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -33,6 +34,9 @@ namespace Easy_Save_WPF
             {
                 MessageBox.Show($"Job {job.Name} and every following jobs have been interrupted by process {processName}.", "Job(s) Interruption(s)", MessageBoxButton.OK, MessageBoxImage.Error);
             };
+
+            //BackupJobViewModel.Get().DeactivateButtons = DeactivateButtons;
+            //BackupJobViewModel.Get().ReactivateButtons = ReactivateButtons;
         }
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
@@ -80,19 +84,22 @@ namespace Easy_Save_WPF
         {
             if (jobsDatagrid.SelectedItem == null)
             {
-                MessageBox.Show("Please select a job to delete.", "No Job Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select job(s) to delete.", "No Job(s) Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             
-            MessageBoxResult result = MessageBox.Show("Deleting a job will remove it from the list and all its associated tasks. Are you sure you want to proceed?", "Delete Job Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show("Deleting a job(s) will remove it from the list and all its associated tasks. Are you sure you want to proceed?", "Delete Job(s) Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             
             if (result != MessageBoxResult.Yes)
             {
                 return;
             }
-            
-            BackupJob selectedJob = (BackupJob)jobsDatagrid.SelectedItem;
-            BackupJobViewModel.Get().DeleteJobCommand.Execute(selectedJob.Name);
+
+            BackupJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<BackupJob>().ToArray();
+
+            foreach (var selectedJob in selectedJobs) {
+                BackupJobViewModel.Get().DeleteJobCommand.Execute(selectedJob.Name); 
+            }
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -127,5 +134,25 @@ namespace Easy_Save_WPF
             myProcess.StartInfo.UseShellExecute = true;
             myProcess.Start();
         }
+
+        //public void DeactivateButtons()
+        //{
+        //    CreateJobBTN.IsEnabled = false;
+        //    ModifyJobBTN.IsEnabled = false;
+        //    DeleteJobBTN.IsEnabled = false;
+        //    RunJobBTN.IsEnabled = false;
+        //    StopJobBTN.IsEnabled = false;
+        //    PauseJobBTN.IsEnabled = false;
+        //}
+
+        //public void ReactivateButtons()
+        //{
+        //    CreateJobBTN.IsEnabled = false;
+        //    ModifyJobBTN.IsEnabled = false;
+        //    DeleteJobBTN.IsEnabled = false;
+        //    RunJobBTN.IsEnabled = false;
+        //    StopJobBTN.IsEnabled = false;
+        //    PauseJobBTN.IsEnabled = false;
+        //}
     }
 }

@@ -31,7 +31,7 @@ namespace CLEA.EasySaveCore.Models
 
         public abstract void UpdateJob(string name, JsonObject? jobJson);
 
-        public abstract void UpdateJob(string name, TJob job);
+        public abstract bool UpdateJob(string name, TJob job);
 
         public bool RemoveJob(string name)
         {

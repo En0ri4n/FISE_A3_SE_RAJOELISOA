@@ -152,6 +152,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand SaveEncryptionKeyCommand { get; set; }
 
         public Action CloseAction { get; set; }
+        //public Action DeactivateButtons { get; set; }
+        //public Action ReactivateButtons { get; set; }
 
         protected override void InitializeCommand()
         {
@@ -173,9 +175,19 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
 
                 if (isJobCreation)
-                    JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
+                {
+                    if (!JobManager.AddJob(SelectedJob = JobBuilder.Build(false), true))
+                    {
+                        MessageBox.Show("A backup job already has this name.", "Existing job", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
                 else
-                    JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build());
+                    if (!JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build(false)))
+                    {
+                        MessageBox.Show("A backup job already has this name.", "Existing job", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                 CloseAction();
             }, _ => true);
@@ -197,9 +209,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (jobName is string name)
                 {
                     JobManager.RemoveJob(name);
-                    BackupJobConfiguration.Get().SaveConfiguration();
                 }
-            }, _ => true);
+            }, _ => true); //Todo utiliser commandes pour désactiver boutons
 
             RunJobCommand = new RelayCommand(jobName =>
             {
@@ -216,7 +227,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 
                 if (jobNames.Count == 0)
                 {
-                    MessageBox.Show("No jobs selected to run.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("No job(s) selected to run.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -228,7 +239,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     MessageBox.Show("CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 
+                //TODO Deactivate all buttons that can impact job running (.e.g: Delete Button, Create Job Button, Settings Button, Run Job Button (to see)
+                // deactivateButtons()
                 JobManager.DoMultipleJob(jobNames);
+                // reactivateButtons()
             }, _ => true);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>

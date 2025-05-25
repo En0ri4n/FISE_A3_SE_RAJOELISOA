@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
@@ -27,6 +28,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override bool AddJob(BackupJob job, bool save)
         {
             if (job == null || (Jobs.Count >= Size && Size!= -1) || Jobs.Any(j => j.Name == job.Name))
+
                 return false;
             
             Jobs.Add(job);
@@ -57,7 +59,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         }
         public override void UpdateJob(string name, JsonObject? jobJson)
         {
-            var job = Jobs.FirstOrDefault(j => j.Name == name);
+            BackupJob job = Jobs.FirstOrDefault(j => j.Name == name);
             if (job == null)
                 throw new Exception($"BackupJob with name {name} not found");
 
@@ -67,19 +69,24 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             BackupJobConfiguration.Get().SaveConfiguration();
         }
 
-        public override void UpdateJob(string name, BackupJob? job)
+        public override bool UpdateJob(string name, BackupJob? job)
         {
-            var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
+            BackupJob existingJob = Jobs.FirstOrDefault(j => j.Name == name);
             if (existingJob == null)
-                throw new Exception($"BackupJob with name {name} not found");
+                return false;
 
             if (job == null)
-                return;
-            
+                return false;
+
+            if (Jobs.Any(j => j.Name == job.Name) && (name != job.Name))
+                return false;
+
             // Sorry for this, but to trigger the CollectionChanged event we need to replace the job in the collection
             Jobs[Jobs.IndexOf(existingJob)] = job;
             
             BackupJobConfiguration.Get().SaveConfiguration();
+
+            return true;
         }
 
 

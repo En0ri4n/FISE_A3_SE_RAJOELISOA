@@ -35,7 +35,7 @@ namespace CLEA.EasySaveCore.ViewModel
         /// Can be used to create a new job or update an existing one.
         /// Clear() should be called after using this method to ensure a clean state.
         /// </summary>
-        public abstract TJob Build();
+        public abstract TJob Build(bool clear = true);
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -18,6 +18,7 @@
       <None Remove="assets\pause_icon.png" />
       <None Remove="assets\play_icon.png" />
       <None Remove="assets\stop_icon.png" />
+      <None Remove="EasySave.ico" />
     </ItemGroup>
 
     <ItemGroup>
@@ -74,6 +75,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="EasySave.ico" />
 	  <Resource Include="options_popup.ico" />
 	</ItemGroup>
 
