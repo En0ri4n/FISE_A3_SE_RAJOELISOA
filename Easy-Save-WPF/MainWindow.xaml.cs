@@ -42,6 +42,20 @@ namespace Easy_Save_WPF
             options.Owner = Window.GetWindow(App.Current.MainWindow);
             options.ShowDialog();
         }
+        public void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (jobsDatagrid.SelectedItems.Count < jobsDatagrid.Items.Count)
+            {
+                jobsDatagrid.SelectAll();
+                SelectAll_Checkbox.IsChecked = true;
+            }
+            else
+            {
+                jobsDatagrid.UnselectAll();
+                SelectAll_Checkbox.IsChecked = false;
+            }
+        }
+
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
             BackupJobViewModel.Get().JobBuilder.Clear();

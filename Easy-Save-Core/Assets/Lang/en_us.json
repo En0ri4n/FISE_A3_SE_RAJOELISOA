@@ -99,7 +99,7 @@
 
   "manage_job.daily_log": "Daily Log",
   "manage_job.status_log": "Status Log",
-  "manage_job.select_all": "Select All",
+  "manage_job.select_all": "Select/Deselect All",
 
   "delete_menu.title": "Delete Job",
   "delete_menu.confirm_text": "Are you sure you want to delete this job ?",
