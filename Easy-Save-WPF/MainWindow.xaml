@@ -193,13 +193,16 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
+                    <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
             
             <Label Grid.Column="1" Content="{local:Loc main_menu.jobs}"/>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
-                    <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
-                </Button>
                 <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click">
                     <TextBlock Text="{local:Loc manage_job.status_log}" />
                 </Button>
@@ -221,7 +224,9 @@
                       FontSize="16" 
                       Margin="0,0,20,0"
                       Foreground="Black"
-                      Background="DodgerBlue"/>
+                      Background="DodgerBlue"
+                      Click="SelectAll_Click"
+                      Name="SelectAll_Checkbox"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
