@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         mc:Ignorable="d"
         Title="MainWindow" Background="#f3f3f3"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" WindowStyle="ToolWindow"
         SizeToContent="Manual"
-        ResizeMode="CanMinimize"
+        ResizeMode="CanResize"
         >
     <!--FIXME HEIGHT & WIDTH should be this size, hardcoded here for clarity (probably should be removed) -->
     <!--CEDRIC : Apparently my max resolution FOR THIS WINDOW SPECIFICALLY on visual studio is 924,8 & 1548,8 -->

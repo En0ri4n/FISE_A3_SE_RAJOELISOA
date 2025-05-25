@@ -12,6 +12,10 @@ namespace CLEA.EasySaveCore.Models
         public delegate void TaskCompletedDelegate(dynamic task);
         public event TaskCompletedDelegate TaskCompletedHandler;
         public void ClearTaskCompletedHandler();
+        
+        public delegate void JobCompletedDelegate(IJob job);
+        public event JobCompletedDelegate JobCompletedHandler;
+        public void ClearJobCompletedHandler();
     
         bool IsRunning { get; set; }
     

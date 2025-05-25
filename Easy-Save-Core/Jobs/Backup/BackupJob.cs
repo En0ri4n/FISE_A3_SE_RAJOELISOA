@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
-using CLEA.EasySaveCore.Utilities;
-using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
-    public class BackupJob : IJob
+    public class BackupJob : IJob, INotifyPropertyChanged
     {
         private DateTime _timestamp;
         private string _source;
@@ -69,16 +69,30 @@ namespace EasySaveCore.Models
             get => _encryptionTime;
             set => _encryptionTime = value;
         }
+        
+        public double Progress
+        {
+            get
+            {
+                if (BackupJobTasks.Count == 0)
+                    return 0.0D;
 
-        public bool IsRunning;
+                int totalTasks = BackupJobTasks.Count;
+                int completedTasks = BackupJobTasks.Count(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted);
+                return (double)completedTasks / totalTasks * 100D;
+            }
+        }
 
-        public string Name { get; set; }
+        private bool _isRunning;
+
+        public bool IsRunning { get => _isRunning; set => _isRunning = value; }
+
+        public string Name { get; private set; }
         
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
-
-        bool IJob.IsRunning { get => IsRunning; set => IsRunning = value; }
+        public event IJob.JobCompletedDelegate? JobCompletedHandler;
 
         public readonly List<BackupJobTask> BackupJobTasks = new List<BackupJobTask>();
 
@@ -86,19 +100,39 @@ namespace EasySaveCore.Models
         {
         }
 
-        public BackupJob(string name, string source, string target, JobExecutionStrategy.StrategyType strategy)
+        public BackupJob(string name, string source, string target, JobExecutionStrategy.StrategyType strategy, bool isEncrypted = false)
         {
             Name = name;
             _timestamp = DateTime.Now;
             _source = source;
             _target = target;
             _strategyType = strategy;
-            _isEncrypted = false;
+            _isEncrypted = isEncrypted;
             _size = -1L;
             _transferTime = -1L;
             _encryptionTime = -1L;
+            TaskCompletedHandler += task => UpdateProgress();
         }
         
+        private void UpdateProgress()
+        {
+            OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(Progress));
+            OnPropertyChanged(nameof(Size));
+            OnPropertyChanged(nameof(TransferTime));
+            OnPropertyChanged(nameof(EncryptionTime));
+        }
+
+        public void ClearTasksAndProgress()
+        {
+            BackupJobTasks.Clear();
+            Size = -1L;
+            TransferTime = -1L;
+            EncryptionTime = -1L;
+            Status = JobExecutionStrategy.ExecutionStatus.NotStarted;
+            UpdateProgress();
+        }
+
         public void OnTaskCompleted(dynamic task)
         {
             TaskCompletedHandler?.Invoke(task);
@@ -108,39 +142,45 @@ namespace EasySaveCore.Models
         {
             TaskCompletedHandler = null;
         }
-        
+
+        public void ClearJobCompletedHandler()
+        {
+            JobCompletedHandler = null;
+        }
+
         public bool CanRunJob()
         {
-            return !IsRunning && !ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray());
+            return !_isRunning;
         }
 
         public void RunJob()
         {
             if (!CanRunJob())
             {
-                Status = JobExecutionStrategy.ExecutionStatus.CanNotStart;
+                CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
                 return;
             }
 
             if (!Directory.Exists(Source))
             {
-                Status = JobExecutionStrategy.ExecutionStatus.SourceNotFound;
+                CompleteJob(JobExecutionStrategy.ExecutionStatus.SourceNotFound);
                 return;
             }
 
             if (string.IsNullOrEmpty(Source) || string.IsNullOrEmpty(Target))
             {
-                Status = JobExecutionStrategy.ExecutionStatus.DirectoriesNotSpecified;
+                CompleteJob(JobExecutionStrategy.ExecutionStatus.DirectoriesNotSpecified);
                 return;
             }
 
             if (Source.Equals(Target))
             {
-                Status = JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget;
+                CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
                 return;
             }
 
             BackupJobTasks.Clear();
+            Status = JobExecutionStrategy.ExecutionStatus.InProgress;
         
             IsRunning = true;
             Timestamp = DateTime.Now;
@@ -165,15 +205,23 @@ namespace EasySaveCore.Models
             }
 
             foreach(BackupJobTask jobTask in BackupJobTasks)
-                jobTask.ExecuteTask(_strategyType);
+                jobTask.ExecuteTask(StrategyType);
 
             TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
             Size = BackupJobTasks.FindAll(x=>x.TransferTime != -1).Select(x => x.Size).Sum();
             EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
 
+            CompleteJob(BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) 
+                ? JobExecutionStrategy.ExecutionStatus.Completed 
+                : JobExecutionStrategy.ExecutionStatus.Failed);
+        }
+        
+        public void CompleteJob(JobExecutionStrategy.ExecutionStatus status)
+        {
+            Status = status;
             IsRunning = false;
-
-            Status = JobExecutionStrategy.ExecutionStatus.Completed;
+            UpdateProgress();
+            JobCompletedHandler?.Invoke(this);
         }
 
         public JsonObject JsonSerialize()
@@ -256,6 +304,13 @@ namespace EasySaveCore.Models
                 IsEncrypted = bool.Parse(data.GetAttribute("IsEncrypted"));
             else
                 throw new KeyNotFoundException("Invalid XML data: Missing 'IsEncrypted' attribute.");
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
