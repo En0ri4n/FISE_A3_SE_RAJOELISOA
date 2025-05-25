@@ -319,8 +319,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RemoveExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                string extensionToRemove = (input as string ?? string.Empty);
-                if (string.IsNullOrEmpty(extensionToRemove) && ExtensionsToEncrypt.Contains(extensionToRemove))
+                string extensionToRemove = (input as string)?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(extensionToRemove) && ExtensionsToEncrypt.Contains(extensionToRemove))
                 {
                     ExtensionsToEncrypt.Remove(extensionToRemove);
                 }
@@ -345,7 +345,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             RemoveProcessToBlacklistCommand = new RelayCommand(input =>
             {
                 string processToRemove = input as string ?? string.Empty;
-                if (string.IsNullOrEmpty(processToRemove) && ProcessesToBlacklist.Contains(processToRemove))
+                if (!string.IsNullOrEmpty(processToRemove) && ProcessesToBlacklist.Contains(processToRemove))
                 {
                     ProcessesToBlacklist.Remove(processToRemove);
                 }
