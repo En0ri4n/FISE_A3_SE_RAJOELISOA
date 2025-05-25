@@ -166,7 +166,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                      string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
                      string.IsNullOrWhiteSpace(GetJobBuilder().Target))
                 {
-                    System.Windows.MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    System.Windows.MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning); //TODO Traduction à faire
                     return;
                 }
 

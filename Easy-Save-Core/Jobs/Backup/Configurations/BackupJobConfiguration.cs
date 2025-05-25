@@ -131,7 +131,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                     if (format is JsonValue formatValue)
                         extensionsToEncryptList.Add(formatValue.ToString());
 
-                _extensionsToEncrypt.CollectionChanged += (sender, args) => SaveConfiguration();
+                extensionsToEncryptList.CollectionChanged += (sender, args) => SaveConfiguration();
                 _extensionsToEncrypt = extensionsToEncryptList;
             }
             else
@@ -146,7 +146,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                     if (process is JsonValue processValue)
                         processesToBlacklistList.Add(processValue.ToString());
 
-                _processesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
+                processesToBlacklistList.CollectionChanged += (sender, args) => SaveConfiguration();
                 _processesToBlacklist = processesToBlacklistList;
             }
             else
