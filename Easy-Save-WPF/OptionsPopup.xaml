@@ -1,4 +1,4 @@
-﻿<Window x:Class="Easy_Save_WPF.Options_PopUp"
+﻿<Window x:Class="Easy_Save_WPF.OptionsPopup"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hc="https://handyorg.github.io/handycontrol"

@@ -11,10 +11,10 @@ namespace Easy_Save_WPF
     /// Logique d'interaction pour CreateJob_Window.xaml
     /// </summary>
 
-    public partial class CreateJob_Window : Window
+    public partial class JobFormWindow : Window
     {
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
-        public CreateJob_Window(string menuName)
+        public JobFormWindow(string menuName)
         {
 
             InitializeComponent();

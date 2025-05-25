@@ -12,7 +12,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public class BackupJobManager : JobManager<BackupJob>
     {
-        public delegate void OnJobInterrupted(BackupJob job);
+        public delegate void OnJobInterrupted(BackupJob job, string processName = "");
         public event OnJobInterrupted? JobInterruptedHandler;
 
         public BackupJob? CurrentRunningJob { get; private set; }
@@ -106,7 +106,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     else
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
-                        JobInterruptedHandler?.Invoke(job);
+                        JobInterruptedHandler?.Invoke(job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                        break;
                     }
                 }
                 CurrentRunningJob = null;

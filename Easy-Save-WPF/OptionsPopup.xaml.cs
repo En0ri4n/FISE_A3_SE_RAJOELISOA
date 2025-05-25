@@ -3,9 +3,9 @@ using EasySaveCore.Jobs.Backup.ViewModels;
 
 namespace Easy_Save_WPF
 {
-    public partial class Options_PopUp : Window
+    public partial class OptionsPopup : Window
     {
-        public Options_PopUp()
+        public OptionsPopup()
         {
             BackupJobViewModel.Get().LoadEncryptionKeyCommand.Execute(null);
             InitializeComponent();
