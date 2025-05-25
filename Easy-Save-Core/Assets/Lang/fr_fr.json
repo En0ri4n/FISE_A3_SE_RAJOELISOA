@@ -35,10 +35,6 @@
   "job_menu.name_question": "Quel est le nom du Job ?",
   "job_menu.select_option": "Quel Job voulez-vous sélectionner ?",
 
-  "job_menu.column.name": "Nom du Job",
-  "job_menu.column.source": "Source",
-  "job_menu.column.target": "Cible",
-
   "loader.running.text": "Un job est en cours d'exécution. Veuillez patienter...",
 
   "information.target_directory": "Quel est le répertoire cible ?",
@@ -66,6 +62,7 @@
 
   "error.path": "Erreur : Erreur de chemin",
   "error.path_with": "Erreur : Le chemin '{PATH}' du job '{JOBNAME}' est introuvable",
+  "error.invalid_job_name": "Erreur : Le nom du Job n'est pas valide'",
 
   "options_popup.title": "Menu de configuration des options",
   "options_popup.subtitle": "Tout se met à jour en temps réel",
@@ -89,5 +86,19 @@
   "common.create": "Créer",
   "common.reset": "Réinitialiser",
   "common.add": "Ajouter",
-  "common.close": "Fermer"
+  "common.close": "Fermer",
+  "common.name": "Nom du Job",
+  "common.source": "Source",
+  "common.target": "Cible",
+
+  "manage_job.daily_log": "Journaux Quotidiens",
+  "manage_job.status_log": "Journaux de Statut",
+  "manage_job.select_all": "Tout Selectionner",
+
+  "delete_menu.title": "Supprimer un Job",
+  "delete_menu.confirm_text": "Etes vous sur de vouloir supprimer ce job ?",
+
+  "create_menu.title": "Créer un Job"
+
+
 }

@@ -2,6 +2,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
@@ -13,7 +14,7 @@
         <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
         <SolidColorBrush x:Key="AccentBrush" Color="#10C2FF"/>
         <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
-        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"></SolidColorBrush>
+        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"/>
 
         <!-- Style bouton icône -->
         <Style x:Key="ColoredIconButton" TargetType="Button">
@@ -37,7 +38,6 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
                                 <Setter Property="Button.Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
@@ -67,7 +67,6 @@
             <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="16"/>
-            <!-- <Setter Property="BorderBrush" Value="{x:Null}"/> -->
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -86,7 +85,6 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!-- <Setter Property="Background" Value="{DynamicResource AccentBrush}" /> -->
                                 <Setter Property="Button.Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
@@ -130,9 +128,9 @@
 
     <Grid Margin="24">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  <!-- Header -->
-            <RowDefinition Height="Auto"/>  <!-- Controls -->
-            <RowDefinition Height="*"/>     <!-- DataGrid fills remaining -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -143,40 +141,37 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Content="Quit" Style="{StaticResource ActionButton}" Foreground="{DynamicResource DangerBrush}" Click="QuitBTN_Click" Width="100"/>
+            <Button Content="{local:Loc common.close}" Style="{StaticResource ActionButton}" Foreground="{DynamicResource DangerBrush}" Click="QuitBTN_Click" Width="100"/>
 
-            <Label Grid.Column="1" Content="Manage Jobs"/>
+            <Label Grid.Column="1" Content="{local:Loc main_menu.jobs}"/>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
                     <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
                 </Button>
                 <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click">
-                    Status Log
+                    <TextBlock Text="{local:Loc manage_job.status_log}" />
                 </Button>
                 <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click">
-                    Daily Log
+                    <TextBlock Text="{local:Loc manage_job.daily_log}" />
                 </Button>
             </StackPanel>
         </Grid>
 
-        <!-- Controls (Select + Actions) -->
+        <!-- Controls -->
         <Grid Grid.Row="1" Margin="0 0 0 12" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Select/Deselect All -->
-            <CheckBox Content="Select/Deselect All" 
+            <CheckBox Content="{local:Loc manage_job.select_all}" 
                       VerticalAlignment="Center" 
                       FontSize="16" 
                       Margin="0,0,20,0"
                       Foreground="Black"
                       Background="DodgerBlue"/>
-            
-            
-            <!-- Boutons d'action alignés à droite -->
+
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
                     <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
@@ -198,38 +193,35 @@
 
         <!-- DataGrid -->
         <DataGrid Grid.Row="2" Name="jobsDatagrid"
-          AutoGenerateColumns="False"
-          SelectionMode="Extended"
-          SelectionUnit="FullRow"
-          MouseDoubleClick="ModifyWindow_Click"
-          SelectionChanged="DataGridSelectionChanged"
-          CanUserAddRows="False"
-          CanUserSortColumns="True"
-          Margin="0"
-          VerticalAlignment="Stretch"
-          HorizontalAlignment="Stretch"
-          HeadersVisibility="Column"
-          ColumnHeaderHeight="36"
-          GridLinesVisibility="Horizontal"
-          >
-    <DataGrid.Resources>
-        <!-- Style en-tête -->
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="8,4"/>
-        </Style>
-    </DataGrid.Resources>
+                  AutoGenerateColumns="False"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  MouseDoubleClick="ModifyWindow_Click"
+                  SelectionChanged="DataGridSelectionChanged"
+                  CanUserAddRows="False"
+                  CanUserSortColumns="True"
+                  Margin="0"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  HeadersVisibility="Column"
+                  ColumnHeaderHeight="36"
+                  GridLinesVisibility="Horizontal">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                </Style>
+            </DataGrid.Resources>
 
-    <DataGrid.Columns>
-        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="2*" IsReadOnly="True"/>
-        <DataGridTextColumn Header="Strategy" Binding="{Binding Strategy}" Width="1.5*" IsReadOnly="True"/>
-        <DataGridCheckBoxColumn Header="Encrypted" Binding="{Binding IsEncrypted}" Width="Auto" IsReadOnly="True" />
-        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="1.5*" IsReadOnly="True"/>
-    </DataGrid.Columns>
-</DataGrid>
-
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="2*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="2*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="2*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.strategy}" Binding="{Binding Strategy}" Width="1.5*" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="{local:Loc common.encrypted}" Binding="{Binding IsEncrypted}" Width="Auto" IsReadOnly="True"/>
+                <DataGridTextColumn Header="{local:Loc common.status}" Binding="{Binding Status}" Width="1.5*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>
