@@ -216,7 +216,8 @@
         </Style>
     </Window.Resources>
 
-    <Grid Margin="20,20,20,20">
+    <ScrollViewer>
+        <Grid Margin="20,20,20,20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="0*"/>
@@ -235,7 +236,7 @@
         <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="246"/>
 
         <!-- Body -->
-        <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="559">
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="594">
             <!-- Language -->
             <StackPanel Orientation="Horizontal" Margin="0 0 0 18">
                 <TextBlock Text="{local:Loc options_popup.language}" Style="{StaticResource LabelStyle}" Width="auto"/>
@@ -330,8 +331,8 @@
             <StackPanel Margin="0 0 0 18">
                 <TextBlock Text="{local:Loc options_popup.extensions_encryption}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 0"/>
 
-                <ListBox ItemsSource="{Binding ExtensionsToEncrypt}" Height="80" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemTemplate>
+                    <ListBox ItemsSource="{Binding ExtensionsToEncrypt}" Height="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" Margin="0,2">
                                 <Grid.ColumnDefinitions>
@@ -351,7 +352,7 @@
                 </ListBox>
 
                 <StackPanel Orientation="Horizontal" Margin="0 6 0 0">
-                    <TextBox Text="{Binding NewExtensionToEncrypt, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
+                    <TextBox Text="{Binding NewExtensionToEncrypt, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4" Style="{x:Null}"/>
                     <Button Content="{local:Loc common.add}" Command="{Binding AddExtensionToEncryptCommand}" CommandParameter="{Binding NewExtensionToEncrypt}" Style="{StaticResource SecondaryButtonStyle}"/>
                 </StackPanel>
             </StackPanel>
@@ -360,7 +361,7 @@
             <StackPanel Margin="0 0 0 18">
                 <TextBlock Text="{local:Loc options_popup.processes_blacklist}" FontSize="16" FontWeight="SemiBold" Margin="0 0 0 0"/>
 
-                <ListBox ItemsSource="{Binding ProcessesToBlacklist}" Height="80" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <ListBox ItemsSource="{Binding ProcessesToBlacklist}" Height="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" Margin="0,2">
@@ -369,7 +370,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="{Binding}" FontSize="14" VerticalAlignment="Center" Grid.Column="0"/>
+                                <TextBlock Text="{Binding}" FontSize="14" VerticalAlignment="Center" Grid.Column="0" Style="{x:Null}"/>
                                 <Button Content="{local:Loc common.delete}" Grid.Column="1"
                                         Command="{Binding DataContext.RemoveProcessToBlacklistCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" 
                                         CommandParameter="{Binding}"
@@ -381,7 +382,7 @@
                 </ListBox>
 
                 <StackPanel Orientation="Horizontal" Margin="0 6 0 0">
-                    <TextBox Text="{Binding NewProcessToBlacklist, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4"/>
+                    <TextBox Text="{Binding NewProcessToBlacklist, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="0 0 10 0" Padding="4" Style="{x:Null}"/>
                     <Button Content="{local:Loc common.add}" Command="{Binding AddProcessToBlacklistCommand}" CommandParameter="{Binding NewProcessToBlacklist}" Style="{StaticResource SecondaryButtonStyle}"/>
                 </StackPanel>
             </StackPanel>
@@ -392,4 +393,5 @@
             <Button Content="{local:Loc common.close}" Width="90" Click="CloseButton_Click"/>
         </StackPanel>
     </Grid>
+    </ScrollViewer>
 </Window>

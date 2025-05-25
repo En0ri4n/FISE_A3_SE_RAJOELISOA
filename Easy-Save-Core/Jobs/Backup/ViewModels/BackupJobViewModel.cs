@@ -18,6 +18,7 @@ using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Models;
 using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
+using System.Windows;
 
 namespace EasySaveCore.Jobs.Backup.ViewModels
 {
@@ -148,9 +149,12 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
 
+
+        public Action CloseAction { get; set; }
+
+
         protected override void InitializeCommand()
         {
-            //_tempEncryptionKey = ExternalEncryptor.GetEncryptionKey();
             _tempEncryptionKey = BackupJobConfiguration.Get().EncryptionKey;
 
             BuildJobCommand = new RelayCommand(_ =>
@@ -158,8 +162,18 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (JobBuilder == null)
                     throw new NullReferenceException("BackupJob builder is not defined !");
 
+                if (string.IsNullOrWhiteSpace(GetJobBuilder().Name) ||
+                     string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
+                     string.IsNullOrWhiteSpace(GetJobBuilder().Target))
+                {
+                    System.Windows.MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
                 BackupJobConfiguration.Get().SaveConfiguration();
+
+                CloseAction?.Invoke();
             }, _ => true);
 
             SelectedJobCommand = new RelayCommand(jobName =>

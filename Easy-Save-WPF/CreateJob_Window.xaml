@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
+        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core" xmlns:viewmodel="clr-namespace:CLEA.EasySaveCore.ViewModel;assembly=Easy-Save-Core" d:DataContext="{d:DesignInstance Type=viewmodel:ViewModelBackupJobBuilder}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="CreateJob_Window" Height="350" Width="800">
+        Height="450" Width="800">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
@@ -141,7 +141,7 @@
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
         </Style>
     </Window.Resources>
-    <Grid Margin="20">
+    <Grid Margin="20,20,20,15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="0*"/>
@@ -153,16 +153,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!--TODO Add back Create Job Features-->
-
         <!-- Title -->
-        <TextBlock Text="{local:Loc create_menu.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
+        <TextBlock Name="MainTitle" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
 
         <!-- Subtitle -->
-        <TextBlock Text="{local:Loc create_menu.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
+        <TextBlock Name="MainSubtitle" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
 
         <!-- Body -->
-        <StackPanel Grid.Row="2" VerticalAlignment="Top" Height="202" Grid.RowSpan="2">
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" Name="Body">
             <!-- Job Name -->
             <Grid Margin="0 0 0 18">
                 <Grid.ColumnDefinitions>
@@ -174,7 +172,7 @@
                 <!-- Label + Value -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <TextBlock Text="{local:Loc common.name}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding Name, Mode=TwoWay}" VerticalAlignment="Center" Width="150" Margin="10,0,0,0"/>
+                    <TextBox Text="{Binding Name, Mode=TwoWay}" VerticalAlignment="Center" Width="300" Margin="10,0,0,0"/>
                 </StackPanel>
             </Grid>
 
@@ -182,7 +180,6 @@
             <Grid Margin="0 0 0 18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
@@ -193,15 +190,13 @@
                 </StackPanel>
 
                 <!-- Buttons -->
-                <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
-                <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
+                <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="true" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
             </Grid>
 
             <!-- Target Path -->
             <Grid Margin="0 0 0 18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
@@ -210,9 +205,9 @@
                     <TextBlock Text="{local:Loc common.target}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding Target, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
+
                 <!-- Buttons -->
                 <Button Grid.Column="1" Content="{local:Loc common.browse}" Command="{Binding ShowFolderDialogCommand}" CommandParameter="false" Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0"/>
-                <Button Grid.Column="2" Content="{local:Loc common.reset}" Command="{Binding ResetFolderLogPathCommand}" CommandParameter="false" Style="{StaticResource ResetButtonStyle}" Margin="10,0,0,0"/>
             </Grid>
 
 
@@ -220,18 +215,27 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <TextBlock Text="{local:Loc common.backup.type}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Margin="10">
-                    <RadioButton Content="{local:Loc common.backup.full}" GroupName="Choices" Margin="5,0" VerticalAlignment="Center"/>
-                    <RadioButton Content="{local:Loc common.backup.differencial}" GroupName="Choices" Margin="5,0" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                    <ComboBox SelectedItem="{Binding StrategyType}" ItemsSource="{Binding AvailableStrategies}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Margin="5,0,0,0" VerticalAlignment="Center" FontWeight="Normal"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
+            </StackPanel>
+
+            <StackPanel  Orientation="Horizontal" Grid.Column="0">
                 <TextBlock Text="{local:Loc common.encryption}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <CheckBox x:Name="Encryption_checkbox" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <CheckBox x:Name="Encryption_checkbox" IsChecked="{Binding IsEncrypted}" Foreground="Black"
+                    Background="DodgerBlue" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
         </StackPanel>
 
         <!-- Footer -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0" Width="200">
-            <Button x:Name="createButton" Content="{local:Loc common.create}" Width="90" Click="CreateButton_Click"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0" Width="200" Name="FooterCreateJob">
+            <Button x:Name="DoneButton" Width="90" Command="{Binding BuildJobCommand}"/>
             <Button Content="{local:Loc common.close}" Style="{StaticResource SecondaryButtonStyle}" Width="90" Click="CloseButton_Click"/>
         </StackPanel>
     </Grid>

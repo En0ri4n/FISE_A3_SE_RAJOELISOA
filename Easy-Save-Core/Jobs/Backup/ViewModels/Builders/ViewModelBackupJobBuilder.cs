@@ -1,5 +1,10 @@
 ﻿using CLEA.EasySaveCore.Models;
 using EasySaveCore.Models;
+using System;
+using System.IO;
+using System.Windows.Forms;
+using System.Windows.Input;
+using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
@@ -41,6 +46,55 @@ namespace CLEA.EasySaveCore.ViewModel
             set { _isEncrypted = value; OnPropertyChanged(); }
         }
 
+        public JobExecutionStrategy.StrategyType[] AvailableStrategies
+        {
+            get
+            {
+                return Enum.GetValues(typeof(JobExecutionStrategy.StrategyType)) as JobExecutionStrategy.StrategyType[]
+                       ?? Array.Empty<JobExecutionStrategy.StrategyType>();
+            }
+        }
+
+        public ICommand ShowFolderDialogCommand { get; set; }
+
+        public ViewModelBackupJobBuilder()
+        {
+            ShowFolderDialogCommand = new RelayCommand(input =>
+            {
+                bool isSource = bool.Parse((string)input!);
+
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                string title = "Select Target Path";
+
+                folderBrowserDialog.Title = title;
+                string path = Target;
+
+                if (isSource)
+                {
+                    folderBrowserDialog.Title = "Select Source Path";
+                    Source = path;
+                }
+
+                string fullPath = Path.IsPathRooted(path) ? path
+                : Path.GetFullPath(Path.Combine(".", path));
+
+                folderBrowserDialog.InitialFolder = fullPath;
+                folderBrowserDialog.AllowMultiSelect = false;
+
+                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                if (isSource)
+                {
+                    Source = folderBrowserDialog.SelectedFolder;
+                }
+                else
+                {
+                    Target = folderBrowserDialog.SelectedFolder;
+                }
+            }, _ => true);
+        }
+        
         public override void Clear()
         {
             Name = string.Empty;
