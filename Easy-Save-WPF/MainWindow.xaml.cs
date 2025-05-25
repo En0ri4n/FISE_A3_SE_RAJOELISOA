@@ -37,9 +37,8 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            
             OptionsPopup options = new OptionsPopup();
-            options.Owner = Window.GetWindow(App.Current.MainWindow);
+            options.Owner = GetWindow(App.Current.MainWindow);
             options.ShowDialog();
         }
         public void SelectAll_Click(object sender, RoutedEventArgs e)
@@ -60,8 +59,8 @@ namespace Easy_Save_WPF
         {
             BackupJobViewModel.Get().JobBuilder.Clear();
 
-            JobFormWindow jobFormWindow = new JobFormWindow("create_job");
-            jobFormWindow.Owner = Window.GetWindow(App.Current.MainWindow);
+            JobFormWindow jobFormWindow = new JobFormWindow("create_job", true);
+            jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
             jobFormWindow.ShowDialog();
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
@@ -73,7 +72,7 @@ namespace Easy_Save_WPF
 
             BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJobName);
 
-            JobFormWindow modifyJobFormWindow = new JobFormWindow("edit_job");
+            JobFormWindow modifyJobFormWindow = new JobFormWindow("edit_job", false);
             modifyJobFormWindow.Owner = Window.GetWindow(App.Current.MainWindow);
             modifyJobFormWindow.ShowDialog();
         }

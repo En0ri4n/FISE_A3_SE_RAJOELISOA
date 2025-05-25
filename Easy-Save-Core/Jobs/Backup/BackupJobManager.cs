@@ -73,9 +73,12 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             if (existingJob == null)
                 throw new Exception($"BackupJob with name {name} not found");
 
-            if (job != null)
-                existingJob.JsonDeserialize(job.JsonSerialize());
-
+            if (job == null)
+                return;
+            
+            // Sorry for this, but to trigger the CollectionChanged event we need to replace the job in the collection
+            Jobs[Jobs.IndexOf(existingJob)] = job;
+            
             BackupJobConfiguration.Get().SaveConfiguration();
         }
 

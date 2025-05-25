@@ -151,16 +151,16 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
 
-
         public Action CloseAction { get; set; }
-
 
         protected override void InitializeCommand()
         {
             _tempEncryptionKey = BackupJobConfiguration.Get().EncryptionKey;
 
-            BuildJobCommand = new RelayCommand(_ =>
+            BuildJobCommand = new RelayCommand(isCreation =>
             {
+                bool isJobCreation = bool.Parse((string)isCreation!);
+                
                 if (JobBuilder == null)
                     throw new NullReferenceException("BackupJob builder is not defined !");
 
@@ -168,14 +168,16 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                      string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
                      string.IsNullOrWhiteSpace(GetJobBuilder().Target))
                 {
-                    System.Windows.MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning); //TODO Traduction à faire
+                    MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning); //TODO Traduction à faire
                     return;
                 }
 
-                JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
-                BackupJobConfiguration.Get().SaveConfiguration();
+                if (isJobCreation)
+                    JobManager.AddJob(SelectedJob = JobBuilder.Build(), true);
+                else
+                    JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build());
 
-                CloseAction?.Invoke();
+                CloseAction();
             }, _ => true);
 
             SelectedJobCommand = new RelayCommand(jobName =>
@@ -209,16 +211,24 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RunMultipleJobsCommand = new RelayCommand(jobNameList =>
             {
-                if (jobNameList is List<string> jobNames)
+                if (!(jobNameList is List<string> jobNames))
+                    return;
+                
+                if (jobNames.Count == 0)
                 {
-                    List<BackupJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
-                    if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
-                    {
-                        Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
-                        MessageBox.Show("CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                    JobManager.DoMultipleJob(jobNames);
+                    MessageBox.Show("No jobs selected to run.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                List<BackupJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+                
+                if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
+                {
+                    Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
+                    MessageBox.Show("CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                
+                JobManager.DoMultipleJob(jobNames);
             }, _ => true);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
