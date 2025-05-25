@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
@@ -10,7 +12,7 @@ using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup
 {
-    public class BackupJobManager : JobManager<BackupJob>
+    public class BackupJobManager : JobManager<BackupJob>, INotifyPropertyChanged
     {
         public delegate void OnJobInterrupted(BackupJob job, string processName = "");
         public event OnJobInterrupted? JobInterruptedHandler;
@@ -19,6 +21,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         public BackupJobManager() : base(-1)
         {
+            Jobs.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Jobs));
         }
 
         public override bool AddJob(BackupJob job, bool save)
@@ -89,7 +92,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             Logger.Get().SaveDailyLog(job.BackupJobTasks.Select(task => task).Cast<JobTask>().ToList());
         }
 
-        protected override void DoMultipleJob(List<BackupJob> jobs)
+        protected override void DoMultipleJob(ObservableCollection<BackupJob> jobs)
         {
             foreach (BackupJob job in jobs)
                 job.ClearTasksAndProgress();
@@ -119,6 +122,12 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override void DoAllJobs()
         {
             DoMultipleJob(Jobs);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

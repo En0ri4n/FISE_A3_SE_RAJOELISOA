@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json.Nodes;
 
@@ -7,7 +9,7 @@ namespace CLEA.EasySaveCore.Models
 {
     public abstract class JobManager<TJob> where TJob : IJob
     {
-        protected List<TJob> Jobs { get; }
+        protected ObservableCollection<TJob> Jobs { get; }
         protected int Size { get; }
 
         public int JobCount => Jobs.Count;
@@ -18,7 +20,7 @@ namespace CLEA.EasySaveCore.Models
         protected JobManager(int size)
         {
             Size = size;
-            Jobs = size != -1 ? new List<TJob>(size) : new List<TJob>();
+            Jobs = new ObservableCollection<TJob>();
         }
 
         public abstract bool AddJob(TJob job, bool save);
@@ -56,7 +58,7 @@ namespace CLEA.EasySaveCore.Models
             return Jobs.FirstOrDefault(j => j.Name == name);
         }
         
-        public List<TJob> GetJobs()
+        public ObservableCollection<TJob> GetJobs()
         {
             return Jobs;
         }
@@ -77,9 +79,9 @@ namespace CLEA.EasySaveCore.Models
 
         public void DoMultipleJob(List<string> jobs)
         {
-            DoMultipleJob(jobs.Select(GetJob).ToList());
+            DoMultipleJob(new ObservableCollection<TJob>(jobs.Select(GetJob)));
         }
 
-        protected abstract void DoMultipleJob(List<TJob> jobs);
+        protected abstract void DoMultipleJob(ObservableCollection<TJob> jobs);
     }
 }

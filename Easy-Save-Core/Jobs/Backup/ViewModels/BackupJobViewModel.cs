@@ -84,7 +84,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public string DailyLogFilePath => Logger.Get().GetDailyLogFilePath();
 
 
-        public List<BackupJob> AvailableJobs => JobManager.GetJobs();
+        public ObservableCollection<BackupJob> AvailableJobs => JobManager.GetJobs();
 
         private BackupJob _selectedJob;
 
