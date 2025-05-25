@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:hc="https://handyorg.github.io/handycontrol"
-      xmlns:local="clr-namespace:Easy_Save_WPF"
+      xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Options_Language_Page" Background="#f3f3f3">

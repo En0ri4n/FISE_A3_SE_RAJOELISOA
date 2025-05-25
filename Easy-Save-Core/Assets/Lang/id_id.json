@@ -35,10 +35,6 @@
   "job_menu.name_question": "Apa nama pekerjaan?",
   "job_menu.select_option": "Pekerjaan mana yang ingin Anda pilih?",
 
-  "job_menu.column.name": "Nama Pekerjaan",
-  "job_menu.column.source": "Sumber",
-  "job_menu.column.target": "Tujuan",
-
   "loader.running.text": "Pekerjaan sedang dijalankan. Mohon tunggu...",
 
   "information.target_directory": "Apa direktori tujuan?",
@@ -63,6 +59,7 @@
 
   "job_modify_menu.title": "Perbarui Pekerjaan (Pilih pekerjaan, lalu tekan enter)",
   "job_modify_menu.title_modify_page": "Tekan enter untuk menggunakan nilai default (teks hijau)",
+  "error.invalid_job_name": "Kesalahan: Nama pekerjaan tidak valid",
 
   "error.path": "Kesalahan: Kesalahan jalur",
   "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}",
@@ -89,5 +86,17 @@
   "common.create": "Buat",
   "common.reset": "Atur Ulang",
   "common.add": "Tambah",
-  "common.close": "Tutup"
+  "common.close": "Tutup",
+  "common.name": "Nama Pekerjaan",
+  "common.source": "Sumber",
+  "common.target": "Target",
+
+  "manage_job.daily_log": "Log Harian",
+  "manage_job.status_log": "Log Status",
+  "manage_job.select_all": "Pilih Semua",
+
+  "delete_menu.title": "Hapus Pekerjaan",
+  "delete_menu.confirm_text": "Apakah Anda yakin ingin menghapus pekerjaan ini?",
+
+  "create_menu.title": "Buat Pekerjaan"
 }

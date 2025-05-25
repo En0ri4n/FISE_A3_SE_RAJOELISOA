@@ -1,6 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Buffers.Text;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using CLEA.EasySaveCore.Utilities;
+using EasySaveCore.Jobs.Backup.Configurations;
 using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore.External
@@ -11,7 +16,7 @@ namespace CLEA.EasySaveCore.External
         {
             return File.Exists("CLEA-Encryptor.exe");
         }
-        
+
         public static void ProcessFile(string key, string fileInputPath, string fileOutputPath)
         {
             if (!IsEncryptorPresent())
@@ -30,6 +35,32 @@ namespace CLEA.EasySaveCore.External
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.Start();
+        }
+
+        public static string EncodeKeyInBase64(string key)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(key);
+            return Convert.ToBase64String(data);
+        }
+
+        public static string DecodeKeyFromBase64(string base64Encoded)
+        {
+            byte[] base64Bytes = Convert.FromBase64String(base64Encoded);
+            return Encoding.UTF8.GetString(base64Bytes);
+        }
+
+        public static string ProcessEncryptionKey(string encryptedKey)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(encryptedKey);
+            byte[] encrypted = ProtectedData.Protect(data, null, DataProtectionScope.CurrentUser);
+            return Convert.ToBase64String(encrypted);
+        }
+
+        public static string GetEncryptionKey()
+        {
+            byte[] data = Convert.FromBase64String(BackupJobConfiguration.Get().EncryptionKey);
+            byte[] decrypted = ProtectedData.Unprotect(data, null, DataProtectionScope.CurrentUser);
+            return Encoding.UTF8.GetString(decrypted);
         }
     }
 }
