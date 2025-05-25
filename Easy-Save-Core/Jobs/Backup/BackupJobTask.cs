@@ -124,8 +124,8 @@ namespace EasySaveCore.Models
                 ["Source"] = Source,
                 ["Target"] = Target,
                 ["Size"] = Size,
-                ["FileTransferTime"] = TransferTime / 1000D,
-                ["EncryptionTime"] = EncryptionTime / 1000D
+                ["FileTransferTime"] = TransferTime == -1 ? -1 : TransferTime / 1000D,
+                ["EncryptionTime"] = EncryptionTime == -1 ? -1 : EncryptionTime / 1000D
             };
             return json;
         }
@@ -156,7 +156,7 @@ namespace EasySaveCore.Models
             jobElement.AppendChild(sizeElement);
 
             XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
-            fileTransferTimeElement.InnerText = (TransferTime / 1000D).ToString(CultureInfo.InvariantCulture);
+            fileTransferTimeElement.InnerText = (TransferTime == -1 ? -1 : TransferTime / 1000D).ToString(CultureInfo.InvariantCulture);
             jobElement.AppendChild(fileTransferTimeElement);
 
             XmlElement timestampElement = document.CreateElement("Timestamp");
@@ -164,7 +164,7 @@ namespace EasySaveCore.Models
             jobElement.AppendChild(timestampElement);
             
             XmlElement encryptionTimeElement = document.CreateElement("EncryptionTime");
-            encryptionTimeElement.InnerText = (EncryptionTime / 1000D).ToString(CultureInfo.InvariantCulture);
+            encryptionTimeElement.InnerText = (EncryptionTime == -1 ? -1 : EncryptionTime / 1000D).ToString(CultureInfo.InvariantCulture);
             jobElement.AppendChild(encryptionTimeElement);
 
             return jobElement;
