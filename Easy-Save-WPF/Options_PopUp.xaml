@@ -1,6 +1,7 @@
 ﻿<Window x:Class="Easy_Save_WPF.Options_PopUp"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
         Title="Options" Height="750" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
