@@ -28,13 +28,43 @@ namespace CLEA.EasySaveCore.External
             Logger.Log(LogLevel.Information, $"Encrypting file using Encryptor from {fileInputPath} to {fileOutputPath}");
             Process process = new Process();
             process.StartInfo.FileName = "CLEA-Encryptor.exe";
-            process.StartInfo.Arguments = $"{key} \"{fileInputPath}\" \"{fileOutputPath}\" -file";
+            process.StartInfo.Arguments = $"process {key} \"{fileInputPath}\" \"{fileOutputPath}\" -file";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.Start();
+        }
+        
+        public static bool CheckIfFileMatchEncryptedFile(string fileInputPath, string fileOutputPath)
+        {
+            if (!IsEncryptorPresent())
+            {
+                Logger.Log(LogLevel.Error, "CLEA-Encryptor.exe not found. Please ensure it is in the same directory as the executable.");
+                return false;
+            }
+            
+            Process process = new Process();
+            process.StartInfo.FileName = "CLEA-Encryptor.exe";
+            process.StartInfo.Arguments = $"check {GetEncryptionKey()} \"{fileInputPath}\" \"{fileOutputPath}\" -file";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.Start();
+            
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            
+            if (process.ExitCode != 0)
+            {
+                Logger.Log(LogLevel.Error, $"Error checking file: {error}");
+                return false;
+            }
+            
+            return bool.Parse(output);
         }
 
         public static string EncodeKeyInBase64(string key)

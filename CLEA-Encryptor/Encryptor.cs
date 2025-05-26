@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CLEA.Encryptor
@@ -10,17 +12,18 @@ namespace CLEA.Encryptor
     {
         public static void Main(string[] args)
         {
-            if (args.Length < 3)
+            if (args.Length < 4)
             {
-                Console.WriteLine("Usage: Encryptor <key> <input> <output> [-file]");
+                Console.WriteLine("Usage: Encryptor process <key> <input> <output> [-file]");
                 return;
             }
 
-            bool isFile = args.Length >= 4 && args[3] == "-file";
+            bool isFile = args.Length >= 5 && args[4] == "-file";
             
-            string key = args[0];
-            string input = args[1];
-            string output = args[2];
+            string type = args[0];
+            string key = args[1];
+            string input = args[2];
+            string output = args[3];
             
             if (key.Length < 8)
             {
@@ -28,16 +31,35 @@ namespace CLEA.Encryptor
                 return;
             }
 
-            if (isFile)
+            if (type.Equals("process", StringComparison.OrdinalIgnoreCase))
             {
-                Encryptor.ProcessFile(key, input, output);
+                if (isFile)
+                {
+                    Encryptor.ProcessFile(key, input, output);
+                }
+                else
+                {
+                    byte[] encryptedBytes = Encryptor.ProcessString(key, input);
+                    Console.WriteLine($"Result:\n{Encoding.UTF8.GetString(encryptedBytes)}");
+                }
             }
-            else
+            else if (type.Equals("check", StringComparison.OrdinalIgnoreCase))
             {
-                byte[] encryptedBytes = Encryptor.ProcessString(key, input);
-                Console.WriteLine($"Result:\n{Encoding.UTF8.GetString(encryptedBytes)}");
+                if (isFile)
+                {
+                    // Create a temporary file to store the processed file and check if the hashes match of the target
+                    string tempFile = Path.GetTempFileName();
+                    Encryptor.ProcessFile(key, input, tempFile);
+                    Console.WriteLine(Encryptor.CompareFileHashes(tempFile, output) ? bool.TrueString : bool.FalseString);
+                }
+                else
+                {
+                    // Get the encrypted string and compare it with the output
+                    byte[] encryptedBytes = Encryptor.ProcessString(key, input);
+                    string encryptedString = Encoding.UTF8.GetString(encryptedBytes);
+                    Console.WriteLine(encryptedString.Equals(output, StringComparison.Ordinal) ? bool.TrueString : bool.FalseString);
+                }
             }
-            
         }
     }
     
@@ -93,87 +115,15 @@ namespace CLEA.Encryptor
             bufferedWriter.Flush();
             bufferedWriter.Close();
         }
-    }
 
-    internal class SimpleRsa
-    {
-        public BigInteger PublicKeyExponent { get; private set; }
-        public BigInteger PrivateKeyExponent { get; private set; }
-        public BigInteger Modulus { get; private set; }
-
-        public SimpleRsa()
+        public static bool CompareFileHashes(string file1, string file2)
         {
-            BigInteger p = 10000019;
-            BigInteger q = 10000079;
-            Modulus = p * q;
-            BigInteger phi = (p - 1) * (q - 1);
-            PublicKeyExponent = 65537;
-            PrivateKeyExponent = ModInverse(PublicKeyExponent, phi);
-        }
-
-        /// <summary>
-        /// Encrypt the given string using RSA algorithm<br></br>
-        /// </summary>
-        /// <param name="plainText">The string to encrypt</param>
-        /// <returns></returns>
-        public string EncryptString(string plainText)
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(plainText);
-            StringBuilder sb = new StringBuilder();
-
-            foreach (byte b in bytes)
-            {
-                BigInteger m = new BigInteger(b);
-                BigInteger c = BigInteger.ModPow(m, PublicKeyExponent, Modulus);
-                byte[] encryptedBytes = c.ToByteArray();
-                string base64 = Convert.ToBase64String(encryptedBytes).PadRight(8, '=');
-                sb.Append(base64);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Decrypt the given string using RSA algorithm<br></br>
-        /// </summary>
-        /// <param name="encrypted">The encrypted string to decrypt</param>
-        /// <returns></returns>
-        public string DecryptString(string encrypted)
-        {
-            List<byte> decryptedBytes = new List<byte>();
-            for (int i = 0; i < encrypted.Length; i += 8)
-            {
-                string base64Block = encrypted.Substring(i, 8).TrimEnd('=');
-                byte[] blockBytes =
-                    Convert.FromBase64String(base64Block + new string('=', (4 - base64Block.Length % 4) % 4));
-                BigInteger c = new BigInteger(blockBytes);
-                BigInteger m = BigInteger.ModPow(c, PrivateKeyExponent, Modulus);
-                decryptedBytes.Add((byte)m);
-            }
-
-            return Encoding.UTF8.GetString(decryptedBytes.ToArray());
-        }
-
-        // Modular inverse using Extended Euclidean Algorithm
-        private BigInteger ModInverse(BigInteger a, BigInteger m)
-        {
-            BigInteger m0 = m, t, q;
-            BigInteger x0 = 0, x1 = 1;
-
-            while (a > 1)
-            {
-                q = a / m;
-                t = m;
-                m = a % m;
-                a = t;
-                t = x0;
-
-                x0 = x1 - q * x0;
-                x1 = t;
-            }
-
-            if (x1 < 0) x1 += m0;
-            return x1;
+            using SHA256 hashAlgorithm = System.Security.Cryptography.SHA256.Create();
+            using FileStream stream1 = File.OpenRead(file1);
+            using FileStream stream2 = File.OpenRead(file2);
+            byte[] hash1 = hashAlgorithm.ComputeHash(stream1);
+            byte[] hash2 = hashAlgorithm.ComputeHash(stream2);
+            return StructuralComparisons.StructuralEqualityComparer.Equals(hash1, hash2);
         }
     }
 }
