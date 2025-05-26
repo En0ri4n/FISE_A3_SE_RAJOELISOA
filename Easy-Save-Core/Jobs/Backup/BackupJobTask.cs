@@ -194,7 +194,6 @@ namespace EasySaveCore.Models
                 while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     targetStream.Write(buffer, 0, bytesRead);
-                    // Optionnel : pause très courte
                     Thread.Sleep(5);
                 }
             }
