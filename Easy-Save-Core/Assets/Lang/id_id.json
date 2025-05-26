@@ -118,8 +118,14 @@
   "message_box.delete_no_selected.title": "Tidak Ada Pekerjaan yang Dipilih",
   "message_box.delete_no_selected.text": "Silakan pilih pekerjaan untuk dihapus.",
 
+  "message_box.interrupt_space.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_space.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah terganggu karena ruang di drive target tidak cukup untuk menjalankan pekerjaan cadangan.",
+
   "message_box.interrupt_process.title": "Gangguan Pekerjaan",
   "message_box.interrupt_process.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah diganggu oleh proses {PROCESS}.",
+
+  "message_box.interrupt_unknown.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_unknown.text": "Pekerjaan {JOB} telah terganggu karena alasan yang tidak diketahui.",
 
   "message_box.missing_data.title": "Data Hilang",
   "message_box.missing_data.text": "Silakan isi semua kolom sebelum membuat pekerjaan.",
@@ -131,5 +137,11 @@
   "message_box.run_no_selected.text": "Tidak ada pekerjaan yang dipilih untuk dijalankan.",
 
   "message_box.cant_find_encryptor.title": "Peringatan",
-  "message_box.cant_find_encryptor.text": "CLEA-Encryptor tidak ditemukan. Enkripsi tidak akan dilakukan untuk pekerjaan dengan enkripsi diaktifkan."
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor tidak ditemukan. Enkripsi tidak akan dilakukan untuk pekerjaan dengan enkripsi diaktifkan.",
+
+  "message_box.no_daily_log.title": "Peringatan",
+  "message_box.no_daily_log.text": "File log harian tidak ada.",
+
+  "message_box.no_status_log.title": "Peringatan",
+  "message_box.no_status_log.text": "File log status tidak ada."
 }

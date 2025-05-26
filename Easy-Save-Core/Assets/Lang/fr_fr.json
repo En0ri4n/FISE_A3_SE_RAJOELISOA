@@ -91,7 +91,7 @@
   "common.backup.full": "Complete",
   "common.backup.differencial": "Différentielle",
   "common.encryption": "Chiffrement",
-  "common.status": "Status",
+  "common.status": "Statut",
   "common.save": "Enreg.", //should not be too big
   "common.progress": "Progression", //TODO : rename ?
 
@@ -118,18 +118,30 @@
   "message_box.delete_no_selected.title": "Aucun Job selectionné",
   "message_box.delete_no_selected.text": "Selectionnez un job(s) à supprimer.",
 
+  "message_box.interrupt_space.title": "Interruption de Job(s)",
+  "message_box.interrupt_space.text": "Job {JOB} aet les jobs suivants ont été intrrompus par manque d'espace dans le lecteur cible pour executer le job de backup.",
+
   "message_box.interrupt_process.title": "Interruption de Job(s)",
   "message_box.interrupt_process.text": "Job {JOB} et les jobs suivants ont été intrrompus par le processus {PROCESS}.",
 
+  "message_box.interrupt_unknown.title": "Interruption de Job(s)",
+  "message_box.interrupt_unknown.text": "Job {JOB} a été interrompu pour des raisons inconnues.",
+
   "message_box.missing_data.title": "Données Manquantes",
-  "message_box.missing_data.text": "Remplissez tout les champs avant de créer le job",
+  "message_box.missing_data.text": "Remplissez tout les champs avant de créer le job.",
 
   "message_box.existing_job.title": "Job existant",
-  "message_box.existing_job.text": "Un job de backup possède déjà ce nom",
+  "message_box.existing_job.text": "Un job de backup possède déjà ce nom.",
 
   "message_box.run_no_selected.title": "Attention",
-  "message_box.run_no_selected.text": "Aucun job selectionné pour être lancé",
+  "message_box.run_no_selected.text": "Aucun job selectionné pour être lancé.",
 
   "message_box.cant_find_encryptor.title": "Attention",
-  "message_box.cant_find_encryptor.text": "CLEA-Encryptor n'a pas été trouvé. Le chiffrement ne sera pas effectué pour les jobs avec chiffrement activé"
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor n'a pas été trouvé. Le chiffrement ne sera pas effectué pour les jobs avec chiffrement activé.",
+
+  "message_box.no_daily_log.title": "Attention",
+  "message_box.no_daily_log.text": "Le fichier de Logs journalières n'existe pas.",
+
+  "message_box.no_status_log.title": "Attention",
+  "message_box.no_status_log.text": "Le fichier de Logs de statut n'existe pas."
 }

@@ -118,8 +118,14 @@
   "message_box.delete_no_selected.title": "未选择任务",
   "message_box.delete_no_selected.text": "请选择要删除的任务。",
 
+  "message_box.interrupt_space.title": "任务中断",
+  "message_box.interrupt_space.text": "任务 {JOB} 及其之后的所有任务因目标驱动器空间不足而被中断，无法执行备份任务。",
+
   "message_box.interrupt_process.title": "任务中断",
   "message_box.interrupt_process.text": "任务 {JOB} 及其之后的所有任务已被进程 {PROCESS} 中断。",
+
+  "message_box.interrupt_unknown.title": "任务中断",
+  "message_box.interrupt_unknown.text": "任务 {JOB} 因未知原因被中断。",
 
   "message_box.missing_data.title": "缺少数据",
   "message_box.missing_data.text": "请在创建任务前填写所有字段。",
@@ -131,5 +137,11 @@
   "message_box.run_no_selected.text": "未选择要运行的任务。",
 
   "message_box.cant_find_encryptor.title": "警告",
-  "message_box.cant_find_encryptor.text": "未找到 CLEA-Encryptor。启用加密的任务将不会被加密。"
+  "message_box.cant_find_encryptor.text": "未找到 CLEA-Encryptor。启用加密的任务将不会被加密。",
+
+  "message_box.no_daily_log.title": "警告",
+  "message_box.no_daily_log.text": "每日日志文件不存在。",
+
+  "message_box.no_status_log.title": "警告",
+  "message_box.no_status_log.text": "状态日志文件不存在。"
 }

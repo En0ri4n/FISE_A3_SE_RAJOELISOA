@@ -118,8 +118,14 @@
   "message_box.delete_no_selected.title": "Tsy Misy Asa Voafantina",
   "message_box.delete_no_selected.text": "Azafady, mifidiana asa hofafana.",
 
+  "message_box.interrupt_space.title": "Fanelingelenana Asa",
+  "message_box.interrupt_space.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny tsy fahampian'ny toerana amin'ny kapila kendrena hanaovana ny asa fanohanana.",
+
   "message_box.interrupt_process.title": "Fanelingelenana Asa",
   "message_box.interrupt_process.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny dingana {PROCESS}.",
+
+  "message_box.interrupt_unknown.title": "Fanelingelenana Asa",
+  "message_box.interrupt_unknown.text": "Voasakana ny asa {JOB} noho ny antony tsy fantatra.",
 
   "message_box.missing_data.title": "Tsy Ampy ny Tahiry",
   "message_box.missing_data.text": "Fenoy daholo azafady ny saha rehetra alohan'ny hamoronana asa.",
@@ -131,5 +137,11 @@
   "message_box.run_no_selected.text": "Tsy misy asa voafantina hatao.",
 
   "message_box.cant_find_encryptor.title": "Fampitandremana",
-  "message_box.cant_find_encryptor.text": "Tsy hita ny CLEA-Encryptor. Tsy hanaovana fanoratana miafina ireo asa manana fanoratana miafina."
+  "message_box.cant_find_encryptor.text": "Tsy hita ny CLEA-Encryptor. Tsy hanaovana fanoratana miafina ireo asa manana fanoratana miafina.",
+
+  "message_box.no_daily_log.title": "Fampitandremana",
+  "message_box.no_daily_log.text": "Tsy misy ny rakitra tatitry ny asa isan’andro.",
+
+  "message_box.no_status_log.title": "Fampitandremana",
+  "message_box.no_status_log.text": "Tsy misy ny rakitra tatitry ny toe-javatra."
 }
