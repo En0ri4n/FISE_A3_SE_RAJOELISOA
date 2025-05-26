@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -17,7 +16,7 @@ namespace CLEA.EasySaveCore.External
             return File.Exists("CLEA-Encryptor.exe");
         }
 
-        public static void ProcessFile(string key, string fileInputPath, string fileOutputPath)
+        public static void ProcessFile(string fileInputPath, string fileOutputPath)
         {
             if (!IsEncryptorPresent())
             {
@@ -28,7 +27,7 @@ namespace CLEA.EasySaveCore.External
             Logger.Log(LogLevel.Information, $"Encrypting file using Encryptor from {fileInputPath} to {fileOutputPath}");
             Process process = new Process();
             process.StartInfo.FileName = "CLEA-Encryptor.exe";
-            process.StartInfo.Arguments = $"process {key} \"{fileInputPath}\" \"{fileOutputPath}\" -file";
+            process.StartInfo.Arguments = $"process {GetEncryptionKey()} \"{fileInputPath}\" \"{fileOutputPath}\" -file";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;

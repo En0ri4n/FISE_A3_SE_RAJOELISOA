@@ -120,8 +120,7 @@ namespace EasySaveCore.Models
                         .Get().ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
                     Stopwatch encryptionWatch = Stopwatch.StartNew();
-                    ExternalEncryptor.ProcessFile(ExternalEncryptor.GetEncryptionKey(), Source,
-                        $"{Target}.encrypted"); // TODO: Add key from configuration
+                    ExternalEncryptor.ProcessFile(Source, $"{Target}.encrypted");
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
                 }
