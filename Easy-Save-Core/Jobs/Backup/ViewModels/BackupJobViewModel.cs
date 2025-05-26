@@ -342,6 +342,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (!ExtensionsToEncrypt.Contains(extension))
                 {
                     ExtensionsToEncrypt.Add(extension);
+                    NewExtensionToEncrypt = string.Empty;
                 }
             }, _ => true);
 
@@ -367,6 +368,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (!ProcessesToBlacklist.Contains(process))
                 {
                     ProcessesToBlacklist.Add(process);
+                    NewProcessToBlacklist = string.Empty;
                 }
             }, _ => true);
 
