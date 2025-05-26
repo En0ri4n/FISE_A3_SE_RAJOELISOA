@@ -90,12 +90,16 @@
   "common.reset": "Reset",
   "common.add": "Add",
   "common.close": "Close",
-
-  "common.save": "Save",
-
   "common.name": "Job Name",
   "common.source": "Source",
   "common.target": "Target",
+  "common.strategy": "Strategy",
+  "common.backup.full": "Complete",
+  "common.backup.differencial": "Differencial",
+  "common.encryption": "Encryption",
+  "common.status": "Status",
+  "common.save": "Save",
+  "common.progress": "Progress",
 
   "manage_job.daily_log": "Daily Log",
   "manage_job.status_log": "Status Log",
@@ -105,11 +109,10 @@
   "delete_menu.confirm_text": "Are you sure you want to delete this job ?",
 
   "create_job.title": "Create Job",
-  "create_job.subtitle": "TODO",
+  "create_job.subtitle": "Enter information on your job",
   "create_job.button.done": "Create",
 
-
   "edit_job.title": "Edit Job",
-  "edit_job.subtitle": "TODO",
-  "edit_job.button.done": "Update"
+  "edit_job.subtitle": "Edit information on your job",
+  "edit_job.button.done": "Edit"
 }
