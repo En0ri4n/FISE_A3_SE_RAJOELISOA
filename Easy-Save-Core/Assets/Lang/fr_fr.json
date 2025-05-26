@@ -119,5 +119,17 @@
   "message_box.delete_no_selected.text": "Selectionnez un job(s) à supprimer.",
 
   "message_box.interrupt_process.title": "Interruption de Job(s)",
-  "message_box.interrupt_process.text": "Job {JOB} et les jobs suivants ont été intrrompus par le processus {PROCESS}."
+  "message_box.interrupt_process.text": "Job {JOB} et les jobs suivants ont été intrrompus par le processus {PROCESS}.",
+
+  "message_box.missing_data.title": "Données Manquantes",
+  "message_box.missing_data.text": "Remplissez tout les champs avant de créer le job",
+
+  "message_box.existing_job.title": "Job existant",
+  "message_box.existing_job.text": "Un job de backup possède déjà ce nom",
+
+  "message_box.run_no_selected.title": "Attention",
+  "message_box.run_no_selected.text": "Aucun job selectionné pour être lancé",
+
+  "message_box.cant_find_encryptor.title": "Attention",
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor n'a pas été trouvé. Le chiffrement ne sera pas effectué pour les jobs avec chiffrement activé"
 }

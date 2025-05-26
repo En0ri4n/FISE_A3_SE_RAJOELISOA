@@ -119,5 +119,17 @@
   "message_box.delete_no_selected.text": "Silakan pilih pekerjaan untuk dihapus.",
 
   "message_box.interrupt_process.title": "Gangguan Pekerjaan",
-  "message_box.interrupt_process.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah diganggu oleh proses {PROCESS}."
+  "message_box.interrupt_process.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah diganggu oleh proses {PROCESS}.",
+
+  "message_box.missing_data.title": "Data Hilang",
+  "message_box.missing_data.text": "Silakan isi semua kolom sebelum membuat pekerjaan.",
+
+  "message_box.existing_job.title": "Pekerjaan Sudah Ada",
+  "message_box.existing_job.text": "Sebuah pekerjaan cadangan sudah menggunakan nama ini.",
+
+  "message_box.run_no_selected.title": "Peringatan",
+  "message_box.run_no_selected.text": "Tidak ada pekerjaan yang dipilih untuk dijalankan.",
+
+  "message_box.cant_find_encryptor.title": "Peringatan",
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor tidak ditemukan. Enkripsi tidak akan dilakukan untuk pekerjaan dengan enkripsi diaktifkan."
 }
