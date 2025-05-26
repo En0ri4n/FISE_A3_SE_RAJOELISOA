@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using CLEA.EasySaveCore;
@@ -118,6 +119,12 @@ namespace Easy_Save_WPF
         {
             var path = BackupJobViewModel.Get().DailyLogFilePath;
 
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Daily log file does not exist", "TODO title", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             using Process myProcess = new Process();
             myProcess.StartInfo.Verb = "open";
             myProcess.StartInfo.FileName = path;
@@ -127,6 +134,11 @@ namespace Easy_Save_WPF
         public void statusLogBTN_Click(object sender, RoutedEventArgs e)
         {
             var path = BackupJobViewModel.Get().StatusLogFilePath;
+
+            if (!File.Exists(path)) {
+                MessageBox.Show("Status log file does not exist", "TODO title", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             using Process myProcess = new Process();
             myProcess.StartInfo.FileName = path;
