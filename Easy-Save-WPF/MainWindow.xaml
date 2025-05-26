@@ -195,7 +195,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="Options">
+                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
                     <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
                 </Button>
             </StackPanel>
@@ -229,19 +229,19 @@
                       Name="SelectAll_Checkbox"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="Run">
+                <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="{local:Loc main_menu.tool_tip.run}">
                     <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
                 </Button>
-                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="Pause">
+                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}">
                     <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="Stop">
+                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button> -->
-                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="Remove Job">
+                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.remove_job}">
                     <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="Add Job">
+                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.add_job}">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
                 </Button>
             </StackPanel>

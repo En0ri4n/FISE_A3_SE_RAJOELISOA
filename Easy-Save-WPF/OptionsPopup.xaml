@@ -278,7 +278,7 @@
         </Grid.RowDefinitions>
 
         <!-- Title -->
-            <Button HorizontalAlignment="Right" ToolTip="Config_File" Style="{StaticResource ColoredIconButton}" Click="configFileBTN_Click">
+            <Button HorizontalAlignment="Right" ToolTip="{local:Loc options_popup.tool_tip.config_file}" Style="{StaticResource ColoredIconButton}" Click="configFileBTN_Click">
             <materialDesign:PackIcon Kind="File" Width="24" Height="24"/>
             </Button>
         <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
