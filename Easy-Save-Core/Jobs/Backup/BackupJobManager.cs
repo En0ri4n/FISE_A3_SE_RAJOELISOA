@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,7 +16,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public class BackupJobManager : JobManager<BackupJob>, INotifyPropertyChanged
     {
-        public delegate void OnJobInterrupted(BackupJob job, string processName = "");
+        public delegate void OnJobInterrupted(JobInterruptionReasons reason, BackupJob job, string processName = "");
         public event OnJobInterrupted? JobInterruptedHandler;
 
         public BackupJob? CurrentRunningJob { get; private set; }
@@ -112,14 +113,23 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 foreach (BackupJob job in jobs)
                 {
                     CurrentRunningJob = job;
-                    if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+
+                    string targetPath = job.Target;
+                    long diskSpaceMin = 10; //TODO Space from jobs
+                    if (!HasEnoughDiskSpace(targetPath, diskSpaceMin * 1024 * 1024 * 1024))
+                    {
+                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
+                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
+                        break;
+                    } 
+                    else if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
                     {
                         job.RunJob();
                     }
                     else
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
-                        JobInterruptedHandler?.Invoke(job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
                         break;
                     }
                 }

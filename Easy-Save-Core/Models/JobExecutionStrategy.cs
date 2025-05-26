@@ -53,7 +53,8 @@
             Failed,
             SourceNotFound,
             DirectoriesNotSpecified,
-            SameSourceAndTarget
+            SameSourceAndTarget,
+            NotEnoughDiskSpace
         }
     }
 }

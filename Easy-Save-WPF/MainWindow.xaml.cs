@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
+using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Jobs.Backup.ViewModels;
@@ -31,9 +32,20 @@ namespace Easy_Save_WPF
             InitializeComponent();
             DataContext = BackupJobViewModel.Get().JobBuilder;
             jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
-            BackupJobViewModel.Get().JobManager.JobInterruptedHandler += (job, processName) =>
+            BackupJobViewModel.Get().JobManager.JobInterruptedHandler += (reason, job, processName) =>
             {
-                MessageBox.Show($"Job {job.Name} and every following jobs have been interrupted by process {processName}.", "Job(s) Interruption(s)", MessageBoxButton.OK, MessageBoxImage.Error);
+                switch (reason)
+                {
+                    case JobInterruptionReasons.NotEnoughDiskSpace:
+                        MessageBox.Show($"Job {job.Name} and every following jobs have been interrupted because there is not enough space on the target drive to execute backup job(s).", "Job(s) Interruption(s)", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case JobInterruptionReasons.ProcessRunning:
+                        MessageBox.Show($"Job {job.Name} and every following jobs have been interrupted by process {processName}.", "Job(s) Interruption(s)", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    default:
+                        MessageBox.Show($"Job {job.Name} has been interrupted for an unknown reason.", "Job Interruption", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        break;
+                }
             };
 
             //BackupJobViewModel.Get().DeactivateButtons = DeactivateButtons;

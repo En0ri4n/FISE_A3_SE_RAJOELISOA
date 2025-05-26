@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
 
@@ -83,5 +84,24 @@ namespace CLEA.EasySaveCore.Models
         }
 
         protected abstract void DoMultipleJob(ObservableCollection<TJob> jobs);
+
+        protected bool HasEnoughDiskSpace(string path, long minimumBytesRequired)
+        {
+            try
+            {
+                DriveInfo drive = new DriveInfo(Path.GetPathRoot(path)!);
+                return drive.AvailableFreeSpace >= minimumBytesRequired;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+
+    public enum JobInterruptionReasons
+    {
+        NotEnoughDiskSpace,
+        ProcessRunning
     }
 }

@@ -319,10 +319,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             {
                 string encryptionKey = (input as string)?.Trim() ?? string.Empty;
 
-                if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length > 30)
+                if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length < 8 || encryptionKey.Length > 30)
+                {
+                    MessageBox.Show("Encryption key must be between 8 and 30 characters long.", "Invalid Key", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
+                }
 
                 BackupJobConfiguration.Get().EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
+                MessageBox.Show("Encryption key saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             });
 
             AddExtensionToEncryptCommand = new RelayCommand(input =>
