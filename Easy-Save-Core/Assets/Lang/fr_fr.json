@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Erreur : Impossible de lancer un job : Aucun Job trouvé",
   "job_menu.error_excessive_jobs": "Erreur : Impossible de créer un Job : Plus de 5 jobs",
   "job_menu.error_job_exist": "Erreur : Impossible de créer un Job : Son nom est déjà utilisé",
-
   "job_menu.title_one": "Lancer un Job",
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Sélectionnez aucun pour quitter)",
   "job_menu.title_all": "Lancer tous les Jobs",
   "job_menu.option_all": "Lancer Tout",
-
   "job_menu.task_run_information": "[{JOB_NAME}] {SOURCE} a été copié vers {TARGET} en {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Le job a été lancé sans erreurs",
   "job_menu.many_jobs_success": "Les {JOBNUMBER} Jobs ont été lancés sans erreurs",
-
   "job_menu.name_question": "Quel est le nom du Job ?",
   "job_menu.select_option": "Quel Job voulez-vous sélectionner ?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Changer le type de Log (actuel : {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Changer le répertoire des Logs journalières (actuel : {PATH})",
   "settings_menu.message_daily_log_path": "Quel est le répertoire des Logs journalières ?",
-
   "settings_menu.change_status_log_path": "Changer le répertoire des Logs de statut (actuel : {PATH})",
   "settings_menu.message_status_log_path": "Quel est le répertoire des Logs de statut ?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "Type de journal : ",
   "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
   "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
+  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
   "options_popup.extensions_encryption": "Extensions à chiffrer : ",
   "options_popup.processes_blacklist": "Liste noire des processus : ",
 
@@ -90,11 +87,24 @@
   "common.name": "Nom du Job",
   "common.source": "Source",
   "common.target": "Cible",
-
-  "common.backup.type": "Type de Sauvegarde",
+  "common.strategy": "Strategie",
   "common.backup.full": "Complete",
   "common.backup.differencial": "Différentielle",
   "common.encryption": "Chiffrement",
+  "common.status": "Statut",
+  "common.save": "Enreg.", //should not be too big
+  "common.progress": "Progression", //TODO : rename ?
+
+  "main_menu.tool_tip.options": "Options",
+  "main_menu.tool_tip.run": "Lancer un Job(s)",
+  "main_menu.tool_tip.stop": "Arreter les Jobs",
+  "main_menu.tool_tip.pause": "Mettre en pause les Jobs",
+  "main_menu.tool_tip.remove_job": "Retirer un Job",
+  "main_menu.tool_tip.add_job": "Ajouter",
+
+  "options_popup.tool_tip.config_file": "Fichier de Configuration",
+
+  "status.NotStarted": "En attente",
 
   "manage_job.daily_log": "Journaux Quotidiens",
   "manage_job.status_log": "Journaux de Statut",
@@ -103,8 +113,55 @@
   "delete_menu.title": "Supprimer un Job",
   "delete_menu.confirm_text": "Etes vous sur de vouloir supprimer ce job ?",
 
-  "create_menu.title": "Créer un Job",
-  "create_menu.subtitle": "Entrez les informations de votre Job"
+  "create_job.title": "Créer un Job",
+  "create_job.subtitle": "Entrez les informations de votre Job",
+  "create_job.button.done": "Créer",
 
+  "edit_job.title": "Modifier un Job",
+  "edit_job.subtitle": "Modifiez les informations de votre Job",
+  "edit_job.button.done": "Modifier",
 
+  "browse_folder.source": "Choisissez un dossier source",
+  "browse_folder.target": "Choisissez un dossier cible",
+  "browse_folder.daily_log": "Choisissez un dossier pour les logs journalières",
+  "browse_folder.status_log": "Choisissez un dossier pour les logs de statut",
+
+  "message_box.delete_confirm.title": "Confirmation de suppression de Job(s)",
+  "message_box.delete_confirm.text": "Supprimer un job(s) le retirera de la liste et de toutes ses tâches associées. Etes-vous sur de vouloir continuer ?",
+
+  "message_box.delete_no_selected.title": "Aucun Job selectionné",
+  "message_box.delete_no_selected.text": "Selectionnez un job(s) à supprimer.",
+
+  "message_box.interrupt_space.title": "Interruption de Job(s)",
+  "message_box.interrupt_space.text": "Job {JOB} aet les jobs suivants ont été intrrompus par manque d'espace dans le lecteur cible pour executer le job de backup.",
+
+  "message_box.interrupt_process.title": "Interruption de Job(s)",
+  "message_box.interrupt_process.text": "Job {JOB} et les jobs suivants ont été intrrompus par le processus {PROCESS}.",
+
+  "message_box.interrupt_unknown.title": "Interruption de Job(s)",
+  "message_box.interrupt_unknown.text": "Job {JOB} a été interrompu pour des raisons inconnues.",
+
+  "message_box.missing_data.title": "Données Manquantes",
+  "message_box.missing_data.text": "Remplissez tout les champs avant de créer le job.",
+
+  "message_box.existing_job.title": "Job existant",
+  "message_box.existing_job.text": "Un job de backup possède déjà ce nom.",
+
+  "message_box.run_no_selected.title": "Attention",
+  "message_box.run_no_selected.text": "Aucun job selectionné pour être lancé.",
+
+  "message_box.cant_find_encryptor.title": "Attention",
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor n'a pas été trouvé. Le chiffrement ne sera pas effectué pour les jobs avec chiffrement activé.",
+
+  "message_box.no_daily_log.title": "Attention",
+  "message_box.no_daily_log.text": "Le fichier de Logs journalières n'existe pas.",
+
+  "message_box.no_status_log.title": "Attention",
+  "message_box.no_status_log.text": "Le fichier de Logs de statut n'existe pas.",
+
+  "message_box.encryption_key_valid.title": "Réussite",
+  "message_box.encryption_key_valid.text": "Clé de chiffrement enregistrée avec succès.",
+
+  "message_box.encryption_key_invalid.title": "Clé Invalide",
+  "message_box.encryption_key_invalid.text": "La Clé de chiffrement doit être composée de 8 à 30 caractères."
 }

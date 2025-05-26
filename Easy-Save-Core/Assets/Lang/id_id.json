@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Kesalahan: Tidak bisa menjalankan pekerjaan: Tidak ada pekerjaan ditemukan",
   "job_menu.error_excessive_jobs": "Kesalahan: Tidak bisa membuat pekerjaan: Lebih dari 5 pekerjaan",
   "job_menu.error_job_exist": "Kesalahan: Tidak bisa membuat pekerjaan: Nama sudah digunakan",
-
   "job_menu.title_one": "Jalankan Satu Pekerjaan",
   "job_menu.title_multiple": "Jalankan Banyak Pekerjaan (kosongkan pilihan untuk keluar)",
   "job_menu.title_all": "Jalankan Semua Pekerjaan",
   "job_menu.option_all": "Jalankan semua",
-
   "job_menu.task_run_information": "[{JOB_NAME}] menyalin {SOURCE} ke {TARGET} dalam {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Pekerjaan berhasil dijalankan tanpa masalah",
   "job_menu.many_jobs_success": "{JOBNUMBER} pekerjaan berhasil dijalankan tanpa masalah",
-
   "job_menu.name_question": "Apa nama pekerjaan?",
   "job_menu.select_option": "Pekerjaan mana yang ingin Anda pilih?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Ganti Jenis Log (saat ini: {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Ganti Direktori Log Harian (saat ini: {PATH})",
   "settings_menu.message_daily_log_path": "Apa direktori log harian?",
-
   "settings_menu.change_status_log_path": "Ganti Direktori Log Status (saat ini: {PATH})",
   "settings_menu.message_status_log_path": "Apa direktori log status?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "Tipe Log: ",
   "options_popup.daily_log_dir": "Direktori Log Harian: ",
   "options_popup.status_log_dir": "Direktori Log Status: ",
+  "options_popup.encryption_key": "Masukkan kunci enkripsi (maks 30 karakter):",
   "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi: ",
   "options_popup.processes_blacklist": "Daftar hitam proses: ",
 
@@ -90,13 +87,81 @@
   "common.name": "Nama Pekerjaan",
   "common.source": "Sumber",
   "common.target": "Target",
+  "common.strategy": "Strategi",
+  "common.backup.full": "Lengkap",
+  "common.backup.differencial": "Diferensial",
+  "common.encryption": "Enkripsi",
+  "common.status": "Status",
+  "common.save": "Simpan",
+  "common.progress": "Kemajuan",
+
+  "main_menu.tool_tip.options": "Opsi",
+  "main_menu.tool_tip.run": "Jalankan Pekerjaan",
+  "main_menu.tool_tip.stop": "Hentikan Proses",
+  "main_menu.tool_tip.pause": "Jeda Proses",
+  "main_menu.tool_tip.remove_job": "Hapus Pekerjaan",
+  "main_menu.tool_tip.add_job": "Tambah Pekerjaan",
+
+  "options_popup.tool_tip.config_file": "Berkas Konfigurasi",
+
+  "status.NotStarted": "Belum Dimulai",
 
   "manage_job.daily_log": "Log Harian",
   "manage_job.status_log": "Log Status",
-  "manage_job.select_all": "Pilih Semua",
+  "manage_job.select_all": "Pilih/Batal Pilih Semua",
 
   "delete_menu.title": "Hapus Pekerjaan",
   "delete_menu.confirm_text": "Apakah Anda yakin ingin menghapus pekerjaan ini?",
 
-  "create_menu.title": "Buat Pekerjaan"
+  "create_job.title": "Buat Pekerjaan",
+  "create_job.subtitle": "Masukkan informasi pekerjaan Anda",
+  "create_job.button.done": "Buat",
+
+  "edit_job.title": "Edit Pekerjaan",
+  "edit_job.subtitle": "Edit informasi pekerjaan Anda",
+  "edit_job.button.done": "Edit",
+
+  "browse_folder.source": "Pilih Jalur Sumber",
+  "browse_folder.target": "Pilih Jalur Tujuan",
+  "browse_folder.daily_log": "Pilih Folder Log Harian.",
+  "browse_folder.status_log": "Pilih Folder Log Status.",
+
+  "message_box.delete_confirm.title": "Konfirmasi Penghapusan Pekerjaan",
+  "message_box.delete_confirm.text": "Menghapus pekerjaan akan menghapusnya dari daftar beserta semua tugas terkait. Apakah Anda yakin ingin melanjutkan?",
+
+  "message_box.delete_no_selected.title": "Tidak Ada Pekerjaan yang Dipilih",
+  "message_box.delete_no_selected.text": "Silakan pilih pekerjaan untuk dihapus.",
+
+  "message_box.interrupt_space.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_space.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah terganggu karena ruang di drive target tidak cukup untuk menjalankan pekerjaan cadangan.",
+
+  "message_box.interrupt_process.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_process.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah diganggu oleh proses {PROCESS}.",
+
+  "message_box.interrupt_unknown.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_unknown.text": "Pekerjaan {JOB} telah terganggu karena alasan yang tidak diketahui.",
+
+  "message_box.missing_data.title": "Data Hilang",
+  "message_box.missing_data.text": "Silakan isi semua kolom sebelum membuat pekerjaan.",
+
+  "message_box.existing_job.title": "Pekerjaan Sudah Ada",
+  "message_box.existing_job.text": "Sebuah pekerjaan cadangan sudah menggunakan nama ini.",
+
+  "message_box.run_no_selected.title": "Peringatan",
+  "message_box.run_no_selected.text": "Tidak ada pekerjaan yang dipilih untuk dijalankan.",
+
+  "message_box.cant_find_encryptor.title": "Peringatan",
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor tidak ditemukan. Enkripsi tidak akan dilakukan untuk pekerjaan dengan enkripsi diaktifkan.",
+
+  "message_box.no_daily_log.title": "Peringatan",
+  "message_box.no_daily_log.text": "File log harian tidak ada.",
+
+  "message_box.no_status_log.title": "Peringatan",
+  "message_box.no_status_log.text": "File log status tidak ada.",
+
+  "message_box.encryption_key_valid.title": "Berhasil",
+  "message_box.encryption_key_valid.text": "Kunci enkripsi berhasil disimpan.",
+
+  "message_box.encryption_key_invalid.title": "Kunci Tidak Valid",
+  "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter."
 }

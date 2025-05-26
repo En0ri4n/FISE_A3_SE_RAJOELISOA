@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "错误: 无法运行任务: 未找到任务",
   "job_menu.error_excessive_jobs": "错误: 无法创建任务: 任务超过5个",
   "job_menu.error_job_exist": "错误: 无法创建任务: 名称已被使用",
-
   "job_menu.title_one": "运行一个任务",
   "job_menu.title_multiple": "运行多个任务(不选即退出)",
   "job_menu.title_all": "运行所有任务",
   "job_menu.option_all": "全部运行",
-
   "job_menu.task_run_information": "[{JOB_NAME}] 已从 {SOURCE} 复制到 {TARGET}, 耗时 {TIME} 毫秒({STATUS})",
   "job_menu.one_job_success": "任务运行成功",
   "job_menu.many_jobs_success": "{JOBNUMBER} 个任务运行成功",
-
   "job_menu.name_question": "任务名称是什么?",
   "job_menu.select_option": "你想选择哪个任务?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "更改日志类型(当前: {LOGTYPE})",
   "settings_menu.change_daily_log_path": "更改每日日志目录(当前: {PATH})",
   "settings_menu.message_daily_log_path": "每日日志目录是?",
-
   "settings_menu.change_status_log_path": "更改状态日志目录(当前: {PATH})",
   "settings_menu.message_status_log_path": "状态日志目录是?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "日志类型: ",
   "options_popup.daily_log_dir": "每日日志目录: ",
   "options_popup.status_log_dir": "状态日志目录: ",
+  "options_popup.encryption_key": "输入加密密钥（最多30个字符）：",
   "options_popup.extensions_encryption": "要加密的扩展名: ",
   "options_popup.processes_blacklist": "进程黑名单: ",
 
@@ -90,13 +87,81 @@
   "common.name": "任务名称",
   "common.source": "来源",
   "common.target": "目标",
+  "common.strategy": "策略",
+  "common.backup.full": "完整",
+  "common.backup.differencial": "差异",
+  "common.encryption": "加密",
+  "common.status": "状态",
+  "common.save": "保存",
+  "common.progress": "进度",
+
+  "main_menu.tool_tip.options": "选项",
+  "main_menu.tool_tip.run": "运行任务",
+  "main_menu.tool_tip.stop": "停止运行",
+  "main_menu.tool_tip.pause": "暂停运行",
+  "main_menu.tool_tip.remove_job": "移除任务",
+  "main_menu.tool_tip.add_job": "添加任务",
+
+  "options_popup.tool_tip.config_file": "配置文件",
+
+  "status.NotStarted": "未开始",
 
   "manage_job.daily_log": "每日日志",
   "manage_job.status_log": "状态日志",
-  "manage_job.select_all": "全选",
+  "manage_job.select_all": "全选/取消全选",
 
   "delete_menu.title": "删除任务",
   "delete_menu.confirm_text": "您确定要删除这个任务吗？",
 
-  "create_menu.title": "创建任务"
+  "create_job.title": "创建任务",
+  "create_job.subtitle": "输入您的任务信息",
+  "create_job.button.done": "创建",
+
+  "edit_job.title": "编辑任务",
+  "edit_job.subtitle": "编辑您的任务信息",
+  "edit_job.button.done": "编辑",
+
+  "browse_folder.source": "选择源路径",
+  "browse_folder.target": "选择目标路径",
+  "browse_folder.daily_log": "选择每日日志文件夹",
+  "browse_folder.status_log": "选择状态日志文件夹",
+
+  "message_box.delete_confirm.title": "删除任务确认",
+  "message_box.delete_confirm.text": "删除任务将从列表中移除该任务及其所有相关任务。您确定要继续吗？",
+
+  "message_box.delete_no_selected.title": "未选择任务",
+  "message_box.delete_no_selected.text": "请选择要删除的任务。",
+
+  "message_box.interrupt_space.title": "任务中断",
+  "message_box.interrupt_space.text": "任务 {JOB} 及其之后的所有任务因目标驱动器空间不足而被中断，无法执行备份任务。",
+
+  "message_box.interrupt_process.title": "任务中断",
+  "message_box.interrupt_process.text": "任务 {JOB} 及其之后的所有任务已被进程 {PROCESS} 中断。",
+
+  "message_box.interrupt_unknown.title": "任务中断",
+  "message_box.interrupt_unknown.text": "任务 {JOB} 因未知原因被中断。",
+
+  "message_box.missing_data.title": "缺少数据",
+  "message_box.missing_data.text": "请在创建任务前填写所有字段。",
+
+  "message_box.existing_job.title": "任务已存在",
+  "message_box.existing_job.text": "已有一个备份任务使用此名称。",
+
+  "message_box.run_no_selected.title": "警告",
+  "message_box.run_no_selected.text": "未选择要运行的任务。",
+
+  "message_box.cant_find_encryptor.title": "警告",
+  "message_box.cant_find_encryptor.text": "未找到 CLEA-Encryptor。启用加密的任务将不会被加密。",
+
+  "message_box.no_daily_log.title": "警告",
+  "message_box.no_daily_log.text": "每日日志文件不存在。",
+
+  "message_box.no_status_log.title": "警告",
+  "message_box.no_status_log.text": "状态日志文件不存在。",
+
+  "message_box.encryption_key_valid.title": "成功",
+  "message_box.encryption_key_valid.text": "加密密钥保存成功。",
+
+  "message_box.encryption_key_invalid.title": "无效密钥",
+  "message_box.encryption_key_invalid.text": "加密密钥长度必须在8到30个字符之间。"
 }

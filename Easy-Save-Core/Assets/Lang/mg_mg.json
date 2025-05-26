@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Hadisoana: Tsy afaka mampandeha Asa: Tsy nisy Asa hita",
   "job_menu.error_excessive_jobs": "Hadisoana: Tsy afaka mamorona Asa: Mihoatra ny 5 Asa",
   "job_menu.error_job_exist": "Hadisoana: Tsy afaka mamorona Asa: Efa misy io anarana io",
-
   "job_menu.title_one": "Mampandeha Asa iray",
   "job_menu.title_multiple": "Mampandeha Asa maro (Tsy misafidy = miala)",
   "job_menu.title_all": "Mampandeha Asa rehetra",
   "job_menu.option_all": "Alefa daholo",
-
   "job_menu.task_run_information": "[{JOB_NAME}] Naka tahiry avy amin’i {SOURCE} ho any amin’i {TARGET} tao anatin’ny {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Vita tsara ilay Asa",
   "job_menu.many_jobs_success": "Asa {JOBNUMBER} vita tsara tsy misy olana",
-
   "job_menu.name_question": "Inona no anaran’ny Asa?",
   "job_menu.select_option": "Asa inona no tianao hofidiana?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Ovay ny Karazana Log (ankehitriny: {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Ovay ny Lahatahiry Log isan’andro (ankehitriny: {PATH})",
   "settings_menu.message_daily_log_path": "Aiza ny lahatahiry log isan’andro?",
-
   "settings_menu.change_status_log_path": "Ovay ny Lahatahiry Log Status (ankehitriny: {PATH})",
   "settings_menu.message_status_log_path": "Aiza ny lahatahiry log status?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "Karazan-dahatsoratra : ",
   "options_popup.daily_log_dir": "Rakitra tatitra isan'andro : ",
   "options_popup.status_log_dir": "Rakitra tatitra sata : ",
+  "options_popup.encryption_key": "Ampidiro ny lakilen'ny fanoratana miafina (hatramin'ny tarehintsoratra 30):", //FIXME probably too long
   "options_popup.extensions_encryption": "Fanitarana hofenoin : ",
   "options_popup.processes_blacklist": "Lisitra mainty ho an'ny dingana : ",
 
@@ -90,13 +87,81 @@
   "common.name": "Anaran'ny Asa",
   "common.source": "Loharanon-kevitra",
   "common.target": "Kendrena",
+  "common.strategy": "Tetikady",
+  "common.backup.full": "Feno",
+  "common.backup.differencial": "Samihafa",
+  "common.encryption": "Fanoratana miafina",
+  "common.status": "Toetry ny Asa",
+  "common.save": "Tehirizo",
+  "common.progress": "Fandrosoana",
+
+  "main_menu.tool_tip.options": "Safidy",
+  "main_menu.tool_tip.run": "Alefa Asa",
+  "main_menu.tool_tip.stop": "Atsaharo",
+  "main_menu.tool_tip.pause": "Ajano",
+  "main_menu.tool_tip.remove_job": "Esory Asa",
+  "main_menu.tool_tip.add_job": "Ampio Asa",
+
+  "options_popup.tool_tip.config_file": "Rakitra Fikirakirana",
+
+  "status.NotStarted": "Tsy Atomboka",
 
   "manage_job.daily_log": "Tatitry ny Asa Isan’andro",
   "manage_job.status_log": "Tatitry ny Toe-javatra",
-  "manage_job.select_all": "Fidio Rehetra",
+  "manage_job.select_all": "Fidio/Fafao Rehetra",
 
   "delete_menu.title": "Fafao ny Asa",
   "delete_menu.confirm_text": "Azonao antoka ve fa tianao hofafana ity asa ity?",
 
-  "create_menu.title": "Mamòna Asa"
+  "create_job.title": "Mamòna Asa",
+  "create_job.subtitle": "Ampidiro ny mombamomba ny asanao",
+  "create_job.button.done": "Mamòna",
+
+  "edit_job.title": "Hanova Asa",
+  "edit_job.subtitle": "Ovay ny mombamomba ny asanao",
+  "edit_job.button.done": "Hanova",
+
+  "browse_folder.source": "Safidio ny Lalana Loharano",
+  "browse_folder.target": "Safidio ny Lalana Kendrena",
+  "browse_folder.daily_log": "Safidio ny lahatahiry ho an'ny Tatitry ny Asa Isan’andro.",
+  "browse_folder.status_log": "Safidio ny lahatahiry ho an'ny Tatitry ny Toe-javatra.",
+
+  "message_box.delete_confirm.title": "Fanamafisana ny Fafana Asa",
+  "message_box.delete_confirm.text": "Ny famafana asa dia hanala izany amin'ny lisitra sy ireo asa rehetra mifandray aminy. Azonao antoka ve fa tianao hanohy?",
+
+  "message_box.delete_no_selected.title": "Tsy Misy Asa Voafantina",
+  "message_box.delete_no_selected.text": "Azafady, mifidiana asa hofafana.",
+
+  "message_box.interrupt_space.title": "Fanelingelenana Asa",
+  "message_box.interrupt_space.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny tsy fahampian'ny toerana amin'ny kapila kendrena hanaovana ny asa fanohanana.",
+
+  "message_box.interrupt_process.title": "Fanelingelenana Asa",
+  "message_box.interrupt_process.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny dingana {PROCESS}.",
+
+  "message_box.interrupt_unknown.title": "Fanelingelenana Asa",
+  "message_box.interrupt_unknown.text": "Voasakana ny asa {JOB} noho ny antony tsy fantatra.",
+
+  "message_box.missing_data.title": "Tsy Ampy ny Tahiry",
+  "message_box.missing_data.text": "Fenoy daholo azafady ny saha rehetra alohan'ny hamoronana asa.",
+
+  "message_box.existing_job.title": "Asa Efa Misy",
+  "message_box.existing_job.text": "Efa misy asa fanohanana mitovy anarana amin’ity.",
+
+  "message_box.run_no_selected.title": "Fampitandremana",
+  "message_box.run_no_selected.text": "Tsy misy asa voafantina hatao.",
+
+  "message_box.cant_find_encryptor.title": "Fampitandremana",
+  "message_box.cant_find_encryptor.text": "Tsy hita ny CLEA-Encryptor. Tsy hanaovana fanoratana miafina ireo asa manana fanoratana miafina.",
+
+  "message_box.no_daily_log.title": "Fampitandremana",
+  "message_box.no_daily_log.text": "Tsy misy ny rakitra tatitry ny asa isan’andro.",
+
+  "message_box.no_status_log.title": "Fampitandremana",
+  "message_box.no_status_log.text": "Tsy misy ny rakitra tatitry ny toe-javatra.",
+
+  "message_box.encryption_key_valid.title": "Nahomby",
+  "message_box.encryption_key_valid.text": "Voatahiry soa aman-tsara ny lakilen'ny fanoratana miafina.",
+
+  "message_box.encryption_key_invalid.title": "Tsy Manankery ny Lakile",
+  "message_box.encryption_key_invalid.text": "Ny lakilen'ny fanoratana miafina dia tsy maintsy manana tarehintsoratra 8 hatramin'ny 30."
 }
