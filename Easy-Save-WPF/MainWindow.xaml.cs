@@ -39,13 +39,13 @@ namespace Easy_Save_WPF
                 switch (reason)
                 {
                     case JobInterruptionReasons.NotEnoughDiskSpace:
-                        MessageBox.Show($"Job {job.Name} and every following jobs have been interrupted because there is not enough space on the target drive to execute backup job(s).", "Job(s) Interruption(s)", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_space.text").Replace("{JOB}", job.Name), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_space.title"), MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case JobInterruptionReasons.ProcessRunning:
                         MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_process.text").Replace("{JOB}", job.Name).Replace("{PROCESS}", processName), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_process.title"), MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     default:
-                        MessageBox.Show($"Job {job.Name} has been interrupted for an unknown reason.", "Job Interruption", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_unknown.text").Replace("{JOB}", job.Name), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_unknown.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                 }
             };
@@ -135,7 +135,7 @@ namespace Easy_Save_WPF
 
             if (!File.Exists(path))
             {
-                MessageBox.Show("Daily log file does not exist", "TODO title", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.no_daily_log.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.no_daily_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -150,7 +150,7 @@ namespace Easy_Save_WPF
             var path = BackupJobViewModel.Get().StatusLogFilePath;
 
             if (!File.Exists(path)) {
-                MessageBox.Show("Status log file does not exist", "TODO title", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.no_status_log.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.no_status_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
