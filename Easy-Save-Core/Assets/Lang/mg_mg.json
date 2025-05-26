@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Hadisoana: Tsy afaka mampandeha Asa: Tsy nisy Asa hita",
   "job_menu.error_excessive_jobs": "Hadisoana: Tsy afaka mamorona Asa: Mihoatra ny 5 Asa",
   "job_menu.error_job_exist": "Hadisoana: Tsy afaka mamorona Asa: Efa misy io anarana io",
-
   "job_menu.title_one": "Mampandeha Asa iray",
   "job_menu.title_multiple": "Mampandeha Asa maro (Tsy misafidy = miala)",
   "job_menu.title_all": "Mampandeha Asa rehetra",
   "job_menu.option_all": "Alefa daholo",
-
   "job_menu.task_run_information": "[{JOB_NAME}] Naka tahiry avy amin’i {SOURCE} ho any amin’i {TARGET} tao anatin’ny {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Vita tsara ilay Asa",
   "job_menu.many_jobs_success": "Asa {JOBNUMBER} vita tsara tsy misy olana",
-
   "job_menu.name_question": "Inona no anaran’ny Asa?",
   "job_menu.select_option": "Asa inona no tianao hofidiana?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Ovay ny Karazana Log (ankehitriny: {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Ovay ny Lahatahiry Log isan’andro (ankehitriny: {PATH})",
   "settings_menu.message_daily_log_path": "Aiza ny lahatahiry log isan’andro?",
-
   "settings_menu.change_status_log_path": "Ovay ny Lahatahiry Log Status (ankehitriny: {PATH})",
   "settings_menu.message_status_log_path": "Aiza ny lahatahiry log status?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "Karazan-dahatsoratra : ",
   "options_popup.daily_log_dir": "Rakitra tatitra isan'andro : ",
   "options_popup.status_log_dir": "Rakitra tatitra sata : ",
+  "options_popup.encryption_key": "Ampidiro ny lakilen'ny fanoratana miafina (hatramin'ny tarehintsoratra 30):", //FIXME probably too long
   "options_popup.extensions_encryption": "Fanitarana hofenoin : ",
   "options_popup.processes_blacklist": "Lisitra mainty ho an'ny dingana : ",
 
@@ -90,13 +87,28 @@
   "common.name": "Anaran'ny Asa",
   "common.source": "Loharanon-kevitra",
   "common.target": "Kendrena",
+  "common.strategy": "Tetikady",
+  "common.backup.full": "Feno",
+  "common.backup.differencial": "Samihafa",
+  "common.encryption": "Fanoratana miafina",
+  "common.status": "Toetry ny Asa",
+  "common.save": "Tehirizo",
+  "common.progress": "Fandrosoana",
+
+  "status.NotStarted": "Tsy Atomboka",
 
   "manage_job.daily_log": "Tatitry ny Asa Isan’andro",
   "manage_job.status_log": "Tatitry ny Toe-javatra",
-  "manage_job.select_all": "Fidio Rehetra",
+  "manage_job.select_all": "Fidio/Fafao Rehetra",
 
   "delete_menu.title": "Fafao ny Asa",
   "delete_menu.confirm_text": "Azonao antoka ve fa tianao hofafana ity asa ity?",
 
-  "create_menu.title": "Mamòna Asa"
+  "create_job.title": "Mamòna Asa",
+  "create_job.subtitle": "Ampidiro ny mombamomba ny asanao",
+  "create_job.button.done": "Mamòna",
+
+  "edit_job.title": "Hanova Asa",
+  "edit_job.subtitle": "Ovay ny mombamomba ny asanao",
+  "edit_job.button.done": "Hanova"
 }

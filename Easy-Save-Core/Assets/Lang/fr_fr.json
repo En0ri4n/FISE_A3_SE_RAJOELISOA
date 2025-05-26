@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Erreur : Impossible de lancer un job : Aucun Job trouvé",
   "job_menu.error_excessive_jobs": "Erreur : Impossible de créer un Job : Plus de 5 jobs",
   "job_menu.error_job_exist": "Erreur : Impossible de créer un Job : Son nom est déjà utilisé",
-
   "job_menu.title_one": "Lancer un Job",
   "job_menu.title_multiple": "Lancer plusieurs Jobs (Sélectionnez aucun pour quitter)",
   "job_menu.title_all": "Lancer tous les Jobs",
   "job_menu.option_all": "Lancer Tout",
-
   "job_menu.task_run_information": "[{JOB_NAME}] {SOURCE} a été copié vers {TARGET} en {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Le job a été lancé sans erreurs",
   "job_menu.many_jobs_success": "Les {JOBNUMBER} Jobs ont été lancés sans erreurs",
-
   "job_menu.name_question": "Quel est le nom du Job ?",
   "job_menu.select_option": "Quel Job voulez-vous sélectionner ?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Changer le type de Log (actuel : {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Changer le répertoire des Logs journalières (actuel : {PATH})",
   "settings_menu.message_daily_log_path": "Quel est le répertoire des Logs journalières ?",
-
   "settings_menu.change_status_log_path": "Changer le répertoire des Logs de statut (actuel : {PATH})",
   "settings_menu.message_status_log_path": "Quel est le répertoire des Logs de statut ?",
 
@@ -70,9 +66,9 @@
   "options_popup.log_type": "Type de journal : ",
   "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
   "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
+  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
   "options_popup.extensions_encryption": "Extensions à chiffrer : ",
   "options_popup.processes_blacklist": "Liste noire des processus : ",
-  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
 
   "common.browse": "Parcourir",
   "common.yes": "Oui",
