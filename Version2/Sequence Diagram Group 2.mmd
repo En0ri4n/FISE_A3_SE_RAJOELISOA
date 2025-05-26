@@ -1,0 +1,177 @@
+sequenceDiagram
+  participant User as User
+  participant MainWindow as MainWindow
+  participant Options_Popup as Options_Popup
+  participant EasySaveView as EasySaveView
+  participant EasySaveViewModel as EasySaveViewModel
+  participant BackupJobManager as BackupJobManager
+  participant BackupJob as BackupJob
+  participant BackupJobTask as BackupJobTask
+  participant Logger as Logger
+  participant BackupJobConfiguration as BackupJobConfiguration
+
+  rect rgb(230, 250, 255)
+    Note over User, MainWindow: Application Initialization
+    User ->> MainWindow: MainWindow()
+    MainWindow -->> User: void
+    MainWindow ->> EasySaveView: DisplayMainMenu()
+    EasySaveView -->> MainWindow: void
+    MainWindow ->> EasySaveViewModel: Init()
+    EasySaveViewModel -->> MainWindow: void
+    EasySaveViewModel ->> BackupJobManager: BackupJobManager()
+    BackupJobManager -->> EasySaveViewModel: void
+    alt Config file exists
+      EasySaveViewModel ->> BackupJobConfiguration: LoadConfiguration()
+      BackupJobConfiguration -->> EasySaveViewModel: void
+    else No config file
+      BackupJobConfiguration ->> BackupJobConfiguration: SaveConfiguration()
+      BackupJobConfiguration -->> BackupJobConfiguration: void
+    end
+  end
+  rect rgb(240, 255, 240)
+    Note over User, EasySaveViewModel: Create Backup Job
+    User ->> EasySaveView: DisplayJobMenu()
+    EasySaveView -->> User: void
+    EasySaveView ->> EasySaveViewModel: SetJobBuilder()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilderer
+    EasySaveView ->> User: Request Job Parameters (Name, Source, Target)
+    User -->> EasySaveView: string, string, string
+    EasySaveView ->> EasySaveViewModel: BuildJobCommand.Execute()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> BackupJobManager: AddJob(BackupJob, bool save)
+    BackupJobManager -->> EasySaveViewModel: bool
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> EasySaveView: Job Created
+    EasySaveView -->> User: void
+  end
+  rect rgb(255, 245, 230)
+    Note over User, EasySaveViewModel: Modify Backup Job
+    User ->> EasySaveView: DisplayJobMenu()
+    EasySaveView -->> User: void
+    EasySaveView ->> EasySaveViewModel: SetJobBuilder()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilderer
+    EasySaveView ->> User: Request New Job Parameters
+    User -->> EasySaveView: string, string, string
+    EasySaveView ->> EasySaveViewModel: BuildJobCommand.Execute()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> BackupJobManager: UpdateJob(string name, BackupJob)
+    BackupJobManager -->> EasySaveViewModel: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> EasySaveView: Job Updated
+    EasySaveView -->> User: void
+  end
+  rect rgb(255, 235, 235)
+    Note over User, EasySaveViewModel: Delete Backup Job
+    User ->> EasySaveView: DisplayJobMenu()
+    EasySaveView -->> User: void
+    EasySaveView ->> EasySaveViewModel: SetJobBuilder()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilderer
+    EasySaveView ->> User: Confirm Deletion
+    User -->> EasySaveView: bool
+    EasySaveView ->> EasySaveViewModel: DeleteJobCommand.Execute()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> BackupJobManager: RemoveJob(BackupJob)
+    BackupJobManager -->> EasySaveViewModel: bool
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> EasySaveView: Job Deleted
+    EasySaveView -->> User: void
+  end
+  rect rgb(250, 230, 255)
+    Note over User, EasySaveView: Run Backup Job(s)
+    User ->> EasySaveView: RunBackupJob()
+    EasySaveView -->> User: void
+    EasySaveView ->> BackupJobManager: RunBackupJob()
+    BackupJobManager -->> EasySaveView: void
+    BackupJobManager ->> BackupJob: Execute()
+    BackupJob -->> BackupJobManager: ExecutionStatus
+    BackupJob ->> BackupJobTask: CreateBackupTasks()
+    BackupJobTask ->> Logger: LogDailyTransferDetails()
+    Logger -->> BackupJobTask: void
+    BackupJobTask ->> BackupJob: GetTransferStatus()
+    BackupJob ->> EasySaveView: UpdateStatus()
+    EasySaveView -->> User: void
+  end
+  rect rgb(245, 245, 245)
+    Note over User, EasySaveViewModel: Language Change Request
+    User ->> Options_Popup: ChangeLanguage()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: UpdateLanguageRequest()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: ChangeCurrentLanguage()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmLanguageChanged()
+    Options_Popup -->> User: void
+  end
+  rect rgb(240, 240, 255)
+    Note over User, EasySaveViewModel: Logs Paths Change Request
+    User ->> Options_Popup: ChangePaths()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: UpdatePathsRequest()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmPathsChanged()
+    Options_Popup -->> User: void
+  end
+  rect rgb(230, 240, 255)
+    Note over User, EasySaveViewModel: Modify Daily Log Format
+    User ->> Options_Popup: DisplayLogTypeMenu()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: UpdateLogTypeRequest()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmLogFormatChanged()
+    Options_Popup -->> User: void
+  end
+    rect rgb(230, 240, 255)
+    Note over User, EasySaveViewModel: Modify Encryption Key
+    User ->> Options_Popup: DisplayEncryptionKey()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: UpdateEncryptionKey()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmEncryptionKey()
+    Options_Popup -->> User: void
+  end
+    rect rgb(230, 240, 255)
+    Note over User, EasySaveViewModel: Modify Extensions To Encrypt
+    User ->> Options_Popup: DisplayExtensionsToEncryptKey()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: DisplayExtensionsToEncryptKey()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmExtenstionsTOEncrypt()
+    Options_Popup -->> User: void
+  end
+    rect rgb(230, 240, 255)
+    Note over User, EasySaveViewModel: Modify Processes To Blacklist
+    User ->> Options_Popup: DisplayProcessBlacklist()
+    Options_Popup -->> User: void
+    Options_Popup ->> EasySaveViewModel: UpdateProcessesBlacklist()
+    EasySaveViewModel -->> Options_Popup: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> Options_Popup: ConfirmProcessesBlacklist()
+    Options_Popup -->> User: void
+  end
+  rect rgb(255, 240, 245)
+    Note over User, EasySaveViewModel: Exit Application
+    User ->> EasySaveView: ExitApplication()
+    EasySaveView -->> User: Show exit text
+    EasySaveView ->> EasySaveViewModel: CloseApplication()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> Logger: Log()
+    Logger -->> EasySaveViewModel: void
+  end
