@@ -263,13 +263,13 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 bool isDailyLog = bool.Parse((string)input!);
 
                 FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = "Select Status Log Folder";
+                string title = L10N<BackupJob>.Get().GetTranslation("browse_folder.status_log");
 
                 folderBrowserDialog.Title = title;
                 string path = StatusLogPath;
 
                 if (isDailyLog) {
-                    folderBrowserDialog.Title = "Select Daily Log Folder";
+                    folderBrowserDialog.Title = L10N<BackupJob>.Get().GetTranslation("browse_folder.daily_log"); ;
                     path = DailyLogPath;
                 }
 
@@ -321,12 +321,12 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
                 if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length < 8 || encryptionKey.Length > 30)
                 {
-                    MessageBox.Show("Encryption key must be between 8 and 30 characters long.", "Invalid Key", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_invalid.text"), L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_invalid.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 BackupJobConfiguration.Get().EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
-                MessageBox.Show("Encryption key saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_valid.text"), L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_valid.title"), MessageBoxButton.OK, MessageBoxImage.Information);
             });
 
             AddExtensionToEncryptCommand = new RelayCommand(input =>
