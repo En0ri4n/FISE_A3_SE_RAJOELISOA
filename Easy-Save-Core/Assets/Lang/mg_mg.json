@@ -112,6 +112,9 @@
   "edit_job.subtitle": "Ovay ny mombamomba ny asanao",
   "edit_job.button.done": "Hanova",
 
+  "browse_folder.daily_log": "Safidio ny lahatahiry ho an'ny Tatitry ny Asa Isan’andro.",
+  "browse_folder.status_log": "Safidio ny lahatahiry ho an'ny Tatitry ny Toe-javatra.",
+
   "message_box.delete_confirm.title": "Fanamafisana ny Fafana Asa",
   "message_box.delete_confirm.text": "Ny famafana asa dia hanala izany amin'ny lisitra sy ireo asa rehetra mifandray aminy. Azonao antoka ve fa tianao hanohy?",
 
@@ -143,5 +146,11 @@
   "message_box.no_daily_log.text": "Tsy misy ny rakitra tatitry ny asa isan’andro.",
 
   "message_box.no_status_log.title": "Fampitandremana",
-  "message_box.no_status_log.text": "Tsy misy ny rakitra tatitry ny toe-javatra."
+  "message_box.no_status_log.text": "Tsy misy ny rakitra tatitry ny toe-javatra.",
+
+  "message_box.encryption_key_valid.title": "Nahomby",
+  "message_box.encryption_key_valid.text": "Voatahiry soa aman-tsara ny lakilen'ny fanoratana miafina.",
+
+  "message_box.encryption_key_invalid.title": "Tsy Manankery ny Lakile",
+  "message_box.encryption_key_invalid.text": "Ny lakilen'ny fanoratana miafina dia tsy maintsy manana tarehintsoratra 8 hatramin'ny 30."
 }

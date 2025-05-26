@@ -112,6 +112,9 @@
   "edit_job.subtitle": "Modifiez les informations de votre Job",
   "edit_job.button.done": "Modifier",
 
+  "browse_folder.daily_log": "Choisissez un dossier pour les logs journalières",
+  "browse_folder.status_log": "Choisissez un dossier pour les logs de statut",
+
   "message_box.delete_confirm.title": "Confirmation de suppression de Job(s)",
   "message_box.delete_confirm.text": "Supprimer un job(s) le retirera de la liste et de toutes ses tâches associées. Etes-vous sur de vouloir continuer ?",
 
@@ -143,5 +146,11 @@
   "message_box.no_daily_log.text": "Le fichier de Logs journalières n'existe pas.",
 
   "message_box.no_status_log.title": "Attention",
-  "message_box.no_status_log.text": "Le fichier de Logs de statut n'existe pas."
+  "message_box.no_status_log.text": "Le fichier de Logs de statut n'existe pas.",
+
+  "message_box.encryption_key_valid.title": "Réussite",
+  "message_box.encryption_key_valid.text": "Clé de chiffrement enregistrée avec succès.",
+
+  "message_box.encryption_key_invalid.title": "Clé Invalide",
+  "message_box.encryption_key_invalid.text": "La Clé de chiffrement doit être composée de 8 à 30 caractères."
 }

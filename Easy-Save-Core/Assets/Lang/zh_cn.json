@@ -112,6 +112,9 @@
   "edit_job.subtitle": "编辑您的任务信息",
   "edit_job.button.done": "编辑",
 
+  "browse_folder.daily_log": "选择每日日志文件夹",
+  "browse_folder.status_log": "选择状态日志文件夹",
+
   "message_box.delete_confirm.title": "删除任务确认",
   "message_box.delete_confirm.text": "删除任务将从列表中移除该任务及其所有相关任务。您确定要继续吗？",
 
@@ -143,5 +146,11 @@
   "message_box.no_daily_log.text": "每日日志文件不存在。",
 
   "message_box.no_status_log.title": "警告",
-  "message_box.no_status_log.text": "状态日志文件不存在。"
+  "message_box.no_status_log.text": "状态日志文件不存在。",
+
+  "message_box.encryption_key_valid.title": "成功",
+  "message_box.encryption_key_valid.text": "加密密钥保存成功。",
+
+  "message_box.encryption_key_invalid.title": "无效密钥",
+  "message_box.encryption_key_invalid.text": "加密密钥长度必须在8到30个字符之间。"
 }

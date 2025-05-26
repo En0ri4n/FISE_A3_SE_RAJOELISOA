@@ -112,6 +112,9 @@
   "edit_job.subtitle": "Edit informasi pekerjaan Anda",
   "edit_job.button.done": "Edit",
 
+  "browse_folder.daily_log": "Pilih Folder Log Harian.",
+  "browse_folder.status_log": "Pilih Folder Log Status.",
+
   "message_box.delete_confirm.title": "Konfirmasi Penghapusan Pekerjaan",
   "message_box.delete_confirm.text": "Menghapus pekerjaan akan menghapusnya dari daftar beserta semua tugas terkait. Apakah Anda yakin ingin melanjutkan?",
 
@@ -143,5 +146,11 @@
   "message_box.no_daily_log.text": "File log harian tidak ada.",
 
   "message_box.no_status_log.title": "Peringatan",
-  "message_box.no_status_log.text": "File log status tidak ada."
+  "message_box.no_status_log.text": "File log status tidak ada.",
+
+  "message_box.encryption_key_valid.title": "Berhasil",
+  "message_box.encryption_key_valid.text": "Kunci enkripsi berhasil disimpan.",
+
+  "message_box.encryption_key_invalid.title": "Kunci Tidak Valid",
+  "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter."
 }
