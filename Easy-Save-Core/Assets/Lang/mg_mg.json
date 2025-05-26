@@ -95,6 +95,15 @@
   "common.save": "Tehirizo",
   "common.progress": "Fandrosoana",
 
+  "main_menu.tool_tip.options": "Safidy",
+  "main_menu.tool_tip.run": "Alefa Asa",
+  "main_menu.tool_tip.stop": "Atsaharo",
+  "main_menu.tool_tip.pause": "Ajano",
+  "main_menu.tool_tip.remove_job": "Esory Asa",
+  "main_menu.tool_tip.add_job": "Ampio Asa",
+
+  "options_popup.tool_tip.config_file": "Rakitra Fikirakirana",
+
   "status.NotStarted": "Tsy Atomboka",
 
   "manage_job.daily_log": "Tatitry ny Asa Isan’andro",

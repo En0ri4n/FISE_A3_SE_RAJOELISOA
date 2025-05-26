@@ -95,6 +95,15 @@
   "common.save": "Save",
   "common.progress": "Progress",
 
+  "main_menu.tool_tip.options": "Options",
+  "main_menu.tool_tip.run": "Run Job(s)",
+  "main_menu.tool_tip.stop": "Stop Running",
+  "main_menu.tool_tip.pause": "Pause Running",
+  "main_menu.tool_tip.remove_job": "Remove a Job",
+  "main_menu.tool_tip.add_job": "Add a Job",
+
+  "options_popup.tool_tip.config_file": "Configuration File",
+
   "status.NotStarted": "Not Started",
 
   "manage_job.daily_log": "Daily Log",

@@ -95,6 +95,15 @@
   "common.save": "保存",
   "common.progress": "进度",
 
+  "main_menu.tool_tip.options": "选项",
+  "main_menu.tool_tip.run": "运行任务",
+  "main_menu.tool_tip.stop": "停止运行",
+  "main_menu.tool_tip.pause": "暂停运行",
+  "main_menu.tool_tip.remove_job": "移除任务",
+  "main_menu.tool_tip.add_job": "添加任务",
+
+  "options_popup.tool_tip.config_file": "配置文件",
+
   "status.NotStarted": "未开始",
 
   "manage_job.daily_log": "每日日志",

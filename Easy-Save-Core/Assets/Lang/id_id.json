@@ -95,6 +95,15 @@
   "common.save": "Simpan",
   "common.progress": "Kemajuan",
 
+  "main_menu.tool_tip.options": "Opsi",
+  "main_menu.tool_tip.run": "Jalankan Pekerjaan",
+  "main_menu.tool_tip.stop": "Hentikan Proses",
+  "main_menu.tool_tip.pause": "Jeda Proses",
+  "main_menu.tool_tip.remove_job": "Hapus Pekerjaan",
+  "main_menu.tool_tip.add_job": "Tambah Pekerjaan",
+
+  "options_popup.tool_tip.config_file": "Berkas Konfigurasi",
+
   "status.NotStarted": "Belum Dimulai",
 
   "manage_job.daily_log": "Log Harian",
