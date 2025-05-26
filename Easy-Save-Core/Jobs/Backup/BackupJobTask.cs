@@ -126,7 +126,8 @@ namespace EasySaveCore.Models
                 }
                 else
                 {
-                    CopyWithHardThrottle(Source, Target, 128 * 1024 * 1024);
+                    //CopyWithHardThrottle(Source, Target, 512 * 1024 * 1024);
+                    CopyFileWithThrottle(Source, Target);
                 }
             }
             catch (Exception e)
@@ -182,6 +183,22 @@ namespace EasySaveCore.Models
             }
         }
 
+        private void CopyFileWithThrottle(string source, string target)
+        {
+            const int bufferSize = 4 * 1024 * 1024;
+            using (var sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read))
+            using (var targetStream = new FileStream(target, FileMode.Create, FileAccess.Write))
+            {
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead;
+                while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    targetStream.Write(buffer, 0, bytesRead);
+                    // Optionnel : pause très courte
+                    Thread.Sleep(5);
+                }
+            }
+        }
 
         public override JsonObject JsonSerialize()
         {
