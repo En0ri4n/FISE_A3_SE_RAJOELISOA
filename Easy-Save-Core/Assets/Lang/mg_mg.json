@@ -119,5 +119,17 @@
   "message_box.delete_no_selected.text": "Azafady, mifidiana asa hofafana.",
 
   "message_box.interrupt_process.title": "Fanelingelenana Asa",
-  "message_box.interrupt_process.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny dingana {PROCESS}."
+  "message_box.interrupt_process.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny dingana {PROCESS}.",
+
+  "message_box.missing_data.title": "Tsy Ampy ny Tahiry",
+  "message_box.missing_data.text": "Fenoy daholo azafady ny saha rehetra alohan'ny hamoronana asa.",
+
+  "message_box.existing_job.title": "Asa Efa Misy",
+  "message_box.existing_job.text": "Efa misy asa fanohanana mitovy anarana amin’ity.",
+
+  "message_box.run_no_selected.title": "Fampitandremana",
+  "message_box.run_no_selected.text": "Tsy misy asa voafantina hatao.",
+
+  "message_box.cant_find_encryptor.title": "Fampitandremana",
+  "message_box.cant_find_encryptor.text": "Tsy hita ny CLEA-Encryptor. Tsy hanaovana fanoratana miafina ireo asa manana fanoratana miafina."
 }

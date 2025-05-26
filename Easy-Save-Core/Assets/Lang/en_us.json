@@ -119,5 +119,17 @@
   "message_box.delete_no_selected.text": "Please select job(s) to delete.",
 
   "message_box.interrupt_process.title": "Job(s) Interruption(s)",
-  "message_box.interrupt_process.text": "Job {JOB} and every following jobs have been interrupted by process {PROCESS}."
+  "message_box.interrupt_process.text": "Job {JOB} and every following jobs have been interrupted by process {PROCESS}.",
+
+  "message_box.missing_data.title": "Missing Data",
+  "message_box.missing_data.text": "Please fill in all fields before creating the job.",
+
+  "message_box.existing_job.title": "Existing job",
+  "message_box.existing_job.text": "A backup job already has this name.",
+
+  "message_box.run_no_selected.title": "Warning",
+  "message_box.run_no_selected.text": "No job(s) selected to run.",
+
+  "message_box.cant_find_encryptor.title": "Warning",
+  "message_box.cant_find_encryptor.text": "CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled."
 }
