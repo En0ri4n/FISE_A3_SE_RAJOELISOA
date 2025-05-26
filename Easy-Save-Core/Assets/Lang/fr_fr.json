@@ -112,6 +112,8 @@
   "edit_job.subtitle": "Modifiez les informations de votre Job",
   "edit_job.button.done": "Modifier",
 
+  "browse_folder.source": "Choisissez un dossier source",
+  "browse_folder.target": "Choisissez un dossier cible",
   "browse_folder.daily_log": "Choisissez un dossier pour les logs journalières",
   "browse_folder.status_log": "Choisissez un dossier pour les logs de statut",
 

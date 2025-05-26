@@ -112,6 +112,8 @@
   "edit_job.subtitle": "Edit informasi pekerjaan Anda",
   "edit_job.button.done": "Edit",
 
+  "browse_folder.source": "Pilih Jalur Sumber",
+  "browse_folder.target": "Pilih Jalur Tujuan",
   "browse_folder.daily_log": "Pilih Folder Log Harian.",
   "browse_folder.status_log": "Pilih Folder Log Status.",
 

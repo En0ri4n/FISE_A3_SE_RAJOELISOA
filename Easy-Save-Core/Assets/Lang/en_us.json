@@ -112,6 +112,8 @@
   "edit_job.subtitle": "Edit information on your job",
   "edit_job.button.done": "Edit",
 
+  "browse_folder.source": "Select Source Path",
+  "browse_folder.target": "Select Target Path",
   "browse_folder.daily_log": "Select Daily Log Folder",
   "browse_folder.status_log": "Select Status Log Folder",
 

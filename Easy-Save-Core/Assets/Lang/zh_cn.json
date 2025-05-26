@@ -112,6 +112,8 @@
   "edit_job.subtitle": "编辑您的任务信息",
   "edit_job.button.done": "编辑",
 
+  "browse_folder.source": "选择源路径",
+  "browse_folder.target": "选择目标路径",
   "browse_folder.daily_log": "选择每日日志文件夹",
   "browse_folder.status_log": "选择状态日志文件夹",
 
