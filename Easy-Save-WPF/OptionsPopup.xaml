@@ -281,10 +281,10 @@
             <Button HorizontalAlignment="Right" ToolTip="Config_File" Style="{StaticResource ColoredIconButton}" Click="configFileBTN_Click">
             <materialDesign:PackIcon Kind="File" Width="24" Height="24"/>
         </Button>
-        <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="406"/>
+            <TextBlock Text="{local:Loc options_popup.title}" FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto"/>
             
         <!-- Subtitle -->
-        <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="246"/>
+        <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1" HorizontalAlignment="Center" Foreground="#666" Width="auto"/>
 
         <!-- Body -->
         <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="594">
