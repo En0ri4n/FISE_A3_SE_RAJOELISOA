@@ -77,9 +77,9 @@ namespace EasySaveCore.Models
                 if (BackupJobTasks.Count == 0)
                     return 0.0D;
 
-                int totalTasks = BackupJobTasks.Count;
-                int completedTasks = BackupJobTasks.Count(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted);
-                return (double)completedTasks / totalTasks * 100D;
+                long totalTasksSize = BackupJobTasks.Sum(bjt => bjt.Size);
+                long completedTasks = BackupJobTasks.FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted).Sum(task => task.Size);
+                return (double)completedTasks / totalTasksSize * 100D;
             }
         }
 
@@ -184,6 +184,8 @@ namespace EasySaveCore.Models
         
             IsRunning = true;
             Timestamp = DateTime.Now;
+            
+            UpdateProgress();
         
             if (!Directory.Exists(Target))
                 Directory.CreateDirectory(Target);
@@ -203,6 +205,8 @@ namespace EasySaveCore.Models
                 BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
                 BackupJobTasks.Add(jobTask);
             }
+            
+            UpdateProgress();
 
             foreach(BackupJobTask jobTask in BackupJobTasks)
                 jobTask.ExecuteTask(StrategyType);
