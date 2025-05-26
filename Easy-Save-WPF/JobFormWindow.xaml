@@ -214,7 +214,7 @@
             <!--Backup Type & Encryption -->
 
             <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <TextBlock Text="{local:Loc common.backup.type}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
+                <TextBlock Text="{local:Loc common.strategy}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
                     <ComboBox SelectedItem="{Binding StrategyType}" ItemsSource="{Binding AvailableStrategies}">
                         <ComboBox.ItemTemplate>
@@ -235,7 +235,7 @@
 
         <!-- Footer -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0" Width="200" Name="FooterCreateJob">
-            <Button x:Name="DoneButton" Width="90" Command="{Binding BuildJobCommand}"/>
+            <Button x:Name="DoneButton" Width="90" Command="{Binding BuildJobCommand}"/> <!-- Not working ???? -->
             <Button Content="{local:Loc common.close}" Style="{StaticResource SecondaryButtonStyle}" Width="90" Click="CloseButton_Click"/>
         </StackPanel>
     </Grid>
