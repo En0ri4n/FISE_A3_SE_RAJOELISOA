@@ -22,16 +22,13 @@
   "job_menu.error_no_jobs": "Kesalahan: Tidak bisa menjalankan pekerjaan: Tidak ada pekerjaan ditemukan",
   "job_menu.error_excessive_jobs": "Kesalahan: Tidak bisa membuat pekerjaan: Lebih dari 5 pekerjaan",
   "job_menu.error_job_exist": "Kesalahan: Tidak bisa membuat pekerjaan: Nama sudah digunakan",
-
   "job_menu.title_one": "Jalankan Satu Pekerjaan",
   "job_menu.title_multiple": "Jalankan Banyak Pekerjaan (kosongkan pilihan untuk keluar)",
   "job_menu.title_all": "Jalankan Semua Pekerjaan",
   "job_menu.option_all": "Jalankan semua",
-
   "job_menu.task_run_information": "[{JOB_NAME}] menyalin {SOURCE} ke {TARGET} dalam {TIME}ms ({STATUS})",
   "job_menu.one_job_success": "Pekerjaan berhasil dijalankan tanpa masalah",
   "job_menu.many_jobs_success": "{JOBNUMBER} pekerjaan berhasil dijalankan tanpa masalah",
-
   "job_menu.name_question": "Apa nama pekerjaan?",
   "job_menu.select_option": "Pekerjaan mana yang ingin Anda pilih?",
 
@@ -49,7 +46,6 @@
   "settings_menu.change_log_type": "Ganti Jenis Log (saat ini: {LOGTYPE})",
   "settings_menu.change_daily_log_path": "Ganti Direktori Log Harian (saat ini: {PATH})",
   "settings_menu.message_daily_log_path": "Apa direktori log harian?",
-
   "settings_menu.change_status_log_path": "Ganti Direktori Log Status (saat ini: {PATH})",
   "settings_menu.message_status_log_path": "Apa direktori log status?",
 
@@ -70,6 +66,7 @@
   "options_popup.log_type": "Tipe Log: ",
   "options_popup.daily_log_dir": "Direktori Log Harian: ",
   "options_popup.status_log_dir": "Direktori Log Status: ",
+  "options_popup.encryption_key": "Masukkan kunci enkripsi (maks 30 karakter):",
   "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi: ",
   "options_popup.processes_blacklist": "Daftar hitam proses: ",
 
@@ -90,13 +87,28 @@
   "common.name": "Nama Pekerjaan",
   "common.source": "Sumber",
   "common.target": "Target",
+  "common.strategy": "Strategi",
+  "common.backup.full": "Lengkap",
+  "common.backup.differencial": "Diferensial",
+  "common.encryption": "Enkripsi",
+  "common.status": "Status",
+  "common.save": "Simpan",
+  "common.progress": "Kemajuan",
+
+  "status.NotStarted": "Belum Dimulai",
 
   "manage_job.daily_log": "Log Harian",
   "manage_job.status_log": "Log Status",
-  "manage_job.select_all": "Pilih Semua",
+  "manage_job.select_all": "Pilih/Batal Pilih Semua",
 
   "delete_menu.title": "Hapus Pekerjaan",
   "delete_menu.confirm_text": "Apakah Anda yakin ingin menghapus pekerjaan ini?",
 
-  "create_menu.title": "Buat Pekerjaan"
+  "create_job.title": "Buat Pekerjaan",
+  "create_job.subtitle": "Masukkan informasi pekerjaan Anda",
+  "create_job.button.done": "Buat",
+
+  "edit_job.title": "Edit Pekerjaan",
+  "edit_job.subtitle": "Edit informasi pekerjaan Anda",
+  "edit_job.button.done": "Edit"
 }
