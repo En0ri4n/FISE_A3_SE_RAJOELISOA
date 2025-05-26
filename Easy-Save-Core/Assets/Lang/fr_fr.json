@@ -72,6 +72,7 @@
   "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
   "options_popup.extensions_encryption": "Extensions à chiffrer : ",
   "options_popup.processes_blacklist": "Liste noire des processus : ",
+  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
 
   "common.browse": "Parcourir",
   "common.yes": "Oui",
@@ -90,11 +91,15 @@
   "common.name": "Nom du Job",
   "common.source": "Source",
   "common.target": "Cible",
-
-  "common.backup.type": "Type de Sauvegarde",
+  "common.strategy": "Strategie",
   "common.backup.full": "Complete",
   "common.backup.differencial": "Différentielle",
   "common.encryption": "Chiffrement",
+  "common.status": "Status",
+  "common.save": "Enreg.", //should not be too big
+  "common.progress": "Progression", //TODO : rename ?
+
+  "status.NotStarted": "En attente",
 
   "manage_job.daily_log": "Journaux Quotidiens",
   "manage_job.status_log": "Journaux de Statut",
@@ -105,9 +110,11 @@
 
   "create_job.title": "Créer un Job",
   "create_job.subtitle": "Entrez les informations de votre Job",
+  "create_job.button.done": "Créer",
 
   "edit_job.title": "Modifier un Job",
-  "edit_job.subtitle": "Modifiez les informations de votre Job"
+  "edit_job.subtitle": "Modifiez les informations de votre Job",
+  "edit_job.button.done": "Modifier"
 
 
 }

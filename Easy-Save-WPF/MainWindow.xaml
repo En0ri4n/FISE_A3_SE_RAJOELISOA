@@ -275,9 +275,9 @@
                 <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
                 <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
                 <DataGridTextColumn Header="{local:Loc common.strategy}" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="{local:Loc common.encrypted}" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="{local:Loc common.encryption}" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
                 <DataGridTextColumn Header="{local:Loc common.status}" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Progress" Width="*">
+                <DataGridTemplateColumn Header="{local:Loc common.progress}" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
