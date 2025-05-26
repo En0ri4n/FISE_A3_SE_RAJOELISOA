@@ -170,7 +170,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                      string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
                      string.IsNullOrWhiteSpace(GetJobBuilder().Target))
                 {
-                    MessageBox.Show("Please fill in all fields before creating the job.", "Missing Data", MessageBoxButton.OK, MessageBoxImage.Warning); //TODO Traduction à faire
+                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.missing_data.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.missing_data.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -178,14 +178,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 {
                     if (!JobManager.AddJob(SelectedJob = JobBuilder.Build(false), true))
                     {
-                        MessageBox.Show("A backup job already has this name.", "Existing job", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                 }
                 else
                     if (!JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build(false)))
                     {
-                        MessageBox.Show("A backup job already has this name.", "Existing job", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -227,7 +227,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 
                 if (jobNames.Count == 0)
                 {
-                    MessageBox.Show("No job(s) selected to run.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.run_no_selected.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.run_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -236,7 +236,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
                 {
                     Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
-                    MessageBox.Show("CLEA-Encryptor not found. Encryption will not be performed for jobs with encryption enabled.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 
                 //TODO Deactivate all buttons that can impact job running (.e.g: Delete Button, Create Job Button, Settings Button, Run Job Button (to see)
