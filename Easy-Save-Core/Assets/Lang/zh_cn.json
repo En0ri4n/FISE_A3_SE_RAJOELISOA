@@ -110,5 +110,14 @@
 
   "edit_job.title": "编辑任务",
   "edit_job.subtitle": "编辑您的任务信息",
-  "edit_job.button.done": "编辑"
+  "edit_job.button.done": "编辑",
+
+  "message_box.delete_confirm.title": "删除任务确认",
+  "message_box.delete_confirm.text": "删除任务将从列表中移除该任务及其所有相关任务。您确定要继续吗？",
+
+  "message_box.delete_no_selected.title": "未选择任务",
+  "message_box.delete_no_selected.text": "请选择要删除的任务。",
+
+  "message_box.interrupt_process.title": "任务中断",
+  "message_box.interrupt_process.text": "任务 {JOB} 及其之后的所有任务已被进程 {PROCESS} 中断。"
 }

@@ -110,5 +110,14 @@
 
   "edit_job.title": "Edit Pekerjaan",
   "edit_job.subtitle": "Edit informasi pekerjaan Anda",
-  "edit_job.button.done": "Edit"
+  "edit_job.button.done": "Edit",
+
+  "message_box.delete_confirm.title": "Konfirmasi Penghapusan Pekerjaan",
+  "message_box.delete_confirm.text": "Menghapus pekerjaan akan menghapusnya dari daftar beserta semua tugas terkait. Apakah Anda yakin ingin melanjutkan?",
+
+  "message_box.delete_no_selected.title": "Tidak Ada Pekerjaan yang Dipilih",
+  "message_box.delete_no_selected.text": "Silakan pilih pekerjaan untuk dihapus.",
+
+  "message_box.interrupt_process.title": "Gangguan Pekerjaan",
+  "message_box.interrupt_process.text": "Pekerjaan {JOB} dan semua pekerjaan setelahnya telah diganggu oleh proses {PROCESS}."
 }

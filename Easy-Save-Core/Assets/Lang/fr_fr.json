@@ -110,5 +110,14 @@
 
   "edit_job.title": "Modifier un Job",
   "edit_job.subtitle": "Modifiez les informations de votre Job",
-  "edit_job.button.done": "Modifier"
+  "edit_job.button.done": "Modifier",
+
+  "message_box.delete_confirm.title": "Confirmation de suppression de Job(s)",
+  "message_box.delete_confirm.text": "Supprimer un job(s) le retirera de la liste et de toutes ses tâches associées. Etes-vous sur de vouloir continuer ?",
+
+  "message_box.delete_no_selected.title": "Aucun Job selectionné",
+  "message_box.delete_no_selected.text": "Selectionnez un job(s) à supprimer.",
+
+  "message_box.interrupt_process.title": "Interruption de Job(s)",
+  "message_box.interrupt_process.text": "Job {JOB} et les jobs suivants ont été intrrompus par le processus {PROCESS}."
 }
