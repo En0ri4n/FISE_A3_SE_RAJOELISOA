@@ -110,5 +110,14 @@
 
   "edit_job.title": "Hanova Asa",
   "edit_job.subtitle": "Ovay ny mombamomba ny asanao",
-  "edit_job.button.done": "Hanova"
+  "edit_job.button.done": "Hanova",
+
+  "message_box.delete_confirm.title": "Fanamafisana ny Fafana Asa",
+  "message_box.delete_confirm.text": "Ny famafana asa dia hanala izany amin'ny lisitra sy ireo asa rehetra mifandray aminy. Azonao antoka ve fa tianao hanohy?",
+
+  "message_box.delete_no_selected.title": "Tsy Misy Asa Voafantina",
+  "message_box.delete_no_selected.text": "Azafady, mifidiana asa hofafana.",
+
+  "message_box.interrupt_process.title": "Fanelingelenana Asa",
+  "message_box.interrupt_process.text": "Ny asa {JOB} sy ireo asa manaraka dia voasakana noho ny dingana {PROCESS}."
 }
