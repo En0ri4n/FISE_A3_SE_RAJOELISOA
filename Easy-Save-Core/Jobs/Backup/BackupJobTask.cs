@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.External;
 using CLEA.EasySaveCore.Models;
@@ -66,7 +67,7 @@ namespace EasySaveCore.Models
             _timestamp = DateTime.Now;
             _source = source;
             _target = target;
-            _size = -1L;
+            _size = new FileInfo(Source).Length;
             _transferTime = -1L;
             _encryptionTime = -1L;
         }
@@ -74,7 +75,6 @@ namespace EasySaveCore.Models
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
         {
             Timestamp = DateTime.Now;
-            Size = new FileInfo(Source).Length;
 
             if (File.Exists(Target)
                 && FilesAreEqual(new FileInfo (Source), new FileInfo(Target))
@@ -102,7 +102,7 @@ namespace EasySaveCore.Models
                 }
                 else
                 {
-                    File.Copy(Source, Target, true);
+                    CopyWithHardThrottle(Source, Target, 128 * 1024 * 1024);
                 }
             }
             catch (Exception e)
@@ -117,6 +117,43 @@ namespace EasySaveCore.Models
             _backupJob.OnTaskCompleted(this);
             Logger.Log(level: LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
         }
+        
+        public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
+        {
+            const int bufferSize = 256 * 1024; // limite l'usage disque
+            byte[] buffer = new byte[bufferSize];
+        
+            using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
+            using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
+        
+            long bytesRead;
+            long bytesTransferredThisSecond = 0;
+            Stopwatch secondTimer = Stopwatch.StartNew();
+        
+            while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                bufferedTarget.Write(buffer, 0, (int)bytesRead);
+                bufferedSource.Flush();
+                bufferedTarget.Flush();
+                bytesTransferredThisSecond += bytesRead;
+        
+                Thread.Sleep(2);
+        
+                if (bytesTransferredThisSecond >= maxBytesPerSecond)
+                {
+                    long elapsed = secondTimer.ElapsedMilliseconds;
+                    if (elapsed < 1000)
+                    {
+                        Thread.Sleep((int)(1000 - elapsed));
+                    }
+                    bytesTransferredThisSecond = 0;
+                    secondTimer.Restart();
+                }
+            }
+        }
+
 
         public override JsonObject JsonSerialize()
         {
