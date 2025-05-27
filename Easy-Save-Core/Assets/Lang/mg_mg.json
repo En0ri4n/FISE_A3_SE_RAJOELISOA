@@ -66,7 +66,7 @@
   "options_popup.log_type": "Karazan-dahatsoratra : ",
   "options_popup.daily_log_dir": "Rakitra tatitra isan'andro : ",
   "options_popup.status_log_dir": "Rakitra tatitra sata : ",
-  "options_popup.encryption_key": "Ampidiro ny lakilen'ny fanoratana miafina (hatramin'ny tarehintsoratra 30):", //FIXME probably too long
+  "options_popup.encryption_key": "Ampidiro ny lakile miafina (<30 ts)",
   "options_popup.extensions_encryption": "Fanitarana hofenoin : ",
   "options_popup.processes_blacklist": "Lisitra mainty ho an'ny dingana : ",
 
