@@ -67,7 +67,7 @@
   "options_popup.daily_log_dir": "每日日志目录: ",
   "options_popup.status_log_dir": "状态日志目录: ",
   "options_popup.encryption_key": "输入加密密钥（最多30个字符）：",
-  "options_popup.extensions_encryption": "要加密的扩展名: ",
+  "options_popup.extensions_encryption": "要加密的扩展名 (格式: '.ext'): ",
   "options_popup.processes_blacklist": "进程黑名单: ",
 
   "common.browse": "浏览",

@@ -67,7 +67,7 @@
   "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
   "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
   "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
-  "options_popup.extensions_encryption": "Extensions à chiffrer : ",
+  "options_popup.extensions_encryption": "Extensions à chiffrer (format: '.ext'):",
   "options_popup.processes_blacklist": "Liste noire des processus : ",
 
   "common.browse": "Parcourir",
@@ -93,7 +93,7 @@
   "common.encryption": "Chiffrement",
   "common.status": "Statut",
   "common.save": "Enreg.", //should not be too big
-  "common.progress": "Progression", //TODO : rename ?
+  "common.progress": "Progression",
 
   "main_menu.tool_tip.options": "Options",
   "main_menu.tool_tip.run": "Lancer un Job(s)",
