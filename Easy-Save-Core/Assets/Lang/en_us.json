@@ -67,7 +67,7 @@
   "options_popup.daily_log_dir": "Daily Log Directory: ",
   "options_popup.status_log_dir": "Status Log Directory: ",
   "options_popup.encryption_key": "Enter Encryption key (max 30chars): ",
-  "options_popup.extensions_encryption": "Extensions to Encrypt: ",
+  "options_popup.extensions_encryption": "Extensions to Encrypt (format: '.ext'): ",
   "options_popup.processes_blacklist": "Processes to Blacklist: ",
 
   "common.browse": "Browse",

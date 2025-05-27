@@ -67,7 +67,7 @@
   "options_popup.daily_log_dir": "Direktori Log Harian: ",
   "options_popup.status_log_dir": "Direktori Log Status: ",
   "options_popup.encryption_key": "Masukkan kunci enkripsi (maks 30 karakter):",
-  "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi: ",
+  "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi (format: '.ext'):",
   "options_popup.processes_blacklist": "Daftar hitam proses: ",
 
   "common.browse": "Telusuri",
