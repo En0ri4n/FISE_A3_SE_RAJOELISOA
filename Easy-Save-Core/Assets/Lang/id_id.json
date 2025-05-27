@@ -169,5 +169,8 @@
   "message_box.jobs_completed.text": "Berhasil menyelesaikan {COUNT} pekerjaan",
 
   "message_box.close_confirm.title": "Konfirmasi",
-  "message_box.close_confirm.text": "Apakah Anda ingin keluar dari Easy Save - CLEA?"
+  "message_box.close_confirm.text": "Apakah Anda ingin keluar dari Easy Save - CLEA?",
+
+  "message_box.process_already_running.title": "Kesalahan",
+  "message_box.process_already_running.text": "EasySave sudah berjalan. Silakan tutup aplikasi sebelum memulai instance baru."
 }
