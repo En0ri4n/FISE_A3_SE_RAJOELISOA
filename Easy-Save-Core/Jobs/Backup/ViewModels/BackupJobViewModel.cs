@@ -262,13 +262,15 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     if (!BackupJobConfiguration.Get().ExtensionsToEncrypt.Any())
                     {
                         Logger.Log(LogLevel.Warning, "No extensions to encrypt specified in the config file. Encryption will not be performed.");
-                        MessageBox.Show(L10N.Get().GetTranslation("message_box.no_extension_encrypt.text"), L10N.Get().GetTranslation("message_box.no_extension_encrypt.title"), MessageBoxButton.OK, MessageBoxImage.Warning); 
+                        MessageBox.Show(L10N.Get().GetTranslation("message_box.no_extension_encrypt.text"), L10N.Get().GetTranslation("message_box.no_extension_encrypt.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
-                    Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
-                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    else
+                    {
+                        Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
                 
-                //TODO Deactivate all buttons that can impact job running (.e.g: Delete Button, Create Job Button, Settings Button, Run Job Button (to see)
                 // deactivateButtons()
                 JobManager.DoMultipleJob(jobNames);
                 // reactivateButtons()
