@@ -67,7 +67,7 @@
   "options_popup.daily_log_dir": "Rakitra tatitra isan'andro : ",
   "options_popup.status_log_dir": "Rakitra tatitra sata : ",
   "options_popup.encryption_key": "Ampidiro ny lakile miafina (<30 ts)",
-  "options_popup.extensions_encryption": "Fanitarana hofenoin : ",
+  "options_popup.extensions_encryption": "Fanitarana hofenoin (endrika '.ext'):",
   "options_popup.processes_blacklist": "Lisitra mainty ho an'ny dingana : ",
 
   "common.browse": "Hitety",
