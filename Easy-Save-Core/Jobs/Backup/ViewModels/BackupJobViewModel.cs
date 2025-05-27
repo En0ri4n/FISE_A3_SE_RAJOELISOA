@@ -169,7 +169,18 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             {
                 if (jobs == null || jobs.Count == 0)
                     return;
-                MessageBox.Show(L10N.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()), L10N.Get().GetTranslation($"message_box.jobs_completed.title"), MessageBoxButton.OK, MessageBoxImage.Information);
+
+                var dispatcher = System.Windows.Application.Current.Dispatcher;
+                dispatcher.Invoke(() =>
+                {
+                    var mainWindow = System.Windows.Application.Current.MainWindow;
+                    MessageBox.Show(
+                        mainWindow,
+                        L10N.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()),
+                        L10N.Get().GetTranslation($"message_box.jobs_completed.title"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                });
             };
 
             BuildJobCommand = new RelayCommand(isCreation =>
@@ -248,6 +259,11 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 
                 if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
                 {
+                    if (!BackupJobConfiguration.Get().ExtensionsToEncrypt.Any())
+                    {
+                        Logger.Log(LogLevel.Warning, "No extensions to encrypt specified in the config file. Encryption will not be performed.");
+                        MessageBox.Show(L10N.Get().GetTranslation($"No extension to encrypt specified in the config file"), L10N.Get().GetTranslation($"No extension to encrypt specified in the config file"), MessageBoxButton.OK, MessageBoxImage.Warning); //TODO
+                    }
                     Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
                     MessageBox.Show(L10N.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
