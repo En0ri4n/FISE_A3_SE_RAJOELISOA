@@ -5,7 +5,7 @@
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
-        Title="Options" Height="750" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
+        Title="Options" Height="800" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA" 
         ResizeMode="NoResize"
         FontFamily="Segoe UI" Icon="/Options_PopUp.ico">
 
