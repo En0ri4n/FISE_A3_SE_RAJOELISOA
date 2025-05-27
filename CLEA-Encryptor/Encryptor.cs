@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -14,7 +12,7 @@ namespace CLEA.Encryptor
         {
             if (args.Length < 4)
             {
-                Console.WriteLine("Usage: Encryptor process <key> <input> <output> [-file]");
+                Console.WriteLine("Usage: Encryptor <process|check> <key> <input> <output> [-file]");
                 return;
             }
 
@@ -118,7 +116,7 @@ namespace CLEA.Encryptor
 
         public static bool CompareFileHashes(string file1, string file2)
         {
-            using SHA256 hashAlgorithm = System.Security.Cryptography.SHA256.Create();
+            using SHA256 hashAlgorithm = SHA256.Create();
             using FileStream stream1 = File.OpenRead(file1);
             using FileStream stream2 = File.OpenRead(file2);
             byte[] hash1 = hashAlgorithm.ComputeHash(stream1);
