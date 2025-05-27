@@ -146,7 +146,7 @@ namespace EasySaveCore.Models
 
         public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
         {
-            const int bufferSize = 256 * 1024; // limite l'usage disque
+            const int bufferSize = 128 * 1024; // limite l'usage disque
             byte[] buffer = new byte[bufferSize];
 
             using FileStream sourceStream =

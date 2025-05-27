@@ -38,13 +38,13 @@ namespace Easy_Save_WPF
                 switch (reason)
                 {
                     case JobInterruptionReasons.NotEnoughDiskSpace:
-                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_space.text").Replace("{JOB}", job.Name), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_space.title"), MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.interrupt_space.text").Replace("{JOB}", job.Name), L10N.Get().GetTranslation($"message_box.interrupt_space.title"), MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case JobInterruptionReasons.ProcessRunning:
-                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_process.text").Replace("{JOB}", job.Name).Replace("{PROCESS}", processName), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_process.title"), MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.interrupt_process.text").Replace("{JOB}", job.Name).Replace("{PROCESS}", processName), L10N.Get().GetTranslation($"message_box.interrupt_process.title"), MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     default:
-                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_unknown.text").Replace("{JOB}", job.Name), L10N<BackupJob>.Get().GetTranslation($"message_box.interrupt_unknown.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.interrupt_unknown.text").Replace("{JOB}", job.Name), L10N.Get().GetTranslation($"message_box.interrupt_unknown.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         break;
                 }
             };
@@ -55,8 +55,8 @@ namespace Easy_Save_WPF
             if (BackupJobViewModel.Get().CanJobBeRun)
                 return;
             
-            MessageBoxResult result = MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.close_confirm.text"), 
-                                         L10N<BackupJob>.Get().GetTranslation("message_box.close_confirm.title"), 
+            MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"), 
+                                         L10N.Get().GetTranslation("message_box.close_confirm.title"), 
                                          MessageBoxButton.YesNo, 
                                          MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes)
@@ -113,12 +113,12 @@ namespace Easy_Save_WPF
         {
             if (jobsDatagrid.SelectedItem == null)
             {
-                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.delete_no_selected.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.delete_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(L10N.Get().GetTranslation($"message_box.delete_no_selected.text"), L10N.Get().GetTranslation($"message_box.delete_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 
                 return;
             }
             
-            MessageBoxResult result = MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.delete_confirm.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.delete_confirm.title"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation($"message_box.delete_confirm.text"), L10N.Get().GetTranslation($"message_box.delete_confirm.title"), MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes)
             {
                 return;
@@ -149,7 +149,7 @@ namespace Easy_Save_WPF
 
             if (!File.Exists(path))
             {
-                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.no_daily_log.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.no_daily_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_daily_log.text"), L10N.Get().GetTranslation($"message_box.no_daily_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace Easy_Save_WPF
             var path = BackupJobViewModel.Get().StatusLogFilePath;
 
             if (!File.Exists(path)) {
-                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.no_status_log.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.no_status_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_status_log.text"), L10N.Get().GetTranslation($"message_box.no_status_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

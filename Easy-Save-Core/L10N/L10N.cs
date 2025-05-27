@@ -9,77 +9,78 @@ using Newtonsoft.Json;
 
 namespace CLEA.EasySaveCore.L10N
 {
-    public class L10N<TJob> where TJob : IJob
-{
-    private static readonly L10N<TJob> Instance = new L10N<TJob>();
-
-    private LangIdentifier _currentLang;
-    private Dictionary<string, string> _translations = new Dictionary<string, string>();
-
-    public static event EventHandler? LanguageChanged;
-    private L10N()
+    public class L10N
     {
-        _currentLang = Languages.EnUs;
-        LoadTranslations();
-    }
+        private static readonly L10N Instance = new L10N();
 
-    public void SetLanguage(LangIdentifier lang)
-    {
-        if (!Languages.SupportedLangs.Contains(lang))
-            throw new ArgumentException("Translation lang not found");
+        private LangIdentifier _currentLang;
+        private Dictionary<string, string> _translations = new Dictionary<string, string>();
 
-        _currentLang = lang;
-        LoadTranslations();
-        LanguageChanged?.Invoke(null, EventArgs.Empty);
-        Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
-    }
-    
-    public LangIdentifier GetLanguage()
-    {
-        return _currentLang;
-    }
+        public static event EventHandler? LanguageChanged;
 
-    private void LoadTranslations()
-    {
-        _translations.Clear();
-
-        // Construct the resource name based on the current language
-        string resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
-
-        // Get the current assembly
-        Assembly assembly = Assembly.GetExecutingAssembly();
-
-        // Try to load the resource
-        using (var stream = assembly.GetManifestResourceStream(resourceName))
+        private L10N()
         {
-            if (stream == null)
-                throw new FileNotFoundException("Translation file not found", resourceName);
-
-            // Read the JSON content from the stream
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                string json = reader.ReadToEnd();
-                _translations = JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ??
-                                new Dictionary<string, string>();
-            }
+            _currentLang = Languages.EnUs;
+            LoadTranslations();
         }
 
-        // Check if the deserialization was successful
-        if (_translations.Count <= 0)
-            throw new JsonException("Failed to deserialize translation file");
+        public void SetLanguage(LangIdentifier lang)
+        {
+            if (!Languages.SupportedLangs.Contains(lang))
+                throw new ArgumentException("Translation lang not found");
+
+            _currentLang = lang;
+            LoadTranslations();
+            LanguageChanged?.Invoke(null, EventArgs.Empty);
+            Logger.Log(LogLevel.Information, $"Language changed to [{_currentLang.Name}]");
+        }
+
+        public LangIdentifier GetLanguage()
+        {
+            return _currentLang;
+        }
+
+        private void LoadTranslations()
+        {
+            _translations.Clear();
+
+            // Construct the resource name based on the current language
+            string resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
+
+            // Get the current assembly
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            // Try to load the resource
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null)
+                    throw new FileNotFoundException("Translation file not found", resourceName);
+
+                // Read the JSON content from the stream
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string json = reader.ReadToEnd();
+                    _translations = JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ??
+                                    new Dictionary<string, string>();
+                }
+            }
+
+            // Check if the deserialization was successful
+            if (_translations.Count <= 0)
+                throw new JsonException("Failed to deserialize translation file");
+        }
+
+
+        public string GetTranslation(string key, string[]? parameters = null)
+        {
+            _translations.TryGetValue(key, out var translation);
+
+            return translation ?? key;
+        }
+
+        public static L10N Get()
+        {
+            return Instance;
+        }
     }
-
-
-    public string GetTranslation(string key, string[]? parameters = null)
-    {
-        _translations.TryGetValue(key, out var translation);
-
-        return translation ?? key;
-    }
-
-    public static L10N<TJob> Get()
-    {
-        return Instance;
-    }
-}
 }

@@ -35,10 +35,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public LangIdentifier CurrentApplicationLang
         {
-            get => L10N<BackupJob>.Get().GetLanguage();
+            get => L10N.Get().GetLanguage();
             set
             {
-                L10N<BackupJob>.Get().SetLanguage(value);
+                L10N.Get().SetLanguage(value);
                 BackupJobConfiguration.Get().SaveConfiguration();
                 OnPropertyChanged();
             }
@@ -170,7 +170,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (jobs == null || jobs.Count == 0)
                     return;
 
-                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()), L10N<BackupJob>.Get().GetTranslation($"message_box.jobs_completed.title"), MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(L10N.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()), L10N.Get().GetTranslation($"message_box.jobs_completed.title"), MessageBoxButton.OK, MessageBoxImage.Information);
             };
 
             BuildJobCommand = new RelayCommand(isCreation =>
@@ -184,7 +184,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                      string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
                      string.IsNullOrWhiteSpace(GetJobBuilder().Target))
                 {
-                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.missing_data.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.missing_data.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.missing_data.text"), L10N.Get().GetTranslation($"message_box.missing_data.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -192,14 +192,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 {
                     if (!JobManager.AddJob(SelectedJob = JobBuilder.Build(false), true))
                     {
-                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.existing_job.text"), L10N.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                 }
                 else
                     if (!JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build(false)))
                     {
-                        MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.existing_job.text"), L10N.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -241,7 +241,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 
                 if (jobNames.Count == 0)
                 {
-                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.run_no_selected.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.run_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.run_no_selected.text"), L10N.Get().GetTranslation($"message_box.run_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -250,7 +250,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
                 {
                     Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
-                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N<BackupJob>.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 
                 //TODO Deactivate all buttons that can impact job running (.e.g: Delete Button, Create Job Button, Settings Button, Run Job Button (to see)
@@ -277,13 +277,13 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 bool isDailyLog = bool.Parse((string)input!);
 
                 FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = L10N<BackupJob>.Get().GetTranslation("browse_folder.status_log");
+                string title = L10N.Get().GetTranslation("browse_folder.status_log");
 
                 folderBrowserDialog.Title = title;
                 string path = StatusLogPath;
 
                 if (isDailyLog) {
-                    folderBrowserDialog.Title = L10N<BackupJob>.Get().GetTranslation("browse_folder.daily_log"); ;
+                    folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.daily_log"); ;
                     path = DailyLogPath;
                 }
 
@@ -335,12 +335,12 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
                 if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length < 8 || encryptionKey.Length > 30)
                 {
-                    MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_invalid.text"), L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_invalid.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_invalid.text"), L10N.Get().GetTranslation("message_box.encryption_key_invalid.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 BackupJobConfiguration.Get().EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
-                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_valid.text"), L10N<BackupJob>.Get().GetTranslation("message_box.encryption_key_valid.title"), MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_valid.text"), L10N.Get().GetTranslation("message_box.encryption_key_valid.title"), MessageBoxButton.OK, MessageBoxImage.Information);
             });
 
             AddExtensionToEncryptCommand = new RelayCommand(input =>

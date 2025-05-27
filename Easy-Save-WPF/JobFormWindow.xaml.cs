@@ -22,11 +22,11 @@ namespace Easy_Save_WPF
 
             BackupJobViewModel.Get().CloseAction = Close;
 
-            Title = L10N<BackupJob>.Get().GetTranslation($"{menuName}.title");
+            Title = L10N.Get().GetTranslation($"{menuName}.title");
             MainTitle.Text = Title;
-            MainSubtitle.Text = L10N<BackupJob>.Get().GetTranslation($"{menuName}.subtitle");
+            MainSubtitle.Text = L10N.Get().GetTranslation($"{menuName}.subtitle");
 
-            DoneButton.Content = L10N<BackupJob>.Get().GetTranslation($"{menuName}.button.done");
+            DoneButton.Content = L10N.Get().GetTranslation($"{menuName}.button.done");
             DoneButton.CommandParameter = isJobCreation.ToString();
         }
     }

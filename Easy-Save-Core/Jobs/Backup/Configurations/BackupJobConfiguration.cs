@@ -69,7 +69,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             JsonObject data = new JsonObject
             {
                 { "version", EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString() },
-                { "language", L10N<BackupJob>.Get().GetLanguage().LangId },
+                { "language", L10N.Get().GetLanguage().LangId },
                 { "dailyLogPath", Logger.DailyLogPath },
                 { "statusLogPath", Logger.StatusLogPath },
                 { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
@@ -168,7 +168,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             if (lang == null)
                 throw new JsonException("Language property not found in configuration file");
             if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
-                L10N<BackupJob>.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ??
+                L10N.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ??
                                              Languages.EnUs);
             else
                 throw new JsonException($"Language '{lang}' is not supported");

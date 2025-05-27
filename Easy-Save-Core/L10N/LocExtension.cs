@@ -22,14 +22,14 @@ namespace CLEA.EasySaveCore.L10N
             }
         }
 
-        public string Value => L10N<BackupJob>.Get().GetTranslation(Key);
+        public string Value => L10N.Get().GetTranslation(Key);
 
         public LocExtension(string key)
         {
             _key = key;
 
-            L10N<BackupJob>.LanguageChanged -= OnLanguageChanged;
-            L10N<BackupJob>.LanguageChanged += OnLanguageChanged;
+            L10N.LanguageChanged -= OnLanguageChanged;
+            L10N.LanguageChanged += OnLanguageChanged;
         }
 
         private void OnLanguageChanged(object? sender, EventArgs e)

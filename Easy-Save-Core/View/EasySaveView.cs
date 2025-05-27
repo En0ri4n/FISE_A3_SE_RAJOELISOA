@@ -5,14 +5,19 @@ using CLEA.EasySaveCore.ViewModel;
 
 namespace CLEA.EasySaveCore.View
 {
-    public abstract class EasySaveView<TJob, TJobManager, TConfiguration, TViewModel, TViewModelObjectBuilder> where TJob : IJob where TJobManager : JobManager<TJob> where TConfiguration : EasySaveConfigurationBase where TViewModel : EasySaveViewModelBase<TJob, TJobManager>
+    public abstract class EasySaveView<TJob, TJobManager, TConfiguration, TViewModel, TViewModelObjectBuilder>
+        where TJob : IJob
+        where TJobManager : JobManager<TJob>
+        where TConfiguration : EasySaveConfigurationBase
+        where TViewModel : EasySaveViewModelBase<TJob, TJobManager>
         where TViewModelObjectBuilder : ViewModelJobBuilder<TJob>
     {
-        protected readonly L10N<TJob> L10N = L10N<TJob>.Get();
+        protected readonly L10N.L10N L10N = EasySaveCore.L10N.L10N.Get();
         public readonly EasySaveCore<TJob, TJobManager, TConfiguration> Core;
         protected TViewModel ViewModel;
 
-        protected EasySaveView(EasySaveCore<TJob, TJobManager, TConfiguration> core, TViewModel viewModel, TViewModelObjectBuilder viewModelObjectBuilder)
+        protected EasySaveView(EasySaveCore<TJob, TJobManager, TConfiguration> core, TViewModel viewModel,
+            TViewModelObjectBuilder viewModelObjectBuilder)
         {
             Core = core;
             ViewModel = viewModel;

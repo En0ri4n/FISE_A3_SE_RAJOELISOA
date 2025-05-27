@@ -17,8 +17,8 @@ namespace CLEA_Tests
         {
             Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
-            var instance1 = L10N<BackupJob>.Get();
-            var instance2 = L10N<BackupJob>.Get();
+            var instance1 = L10N.Get();
+            var instance2 = L10N.Get();
 
             Assert.Same(instance1, instance2);
         }
@@ -28,7 +28,7 @@ namespace CLEA_Tests
         {
             Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
-            var l10N = L10N<BackupJob>.Get();
+            var l10N = L10N.Get();
             l10N.SetLanguage(Languages.EnUs);
 
             string result = l10N.GetTranslation("language");
@@ -40,7 +40,7 @@ namespace CLEA_Tests
         {
             Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
-            var l10N = L10N<BackupJob>.Get();
+            var l10N = L10N.Get();
 
             var ex = Assert.Throws<ArgumentException>(() => l10N.SetLanguage(FakeLang));
             Assert.Equal("Translation lang not found", ex.Message);
@@ -51,7 +51,7 @@ namespace CLEA_Tests
         {
             Skip.IfNot(EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.Major == 1);
 
-            var l10N = L10N<BackupJob>.Get();
+            var l10N = L10N.Get();
             l10N.SetLanguage(Languages.EnUs);
 
             Assert.Equal("nonexistent.key", l10N.GetTranslation("nonexistent.key"));

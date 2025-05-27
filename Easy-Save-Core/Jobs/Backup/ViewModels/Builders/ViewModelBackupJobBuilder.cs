@@ -1,11 +1,9 @@
-﻿using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
-using EasySaveCore.Models;
-using System;
+﻿using System;
 using System.IO;
-using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
+using CLEA.EasySaveCore.Models;
+using EasySaveCore.Models;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
 namespace CLEA.EasySaveCore.ViewModel
@@ -66,14 +64,14 @@ namespace CLEA.EasySaveCore.ViewModel
                 bool isSource = bool.Parse((string)input!);
 
                 FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = L10N<BackupJob>.Get().GetTranslation("browse_folder.target");
+                string title = L10N.L10N.Get().GetTranslation("browse_folder.target");
 
                 folderBrowserDialog.Title = title;
                 string path = Target;
 
                 if (isSource)
                 {
-                    folderBrowserDialog.Title = L10N<BackupJob>.Get().GetTranslation("browse_folder.source");
+                    folderBrowserDialog.Title = L10N.L10N.Get().GetTranslation("browse_folder.source");
                     Source = path;
                 }
 
