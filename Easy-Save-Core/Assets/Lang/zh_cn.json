@@ -169,5 +169,8 @@
   "message_box.jobs_completed.text": "成功完成了 {COUNT} 个任务",
 
   "message_box.close_confirm.title": "确认",
-  "message_box.close_confirm.text": "您要退出 Easy Save - CLEA 吗？"
+  "message_box.close_confirm.text": "您要退出 Easy Save - CLEA 吗？",
+
+  "message_box.process_already_running.title": "错误",
+  "message_box.process_already_running.text": "EasySave 已在运行中。请先关闭该应用程序，然后再启动新实例。"
 }

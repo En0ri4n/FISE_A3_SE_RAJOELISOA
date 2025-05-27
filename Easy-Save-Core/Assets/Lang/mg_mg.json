@@ -169,5 +169,8 @@
   "message_box.jobs_completed.text": "Asa {COUNT} vita soa aman-tsara",
 
   "message_box.close_confirm.title": "Hamarino",
-  "message_box.close_confirm.text": "Te hiala amin'ny Easy Save - CLEA ve ianao?"
+  "message_box.close_confirm.text": "Te hiala amin'ny Easy Save - CLEA ve ianao?",
+
+  "message_box.process_already_running.title": "Hadisoana",
+  "message_box.process_already_running.text": "Efa mandeha i EasySave. Azafady, akatony ny rindranasa alohan'ny hanombohana indray."
 }

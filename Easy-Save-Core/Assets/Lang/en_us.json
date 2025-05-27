@@ -169,5 +169,8 @@
   "message_box.jobs_completed.text": "Completed {COUNT} Job(s) successfully",
 
   "message_box.close_confirm.title": "Confirm",
-  "message_box.close_confirm.text": "Do you want to quit Easy Save - CLEA ?"
+  "message_box.close_confirm.text": "Do you want to quit Easy Save - CLEA ?",
+
+  "message_box.process_already_running.title": "Error",
+  "message_box.process_already_running.text": "EasySave is already running. Please close the application before starting a new instance."
 }
