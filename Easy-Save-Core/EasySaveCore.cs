@@ -40,7 +40,7 @@ namespace CLEA.EasySaveCore
             if (ProcessHelper.GetProcessCount(Process.GetCurrentProcess().ProcessName) > 1)
             {
                 MessageBox.Show(
-                    L10N.L10N.Get().GetTranslation("message_box.process_already_running.text"), L10N.L10N.Get().GetTranslation("message_box.process_already_running.title"), //TODO : Is this the correct way to call the L10N class ? Does it break anything in the code structure ? (only instance of l10N in the core afaik) 
+                    L10N.L10N.Get().GetTranslation("message_box.process_already_running.text"), L10N.L10N.Get().GetTranslation("message_box.process_already_running.title"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
