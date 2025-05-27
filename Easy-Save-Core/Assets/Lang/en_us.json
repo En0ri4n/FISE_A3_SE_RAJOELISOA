@@ -172,5 +172,8 @@
   "message_box.close_confirm.text": "Do you want to quit Easy Save - CLEA ?",
 
   "message_box.process_already_running.title": "Error",
-  "message_box.process_already_running.text": "EasySave is already running. Please close the application before starting a new instance."
+  "message_box.process_already_running.text": "EasySave is already running. Please close the application before starting a new instance.",
+
+  "message_box.no_extension_encrypt.title": "Warning",
+  "message_box.no_extension_encrypt.text": "No extension to encrypt specified in the config file"
 }

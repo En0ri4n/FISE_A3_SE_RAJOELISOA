@@ -172,5 +172,9 @@
   "message_box.close_confirm.text": "Apakah Anda ingin keluar dari Easy Save - CLEA?",
 
   "message_box.process_already_running.title": "Kesalahan",
-  "message_box.process_already_running.text": "EasySave sudah berjalan. Silakan tutup aplikasi sebelum memulai instance baru."
+  "message_box.process_already_running.text": "EasySave sudah berjalan. Silakan tutup aplikasi sebelum memulai instance baru.",
+
+  "message_box.no_extension_encrypt.title": "Peringatan",
+  "message_box.no_extension_encrypt.text": "Tidak ada ekstensi untuk dienkripsi yang ditentukan dalam berkas konfigurasi"
+
 }

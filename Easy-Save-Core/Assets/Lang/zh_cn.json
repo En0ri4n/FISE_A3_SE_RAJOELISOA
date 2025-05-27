@@ -172,5 +172,8 @@
   "message_box.close_confirm.text": "您要退出 Easy Save - CLEA 吗？",
 
   "message_box.process_already_running.title": "错误",
-  "message_box.process_already_running.text": "EasySave 已在运行中。请先关闭该应用程序，然后再启动新实例。"
+  "message_box.process_already_running.text": "EasySave 已在运行中。请先关闭该应用程序，然后再启动新实例。",
+
+  "message_box.no_extension_encrypt.title": "警告",
+  "message_box.no_extension_encrypt.text": "配置文件中未指定要加密的扩展名"
 }
