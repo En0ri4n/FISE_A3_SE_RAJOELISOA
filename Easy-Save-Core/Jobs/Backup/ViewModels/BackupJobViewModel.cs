@@ -169,8 +169,6 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             {
                 if (jobs == null || jobs.Count == 0)
                     return;
-
-                // TODO: Translations
                 MessageBox.Show(L10N.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()), L10N.Get().GetTranslation($"message_box.jobs_completed.title"), MessageBoxButton.OK, MessageBoxImage.Information);
             };
 

@@ -163,5 +163,11 @@
   "message_box.encryption_key_valid.text": "Clé de chiffrement enregistrée avec succès.",
 
   "message_box.encryption_key_invalid.title": "Clé Invalide",
-  "message_box.encryption_key_invalid.text": "La Clé de chiffrement doit être composée de 8 à 30 caractères."
+  "message_box.encryption_key_invalid.text": "La Clé de chiffrement doit être composée de 8 à 30 caractères.",
+
+  "message_box.jobs_completed.title": "Réussite",
+  "message_box.jobs_completed.text": "Completé {COUNT} Job(s) avec succès",
+
+  "message_box.close_confirm.title": "Confirmer",
+  "message_box.close_confirm.text": "Voulez vous quitter Easy Save - CLEA ?"
 }

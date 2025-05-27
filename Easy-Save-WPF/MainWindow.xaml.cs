@@ -56,7 +56,7 @@ namespace Easy_Save_WPF
                 return;
             
             MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"), 
-                                         L10N.Get().GetTranslation("message_box.close_confirm.title"),  // TODO: Translations
+                                         L10N.Get().GetTranslation("message_box.close_confirm.title"),
                                          MessageBoxButton.YesNo, 
                                          MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes)

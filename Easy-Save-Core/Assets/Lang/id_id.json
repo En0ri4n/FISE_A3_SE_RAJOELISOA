@@ -163,5 +163,11 @@
   "message_box.encryption_key_valid.text": "Kunci enkripsi berhasil disimpan.",
 
   "message_box.encryption_key_invalid.title": "Kunci Tidak Valid",
-  "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter."
+  "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter.",
+
+  "message_box.jobs_completed.title": "Berhasil",
+  "message_box.jobs_completed.text": "Berhasil menyelesaikan {COUNT} pekerjaan",
+
+  "message_box.close_confirm.title": "Konfirmasi",
+  "message_box.close_confirm.text": "Apakah Anda ingin keluar dari Easy Save - CLEA?"
 }

@@ -163,5 +163,11 @@
   "message_box.encryption_key_valid.text": "Voatahiry soa aman-tsara ny lakilen'ny fanoratana miafina.",
 
   "message_box.encryption_key_invalid.title": "Tsy Manankery ny Lakile",
-  "message_box.encryption_key_invalid.text": "Ny lakilen'ny fanoratana miafina dia tsy maintsy manana tarehintsoratra 8 hatramin'ny 30."
+  "message_box.encryption_key_invalid.text": "Ny lakilen'ny fanoratana miafina dia tsy maintsy manana tarehintsoratra 8 hatramin'ny 30.",
+
+  "message_box.jobs_completed.title": "Nahomby",
+  "message_box.jobs_completed.text": "Asa {COUNT} vita soa aman-tsara",
+
+  "message_box.close_confirm.title": "Hamarino",
+  "message_box.close_confirm.text": "Te hiala amin'ny Easy Save - CLEA ve ianao?"
 }

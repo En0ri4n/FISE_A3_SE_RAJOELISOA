@@ -163,5 +163,11 @@
   "message_box.encryption_key_valid.text": "Encryption key saved successfully.",
 
   "message_box.encryption_key_invalid.title": "Invalid Key",
-  "message_box.encryption_key_invalid.text": "Encryption key must be between 8 and 30 characters long."
+  "message_box.encryption_key_invalid.text": "Encryption key must be between 8 and 30 characters long.",
+
+  "message_box.jobs_completed.title": "Success",
+  "message_box.jobs_completed.text": "Completed {COUNT} Job(s) successfully",
+
+  "message_box.close_confirm.title": "Confirm",
+  "message_box.close_confirm.text": "Do you want to quit Easy Save - CLEA ?"
 }

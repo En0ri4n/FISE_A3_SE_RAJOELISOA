@@ -163,5 +163,11 @@
   "message_box.encryption_key_valid.text": "加密密钥保存成功。",
 
   "message_box.encryption_key_invalid.title": "无效密钥",
-  "message_box.encryption_key_invalid.text": "加密密钥长度必须在8到30个字符之间。"
+  "message_box.encryption_key_invalid.text": "加密密钥长度必须在8到30个字符之间。",
+
+  "message_box.jobs_completed.title": "成功",
+  "message_box.jobs_completed.text": "成功完成了 {COUNT} 个任务",
+
+  "message_box.close_confirm.title": "确认",
+  "message_box.close_confirm.text": "您要退出 Easy Save - CLEA 吗？"
 }
