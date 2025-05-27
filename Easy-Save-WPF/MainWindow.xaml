@@ -7,6 +7,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
       Background="{DynamicResource MaterialDesignPaper}"
+      Closing="OnCustomClosing"
       Title="Easy Save" Icon="/EasySave.ico">
 
     <Window.Resources>
@@ -195,7 +196,9 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}" Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
+                <Button Style="{StaticResource ColoredIconButton}"
+                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
                     <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
                 </Button>
             </StackPanel>
@@ -228,8 +231,11 @@
                       Click="SelectAll_Click"
                       Name="SelectAll_Checkbox"/>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}" Click="RunJob_Click" ToolTip="{local:Loc main_menu.tool_tip.run}">
+            <StackPanel Name="Buttons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Style="{StaticResource ColoredIconButton}"
+                        Click="RunJob_Click"
+                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="{local:Loc main_menu.tool_tip.run}">
                     <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
                 </Button>
                 <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}">
@@ -238,10 +244,14 @@
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button> -->
-                <Button Style="{StaticResource ColoredIconButton}" Click="DeleteWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.remove_job}">
+                <Button Style="{StaticResource ColoredIconButton}" 
+                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        Click="DeleteWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.remove_job}">
                     <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="CreateWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.add_job}">
+                <Button Style="{StaticResource ColoredIconButton}"
+                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        Click="CreateWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.add_job}">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
                 </Button>
             </StackPanel>

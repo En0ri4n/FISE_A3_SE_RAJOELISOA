@@ -123,13 +123,13 @@ namespace EasySaveCore.Models
             OnPropertyChanged(nameof(EncryptionTime));
         }
 
-        public void ClearTasksAndProgress()
+        public void ClearAndSetupJob()
         {
             BackupJobTasks.Clear();
             Size = -1L;
             TransferTime = -1L;
             EncryptionTime = -1L;
-            Status = JobExecutionStrategy.ExecutionStatus.NotStarted;
+            Status = JobExecutionStrategy.ExecutionStatus.InQueue;
             UpdateProgress();
         }
 

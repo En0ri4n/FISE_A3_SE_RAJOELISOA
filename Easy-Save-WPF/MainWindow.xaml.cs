@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
@@ -32,7 +30,8 @@ namespace Easy_Save_WPF
             BackupJobViewModel.Get().SetJobBuilder(new ViewModelBackupJobBuilder());
             
             InitializeComponent();
-            DataContext = BackupJobViewModel.Get().JobBuilder;
+            DataContext = BackupJobViewModel.Get();
+            Buttons.DataContext = BackupJobViewModel.Get();
             jobsDatagrid.ItemsSource = BackupJobViewModel.Get().AvailableJobs;
             BackupJobViewModel.Get().JobManager.JobInterruptedHandler += (reason, job, processName) =>
             {
@@ -49,9 +48,21 @@ namespace Easy_Save_WPF
                         break;
                 }
             };
-
-            //BackupJobViewModel.Get().DeactivateButtons = DeactivateButtons;
-            //BackupJobViewModel.Get().ReactivateButtons = ReactivateButtons;
+        }
+        
+        private void OnCustomClosing(object sender, CancelEventArgs e)
+        {
+            if (BackupJobViewModel.Get().CanJobBeRun)
+                return;
+            
+            MessageBoxResult result = MessageBox.Show(L10N<BackupJob>.Get().GetTranslation("message_box.close_confirm.text"), 
+                                         L10N<BackupJob>.Get().GetTranslation("message_box.close_confirm.title"), 
+                                         MessageBoxButton.YesNo, 
+                                         MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+            {
+                e.Cancel = true;
+            }
         }
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
@@ -84,6 +95,9 @@ namespace Easy_Save_WPF
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
+            if (!BackupJobViewModel.Get().CanJobBeRun)
+                return;
+            
             string selectedJobName = ((BackupJob)this.jobsDatagrid.SelectedItem)?.Name;
 
             if (selectedJobName == null)
@@ -92,7 +106,7 @@ namespace Easy_Save_WPF
             BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJobName);
 
             JobFormWindow modifyJobFormWindow = new JobFormWindow("edit_job", false);
-            modifyJobFormWindow.Owner = Window.GetWindow(App.Current.MainWindow);
+            modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
             modifyJobFormWindow.ShowDialog();
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)

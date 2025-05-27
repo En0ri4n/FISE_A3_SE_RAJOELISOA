@@ -134,6 +134,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
+        public bool CanJobBeRun => !JobManager.IsRunning;
+
         public ICommand BuildJobCommand { get; set; }
         public ICommand SelectedJobCommand { get; set; }
         public ICommand LoadJobInBuilderCommand { get; set; }
@@ -158,6 +160,18 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         protected override void InitializeCommand()
         {
             _tempEncryptionKey = BackupJobConfiguration.Get().EncryptionKey;
+            JobManager.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(JobManager.IsRunning))
+                    OnPropertyChanged(nameof(CanJobBeRun));
+            };
+            JobManager.MultipleJobCompletedHandler += jobs =>
+            {
+                if (jobs == null || jobs.Count == 0)
+                    return;
+
+                MessageBox.Show(L10N<BackupJob>.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()), L10N<BackupJob>.Get().GetTranslation($"message_box.jobs_completed.title"), MessageBoxButton.OK, MessageBoxImage.Information);
+            };
 
             BuildJobCommand = new RelayCommand(isCreation =>
             {
@@ -243,7 +257,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 // deactivateButtons()
                 JobManager.DoMultipleJob(jobNames);
                 // reactivateButtons()
-            }, _ => true);
+            }, _ => !JobManager.IsRunning);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
             {

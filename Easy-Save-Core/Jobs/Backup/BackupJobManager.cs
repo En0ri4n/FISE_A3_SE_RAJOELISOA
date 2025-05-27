@@ -18,6 +18,20 @@ namespace CLEA.EasySaveCore.Jobs.Backup
     {
         public delegate void OnJobInterrupted(JobInterruptionReasons reason, BackupJob job, string processName = "");
         public event OnJobInterrupted? JobInterruptedHandler;
+        public delegate void OnMultipleJobCompleted(ObservableCollection<BackupJob> jobs);
+        public event OnMultipleJobCompleted? MultipleJobCompletedHandler;
+
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get => _isRunning;
+            private set
+            {
+                _isRunning = value;
+                OnPropertyChanged();
+            }
+        }
+        private readonly object _lockObject = new object();
 
         public BackupJob? CurrentRunningJob { get; private set; }
 
@@ -105,8 +119,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         protected override void DoMultipleJob(ObservableCollection<BackupJob> jobs)
         {
+            IsRunning = true;
+            
             foreach (BackupJob job in jobs)
-                job.ClearTasksAndProgress();
+                job.ClearAndSetupJob();
             
             Task.Run(() =>
             {
@@ -121,8 +137,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                         break;
-                    } 
-                    else if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+                    }
+
+                    if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
                     {
                         job.RunJob();
                     }
@@ -136,6 +153,12 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 CurrentRunningJob = null;
 
                 Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+
+                lock (_lockObject)
+                {
+                    IsRunning = false;
+                    MultipleJobCompletedHandler?.Invoke(jobs);
+                }
             });
         }
 
