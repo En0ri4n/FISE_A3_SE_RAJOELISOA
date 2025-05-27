@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
+using System.Windows;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
@@ -35,6 +37,17 @@ namespace CLEA.EasySaveCore
 
         public static EasySaveCore<TJob, TJobManager, TConfiguration> Init(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
         {
+            if (ProcessHelper.GetProcessCount(Process.GetCurrentProcess().ProcessName) > 1)
+            {
+                MessageBox.Show(
+                    "EasySave is already running. Please close the application before starting a new instance.", // TODO Traduction
+                    "EasySave - Error", // TODO Traduction
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+                Environment.Exit(1);
+            }
+
             if (_instance != null)
                 throw new InvalidOperationException("EasySaveCore is already initialized.");
 

@@ -56,5 +56,20 @@ namespace CLEA.EasySaveCore.Utilities
 
             return false;
         }
+
+        public static int GetProcessCount (string processName)
+        {
+
+            try
+            {
+                Process[] processes = Process.GetProcessesByName(processName);
+                return processes.Length;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Warning, $"Error checking if any process is running :\n{ex.Message}");
+                return 0;
+            }
+        }
     }
 }
