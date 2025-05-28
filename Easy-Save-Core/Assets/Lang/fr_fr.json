@@ -66,9 +66,11 @@
   "options_popup.log_type": "Type de journal : ",
   "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
   "options_popup.status_log_dir": "Répertoire des journaux de statut : ",
-  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara):",
+  "options_popup.encryption_key": "Clé de chiffrement (max 30 cara) : ",
+  "options_popup.simultaneous_max_file_size_threshold": "Entrez le seuil maximal de taille de fichier simultané (en ko, >0) : ",
   "options_popup.extensions_encryption": "Extensions à chiffrer (format: '.ext'):",
   "options_popup.processes_blacklist": "Liste noire des processus : ",
+  "options_popup.extensions_prioritization": "Extensions de fichiers à prioriser (format : '.ext') : ",
 
   "common.browse": "Parcourir",
   "common.yes": "Oui",

@@ -67,8 +67,10 @@
   "options_popup.daily_log_dir": "每日日志目录: ",
   "options_popup.status_log_dir": "状态日志目录: ",
   "options_popup.encryption_key": "输入加密密钥（最多30个字符）：",
+  "options_popup.simultaneous_max_file_size_threshold": "请输入同时处理的最大文件大小阈值（单位：KB，>0：",
   "options_popup.extensions_encryption": "要加密的扩展名 (格式: '.ext'): ",
   "options_popup.processes_blacklist": "进程黑名单: ",
+  "options_popup.extensions_prioritization": "优先处理的文件扩展名（格式：'.ext'：",
 
   "common.browse": "浏览",
   "common.yes": "是",
