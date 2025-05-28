@@ -3,21 +3,32 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Translations;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
 using Microsoft.Extensions.Logging;
 
-namespace CLEA.EasySaveCore
+namespace CLEA.EasySaveCore.Core
 {
-    public class EasySaveCore<TJob, TJobManager, TConfiguration> where TJob : IJob where TJobManager : JobManager<TJob> where TConfiguration : EasySaveConfigurationBase
+    public class EasySaveCore
     {
-        public static readonly Version Version = new Version(2, 0, 0);
         public const string Name = "EasySave-CLEA";
+        public static readonly Version Version = new Version(3, 0, 0);
 
-        private static EasySaveCore<TJob, TJobManager, TConfiguration> _instance;
+        private static EasySaveCore _instance;
+        
+        public EasySaveConfigurationBase Configuration { get; private set; }
+        public JobManager JobManager { get; private set; }
+        public EasySaveViewModelBase EasySaveViewModelBase { get; private set; }
 
-        private EasySaveCore(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
+        private EasySaveCore(EasySaveViewModelBase easySaveViewModelBase, JobManager jobManager,
+            EasySaveConfigurationBase configuration)
         {
+            _instance = this;
+            Configuration = configuration;
+            JobManager = jobManager;
+            EasySaveViewModelBase = easySaveViewModelBase;
+            
             // Initialize the view model with the job manager
             easySaveViewModelBase.InitializeViewModel(jobManager);
 
@@ -35,12 +46,15 @@ namespace CLEA.EasySaveCore
             Logger.Log(LogLevel.Information, "EasySave-CLEA started");
         }
 
-        public static EasySaveCore<TJob, TJobManager, TConfiguration> Init(EasySaveViewModelBase<TJob, TJobManager> easySaveViewModelBase, TJobManager jobManager, TConfiguration configuration)
+        public static EasySaveCore Init(
+            EasySaveViewModelBase easySaveViewModelBase, JobManager jobManager,
+            EasySaveConfigurationBase configuration)
         {
             if (ProcessHelper.GetProcessCount(Process.GetCurrentProcess().ProcessName) > 1)
             {
                 MessageBox.Show(
-                    L10N.L10N.Get().GetTranslation("message_box.process_already_running.text"), L10N.L10N.Get().GetTranslation("message_box.process_already_running.title"),
+                    L10N.Get().GetTranslation("message_box.process_already_running.text"),
+                    L10N.Get().GetTranslation("message_box.process_already_running.title"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
@@ -50,10 +64,10 @@ namespace CLEA.EasySaveCore
             if (_instance != null)
                 throw new InvalidOperationException("EasySaveCore is already initialized.");
 
-            return _instance = new EasySaveCore<TJob, TJobManager, TConfiguration>(easySaveViewModelBase, jobManager, configuration);
+            return new EasySaveCore(easySaveViewModelBase, jobManager, configuration);
         }
 
-        public static EasySaveCore<TJob, TJobManager, TConfiguration> Get()
+        public static EasySaveCore Get()
         {
             return _instance;
         }

@@ -3,14 +3,21 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
-using EasySaveCore.Models;
 
-namespace CLEA.EasySaveCore.L10N
+namespace CLEA.EasySaveCore.Translations
 {
     [MarkupExtensionReturnType(typeof(string))]
     public class LocExtension : MarkupExtension, INotifyPropertyChanged
     {
         private string _key;
+
+        public LocExtension(string key)
+        {
+            _key = key;
+
+            L10N.LanguageChanged -= OnLanguageChanged;
+            L10N.LanguageChanged += OnLanguageChanged;
+        }
 
         public string Key
         {
@@ -24,13 +31,7 @@ namespace CLEA.EasySaveCore.L10N
 
         public string Value => L10N.Get().GetTranslation(Key);
 
-        public LocExtension(string key)
-        {
-            _key = key;
-
-            L10N.LanguageChanged -= OnLanguageChanged;
-            L10N.LanguageChanged += OnLanguageChanged;
-        }
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnLanguageChanged(object? sender, EventArgs e)
         {
@@ -47,8 +48,6 @@ namespace CLEA.EasySaveCore.L10N
 
             return binding.ProvideValue(serviceProvider);
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {

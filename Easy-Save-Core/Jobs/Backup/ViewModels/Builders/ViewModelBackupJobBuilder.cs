@@ -2,81 +2,44 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Input;
+using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Translations;
 using EasySaveCore.Models;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
-    public sealed class ViewModelBackupJobBuilder : ViewModelJobBuilder<BackupJob>
+    public sealed class ViewModelBackupJobBuilder : ViewModelJobBuilderBase
     {
+        private bool _isEncrypted;
         private string _name = string.Empty;
         private string _source = string.Empty;
-        private string _target = string.Empty;
         private JobExecutionStrategy.StrategyType _strategyType = JobExecutionStrategy.StrategyType.Full;
-        private bool _isEncrypted = false;
+        private string _target = string.Empty;
 
-        public string Name
+        public ViewModelBackupJobBuilder(BackupJobManager manager)
         {
-            get => _name;
-            set { _name = value; OnPropertyChanged(); }
-        }
-    
-        public string Source
-        {
-            get => _source;
-            set { _source = value; OnPropertyChanged(); }
-        }
-    
-        public string Target
-        {
-            get => _target;
-            set { _target = value; OnPropertyChanged(); }
-        }
-        
-        public JobExecutionStrategy.StrategyType StrategyType
-        {
-            get => _strategyType;
-            set { _strategyType = value; OnPropertyChanged(); }
-        }
-        
-        public bool IsEncrypted
-        {
-            get => _isEncrypted;
-            set { _isEncrypted = value; OnPropertyChanged(); }
-        }
-
-        public JobExecutionStrategy.StrategyType[] AvailableStrategies
-        {
-            get
-            {
-                return Enum.GetValues(typeof(JobExecutionStrategy.StrategyType)) as JobExecutionStrategy.StrategyType[]
-                       ?? Array.Empty<JobExecutionStrategy.StrategyType>();
-            }
-        }
-
-        public ICommand ShowFolderDialogCommand { get; set; }
-
-        public ViewModelBackupJobBuilder()
-        {
+            Manager = manager;
             ShowFolderDialogCommand = new RelayCommand(input =>
             {
-                bool isSource = bool.Parse((string)input!);
+                var isSource = bool.Parse((string)input!);
 
-                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = L10N.L10N.Get().GetTranslation("browse_folder.target");
+                var folderBrowserDialog = new FolderBrowserDialog();
+                var title = L10N.Get().GetTranslation("browse_folder.target");
 
                 folderBrowserDialog.Title = title;
-                string path = Target;
+                var path = Target;
 
                 if (isSource)
                 {
-                    folderBrowserDialog.Title = L10N.L10N.Get().GetTranslation("browse_folder.source");
+                    folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.source");
                     Source = path;
                 }
 
-                string fullPath = Path.IsPathRooted(path) ? path
-                : Path.GetFullPath(Path.Combine(".", path));
+                var fullPath = Path.IsPathRooted(path)
+                    ? path
+                    : Path.GetFullPath(Path.Combine(".", path));
 
                 folderBrowserDialog.InitialFolder = fullPath;
                 folderBrowserDialog.AllowMultiSelect = false;
@@ -85,16 +48,70 @@ namespace CLEA.EasySaveCore.ViewModel
                     return;
 
                 if (isSource)
-                {
                     Source = folderBrowserDialog.SelectedFolder;
-                }
                 else
-                {
                     Target = folderBrowserDialog.SelectedFolder;
-                }
             }, _ => true);
         }
-        
+
+        public BackupJobManager Manager { get; }
+
+        public override string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public override string Source
+        {
+            get => _source;
+            set
+            {
+                _source = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public override string Target
+        {
+            get => _target;
+            set
+            {
+                _target = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public override JobExecutionStrategy.StrategyType StrategyType
+        {
+            get => _strategyType;
+            set
+            {
+                _strategyType = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public override bool IsEncrypted
+        {
+            get => _isEncrypted;
+            set
+            {
+                _isEncrypted = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public JobExecutionStrategy.StrategyType[] AvailableStrategies =>
+            Enum.GetValues(typeof(JobExecutionStrategy.StrategyType)) as JobExecutionStrategy.StrategyType[]
+            ?? Array.Empty<JobExecutionStrategy.StrategyType>();
+
+        public ICommand ShowFolderDialogCommand { get; set; }
+
         public override void Clear()
         {
             Name = string.Empty;
@@ -104,7 +121,7 @@ namespace CLEA.EasySaveCore.ViewModel
             IsEncrypted = false;
         }
 
-        public override void GetFrom(BackupJob job)
+        public override void GetFrom(IJob job)
         {
             InitialName = job.Name;
             Name = job.Name;
@@ -114,9 +131,9 @@ namespace CLEA.EasySaveCore.ViewModel
             IsEncrypted = job.IsEncrypted;
         }
 
-        public override BackupJob Build(bool clear = true)
+        public override IJob Build(bool clear = true)
         {
-            BackupJob job = new BackupJob(Name, Source, Target, StrategyType, IsEncrypted);
+            BackupJob job = new BackupJob(Manager, Name, Source, Target, StrategyType, IsEncrypted);
             if (clear)
                 Clear();
             return job;

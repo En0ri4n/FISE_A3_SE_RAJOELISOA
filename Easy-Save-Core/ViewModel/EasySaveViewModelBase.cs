@@ -1,29 +1,36 @@
 ﻿using System.ComponentModel;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
-    public abstract class EasySaveViewModelBase<TJob, TJobManager> : INotifyPropertyChanged where TJob : IJob where TJobManager : JobManager<TJob>
+    public abstract class EasySaveViewModelBase : INotifyPropertyChanged
     {
-        public TJobManager JobManager;
+        public ViewModelJobBuilderBase JobBuilderBase;
+        public JobManager JobManager;
+        
+        public abstract bool IsRunning { get; set; }
 
-        public ViewModelJobBuilder<TJob> JobBuilder;
+        public EasySaveConfigurationBase JobConfiguration { get; set; }
 
-        public void InitializeViewModel(TJobManager jobManager)
+        public abstract event PropertyChangedEventHandler? PropertyChanged;
+        
+        protected EasySaveViewModelBase(EasySaveConfigurationBase configuration)
+        {
+            JobConfiguration = configuration;
+        }
+
+        public void InitializeViewModel(JobManager jobManager)
         {
             JobManager = jobManager;
             InitializeCommand();
         }
 
-        public void SetJobBuilder(ViewModelJobBuilder<TJob> jobBuilder)
+        public void SetJobBuilder(ViewModelJobBuilderBase jobBuilderBase)
         {
-            JobBuilder = jobBuilder;
+            JobBuilderBase = jobBuilderBase;
         }
 
         protected abstract void InitializeCommand();
-
-        public abstract event PropertyChangedEventHandler? PropertyChanged;
     }
-
-    // Options PopUp Methods
 }

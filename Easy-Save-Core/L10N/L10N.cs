@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace CLEA.EasySaveCore.L10N
+namespace CLEA.EasySaveCore.Translations
 {
     public class L10N
     {
@@ -16,13 +15,13 @@ namespace CLEA.EasySaveCore.L10N
         private LangIdentifier _currentLang;
         private Dictionary<string, string> _translations = new Dictionary<string, string>();
 
-        public static event EventHandler? LanguageChanged;
-
         private L10N()
         {
             _currentLang = Languages.EnUs;
             LoadTranslations();
         }
+
+        public static event EventHandler? LanguageChanged;
 
         public void SetLanguage(LangIdentifier lang)
         {
@@ -45,10 +44,10 @@ namespace CLEA.EasySaveCore.L10N
             _translations.Clear();
 
             // Construct the resource name based on the current language
-            string resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
+            var resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
 
             // Get the current assembly
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetExecutingAssembly();
 
             // Try to load the resource
             using (var stream = assembly.GetManifestResourceStream(resourceName))
@@ -57,9 +56,9 @@ namespace CLEA.EasySaveCore.L10N
                     throw new FileNotFoundException("Translation file not found", resourceName);
 
                 // Read the JSON content from the stream
-                using (StreamReader reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
-                    string json = reader.ReadToEnd();
+                    var json = reader.ReadToEnd();
                     _translations = JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ??
                                     new Dictionary<string, string>();
                 }
@@ -69,8 +68,7 @@ namespace CLEA.EasySaveCore.L10N
             if (_translations.Count <= 0)
                 throw new JsonException("Failed to deserialize translation file");
         }
-
-
+        
         public string GetTranslation(string key, string[]? parameters = null)
         {
             _translations.TryGetValue(key, out var translation);

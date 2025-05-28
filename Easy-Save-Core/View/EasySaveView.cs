@@ -1,32 +1,18 @@
-﻿using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
-using CLEA.EasySaveCore.Utilities;
+﻿using CLEA.EasySaveCore.Translations;
 using CLEA.EasySaveCore.ViewModel;
 
 namespace CLEA.EasySaveCore.View
 {
-    public abstract class EasySaveView<TJob, TJobManager, TConfiguration, TViewModel, TViewModelObjectBuilder>
-        where TJob : IJob
-        where TJobManager : JobManager<TJob>
-        where TConfiguration : EasySaveConfigurationBase
-        where TViewModel : EasySaveViewModelBase<TJob, TJobManager>
-        where TViewModelObjectBuilder : ViewModelJobBuilder<TJob>
+    public abstract class EasySaveView
     {
-        protected readonly L10N.L10N L10N = EasySaveCore.L10N.L10N.Get();
-        public readonly EasySaveCore<TJob, TJobManager, TConfiguration> Core;
-        protected TViewModel ViewModel;
+        public readonly Core.EasySaveCore Core;
+        protected L10N L10N => L10N.Get();
 
-        protected EasySaveView(EasySaveCore<TJob, TJobManager, TConfiguration> core, TViewModel viewModel,
-            TViewModelObjectBuilder viewModelObjectBuilder)
+        protected EasySaveView(Core.EasySaveCore core, EasySaveViewModelBase viewModel,
+            ViewModelJobBuilderBase viewModelObjectBuilder)
         {
             Core = core;
-            ViewModel = viewModel;
             viewModel.SetJobBuilder(viewModelObjectBuilder);
-        }
-
-        public TViewModelObjectBuilder GetJobBuilder()
-        {
-            return (TViewModelObjectBuilder)ViewModel.JobBuilder;
         }
 
         protected abstract void DisplayMainMenu();
