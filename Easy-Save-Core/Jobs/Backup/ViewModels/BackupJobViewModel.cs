@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CLEA.EasySaveCore.External;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Translations;
@@ -29,7 +30,12 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         private string _newProcessToBlacklist;
 
+        private string _newExtensionToPrioritize;
+
         private string _tempEncryptionKey;
+
+        private string _tempSimultaneousFileSizeThreshold;
+
 
         public override bool IsRunning { get; set; }
         public override event PropertyChangedEventHandler? PropertyChanged;
@@ -101,8 +107,20 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
+        public string TempSimultaneousFileSizeThreshold
+        {
+            get => _tempSimultaneousFileSizeThreshold;
+            set
+            {
+                _tempSimultaneousFileSizeThreshold = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<string> ExtensionsToEncrypt => Configuration.ExtensionsToEncrypt;
         public ObservableCollection<string> ProcessesToBlacklist => Configuration.ProcessesToBlacklist;
+        public ObservableCollection<string> ExtensionsToPrioritize => Configuration.ExtensionsToPrioritize;
+
 
         public string NewExtensionToEncrypt
         {
@@ -124,6 +142,17 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
+        public string NewExtensionToPrioritize
+        {
+            get => _newExtensionToPrioritize;
+            set
+            {
+                _newExtensionToPrioritize = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public bool CanJobBeRun => !JobManager.IsRunning;
 
         public ICommand BuildJobCommand { get; private set; }
@@ -139,8 +168,15 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand RemoveProcessToBlacklistCommand { get; set; }
         public ICommand AddExtensionToEncryptCommand { get; set; }
         public ICommand RemoveExtensionToEncryptCommand { get; set; }
+        public ICommand AddExtensionToPrioritizeCommand { get; set; }
+        public ICommand RemoveExtensionToPrioritizeCommand { get; set; }
+
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
+
+        public ICommand LoadSimultaneousFileSizeThresholdCommand { get; set; }
+        public ICommand SaveSimultaneousFileSizeThresholdCommand { get; set; }
+
 
         public Action CloseAction { get; set; }
         
@@ -154,6 +190,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         protected override void InitializeCommand()
         {
             _tempEncryptionKey = Configuration.EncryptionKey;
+            _tempSimultaneousFileSizeThreshold = Configuration.SimultaneousFileSizeThreshold.ToString();
+
             JobManager.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(JobManager.IsRunning))
@@ -164,10 +202,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (jobs == null || jobs.Count == 0)
                     return;
 
-                var dispatcher = Application.Current.Dispatcher;
+                Dispatcher dispatcher = Application.Current.Dispatcher;
                 dispatcher.Invoke(() =>
                 {
-                    var mainWindow = Application.Current.MainWindow;
+                    Window mainWindow = Application.Current.MainWindow;
                     MessageBox.Show(
                         mainWindow,
                         L10N.Get().GetTranslation("message_box.jobs_completed.text")
@@ -180,7 +218,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             BuildJobCommand = new RelayCommand(isCreation =>
             {
-                var isJobCreation = bool.Parse((string)isCreation!);
+                bool isJobCreation = bool.Parse((string)isCreation!);
 
                 if (JobBuilderBase == null)
                     throw new NullReferenceException("BackupJob builder is not defined !");
@@ -225,7 +263,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             DeleteJobCommand = new RelayCommand(jobName =>
             {
                 if (jobName is string name) JobManager.RemoveJob(name);
-            }, _ => true); //Todo utiliser commandes pour désactiver boutons
+            }, _ => true);
 
             RunJobCommand = new RelayCommand(jobName =>
             {
@@ -245,7 +283,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     return;
                 }
 
-                var jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+                List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
 
                 if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job =>
                         job.IsEncrypted && Configuration.ExtensionsToEncrypt.Any()))
@@ -268,9 +306,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     }
                 }
 
-                // deactivateButtons()
                 JobManager.DoMultipleJob(jobNames);
-                // reactivateButtons()
             }, _ => !JobManager.IsRunning);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
@@ -286,13 +322,13 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             ShowFolderDialogCommand = new RelayCommand(input =>
             {
-                var isDailyLog = bool.Parse((string)input!);
+                bool isDailyLog = bool.Parse((string)input!);
 
-                var folderBrowserDialog = new FolderBrowserDialog();
-                var title = L10N.Get().GetTranslation("browse_folder.status_log");
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                string title = L10N.Get().GetTranslation("browse_folder.status_log");
 
                 folderBrowserDialog.Title = title;
-                var path = StatusLogPath;
+                string path = StatusLogPath;
 
                 if (isDailyLog)
                 {
@@ -301,7 +337,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     path = DailyLogPath;
                 }
 
-                var fullPath = Path.IsPathRooted(path)
+                string fullPath = Path.IsPathRooted(path)
                     ? path
                     : Path.GetFullPath(Path.Combine(".", path));
 
@@ -319,9 +355,9 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             ResetFolderLogPathCommand = new RelayCommand(input =>
             {
-                var isDailyLogPath = bool.Parse((string)input!);
+                bool isDailyLogPath = bool.Parse((string)input!);
 
-                var path = @"logs\";
+                string path = @"logs\";
 
                 if (isDailyLogPath)
                 {
@@ -342,7 +378,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             SaveEncryptionKeyCommand = new RelayCommand(input =>
             {
-                var encryptionKey = (input as string)?.Trim() ?? string.Empty;
+                string encryptionKey = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length < 8 || encryptionKey.Length > 30)
                 {
@@ -358,9 +394,48 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     MessageBoxImage.Information);
             });
 
+            LoadSimultaneousFileSizeThresholdCommand = new RelayCommand(input =>
+            {
+                TempSimultaneousFileSizeThreshold = Configuration.SimultaneousFileSizeThreshold.ToString();
+            });
+
+            SaveSimultaneousFileSizeThresholdCommand = new RelayCommand(input =>
+            {
+                string inputStr = (input as string)?.Trim() ?? string.Empty;
+
+                if (!Regex.IsMatch(inputStr, @"^\d+$") || !long.TryParse(inputStr, out long fileSizeThreshold))
+                {
+                    MessageBox.Show(
+                        L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_invalid.text.regex"),
+                        L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_invalid.title.regex"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (fileSizeThreshold < 1)
+                {
+                    MessageBox.Show(
+                        L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_invalid.text"),
+                        L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_invalid.title"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                Configuration.SimultaneousFileSizeThreshold = fileSizeThreshold;
+
+                MessageBox.Show(
+                    L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_valid.text"),
+                    L10N.Get().GetTranslation("message_box.simultaneous_file_size_threshold_valid.title"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            });
+
+
             AddExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                var extension = (input as string)?.Trim() ?? string.Empty;
+                string extension = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(extension))
                     return;
@@ -377,14 +452,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RemoveExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                var extensionToRemove = (input as string)?.Trim() ?? string.Empty;
+                string extensionToRemove = (input as string)?.Trim() ?? string.Empty;
                 if (!string.IsNullOrEmpty(extensionToRemove) && ExtensionsToEncrypt.Contains(extensionToRemove))
                     ExtensionsToEncrypt.Remove(extensionToRemove);
             }, _ => true);
 
             AddProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                var process = (input as string)?.Trim() ?? string.Empty;
+                string process = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(process))
                     return;
@@ -401,9 +476,33 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RemoveProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                var processToRemove = input as string ?? string.Empty;
+                string processToRemove = input as string ?? string.Empty;
                 if (!string.IsNullOrEmpty(processToRemove) && ProcessesToBlacklist.Contains(processToRemove))
                     ProcessesToBlacklist.Remove(processToRemove);
+            }, _ => true);
+
+            AddExtensionToPrioritizeCommand = new RelayCommand(input =>
+            {
+                string extension = (input as string)?.Trim() ?? string.Empty;
+
+                if (string.IsNullOrEmpty(extension))
+                    return;
+
+                if (!Regex.IsMatch(extension, @"^\.[\w]+$"))
+                    return;
+
+                if (!ExtensionsToPrioritize.Contains(extension))
+                {
+                    ExtensionsToPrioritize.Add(extension);
+                    NewExtensionToPrioritize = string.Empty;
+                }
+            }, _ => true);
+
+            RemoveExtensionToPrioritizeCommand = new RelayCommand(input =>
+            {
+                string extensionToPrioritize = (input as string)?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(extensionToPrioritize) && ExtensionsToPrioritize.Contains(extensionToPrioritize))
+                    ExtensionsToPrioritize.Remove(extensionToPrioritize);
             }, _ => true);
 
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
@@ -416,9 +515,9 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
         {
-            foreach (var jobName in jobNames)
+            foreach (string jobName in jobNames)
             {
-                var job = JobManager.GetJob(jobName);
+                IJob job = JobManager.GetJob(jobName);
                 if (job == null)
                     continue;
 
@@ -436,7 +535,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         {
             try
             {
-                var fullPath = Path.GetFullPath(path);
+                string fullPath = Path.GetFullPath(path);
 
                 return !Path.HasExtension(fullPath);
             }
@@ -449,8 +548,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public bool IsNameValid(string name, bool isCreation)
         {
-            var existingJob = JobManager.GetJob(name);
-            var exists = existingJob != null;
+            IJob existingJob = JobManager.GetJob(name);
+            bool exists = existingJob != null;
 
             return isCreation ? !exists : exists;
         }

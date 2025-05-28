@@ -61,7 +61,7 @@
   "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}",
 
   "options_popup.title": "Menu Konfigurasi Opsi",
-  "options_popup.subtitle": "Semua diperbarui secara real time",
+  "options_popup.subtitle": "Semua diperbarui secara real-time (kecuali kunci enkripsi dan ambang batas ukuran file)",
   "options_popup.language": "Bahasa: ",
   "options_popup.log_type": "Tipe Log: ",
   "options_popup.daily_log_dir": "Direktori Log Harian: ",
@@ -164,6 +164,15 @@
 
   "message_box.encryption_key_invalid.title": "Kunci Tidak Valid",
   "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter.",
+
+  "message_box.simultaneous_file_size_threshold_valid.title": "Berhasil",
+  "message_box.simultaneous_file_size_threshold_valid.text": "Ukuran maksimum file simultan berhasil disimpan.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title": "Ukuran file maksimum tidak valid (dalam kB)",
+  "message_box.simultaneous_file_size_threshold_invalid.text": "Ukuran maksimum file harus lebih besar atau sama dengan 1.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title.regex": "Format ukuran file tidak valid",
+  "message_box.simultaneous_file_size_threshold_invalid.text.regex": "Ukuran maksimum file harus terdiri dari angka saja.",
 
   "message_box.jobs_completed.title": "Berhasil",
   "message_box.jobs_completed.text": "Berhasil menyelesaikan {COUNT} pekerjaan",

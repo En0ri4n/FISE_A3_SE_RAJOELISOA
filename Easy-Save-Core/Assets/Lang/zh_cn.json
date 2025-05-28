@@ -61,7 +61,7 @@
   "error.path_with": "错误: 任务 {JOBNAME} 的路径错误",
 
   "options_popup.title": "选项配置菜单",
-  "options_popup.subtitle": "所有内容实时更新",
+  "options_popup.subtitle": "所有内容实时更新（加密密钥和文件大小阈值除外）",
   "options_popup.language": "语言: ",
   "options_popup.log_type": "日志类型: ",
   "options_popup.daily_log_dir": "每日日志目录: ",
@@ -164,6 +164,15 @@
 
   "message_box.encryption_key_invalid.title": "无效密钥",
   "message_box.encryption_key_invalid.text": "加密密钥长度必须在8到30个字符之间。",
+
+  "message_box.simultaneous_file_size_threshold_valid.title": "成功",
+  "message_box.simultaneous_file_size_threshold_valid.text": "最大同时文件大小已成功保存。",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title": "无效的最大文件大小（单位：KB）",
+  "message_box.simultaneous_file_size_threshold_invalid.text": "最大文件大小必须大于或等于 1。",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title.regex": "文件大小格式无效",
+  "message_box.simultaneous_file_size_threshold_invalid.text.regex": "文件大小只能由数字组成。",
 
   "message_box.jobs_completed.title": "成功",
   "message_box.jobs_completed.text": "成功完成了 {COUNT} 个任务",

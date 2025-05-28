@@ -61,7 +61,7 @@
   "error.invalid_job_name": "Erreur : Le nom du Job n'est pas valide'",
 
   "options_popup.title": "Menu de configuration des options",
-  "options_popup.subtitle": "Tout se met à jour en temps réel",
+  "options_popup.subtitle": "Tout est mis à jour en temps réel (sauf la clé de chiffrement et le seuil de taille de fichier)",
   "options_popup.language": "Langue : ",
   "options_popup.log_type": "Type de journal : ",
   "options_popup.daily_log_dir": "Répertoire des journaux quotidiens : ",
@@ -164,6 +164,15 @@
 
   "message_box.encryption_key_invalid.title": "Clé Invalide",
   "message_box.encryption_key_invalid.text": "La Clé de chiffrement doit être composée de 8 à 30 caractères.",
+
+  "message_box.simultaneous_file_size_threshold_valid.title": "Succès",
+  "message_box.simultaneous_file_size_threshold_valid.text": "La taille maximale de fichier simultanée a été enregistrée avec succès.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title": "Taille maximale de fichier invalide (en ko)",
+  "message_box.simultaneous_file_size_threshold_invalid.text": "La taille maximale de fichier simultanée doit être supérieure ou égale à 1.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title.regex": "Format de taille invalide",
+  "message_box.simultaneous_file_size_threshold_invalid.text.regex": "La taille maximale de fichier doit contenir uniquement des chiffres.",
 
   "message_box.jobs_completed.title": "Réussite",
   "message_box.jobs_completed.text": "Completé {COUNT} Job(s) avec succès",

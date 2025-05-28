@@ -9,6 +9,7 @@ namespace Easy_Save_WPF
         public OptionsPopup(BackupJobViewModel viewModel)
         {
             viewModel.LoadEncryptionKeyCommand.Execute(null);
+            viewModel.LoadSimultaneousFileSizeThresholdCommand.Execute(null);
             InitializeComponent();
             DataContext = viewModel;
         }

@@ -61,14 +61,16 @@
   "error.invalid_job_name": "Error : Job name is not valid",
 
   "options_popup.title": "Options Configuration Menu",
-  "options_popup.subtitle": "Everything updates in real time",
+  "options_popup.subtitle": "Everything updates in real time (except encryption key and file size threshold)",
   "options_popup.language": "Language: ",
   "options_popup.log_type": "Log Type: ",
   "options_popup.daily_log_dir": "Daily Log Directory: ",
   "options_popup.status_log_dir": "Status Log Directory: ",
   "options_popup.encryption_key": "Enter Encryption key (max 30chars): ",
+  "options_popup.simultaneous_max_file_size_threshold": "Enter Simultaneous max file size threshold (in kB, >0): ",
   "options_popup.extensions_encryption": "Extensions to Encrypt (format: '.ext'): ",
   "options_popup.processes_blacklist": "Processes to Blacklist: ",
+  "options_popup.extensions_prioritization": "File extensions to Prioritize (format: '.ext'): ",
 
   "common.browse": "Browse",
   "common.yes": "Yes",
@@ -164,6 +166,15 @@
 
   "message_box.encryption_key_invalid.title": "Invalid Key",
   "message_box.encryption_key_invalid.text": "Encryption key must be between 8 and 30 characters long.",
+
+  "message_box.simultaneous_file_size_threshold_valid.title": "Success",
+  "message_box.simultaneous_file_size_threshold_valid.text": "Simultaneous Max File Size saved successfully.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title": "Invalid Simultaneous Max File Size (in kB)",
+  "message_box.simultaneous_file_size_threshold_invalid.text": "Simultaneous Max File Size must be between greater or equal to 1.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title.regex": "Invalid Simultaneous Max File Size format",
+  "message_box.simultaneous_file_size_threshold_invalid.text.regex": "Simultaneous Max File Size must be composed of numbers only.",
 
   "message_box.jobs_completed.title": "Success",
   "message_box.jobs_completed.text": "Completed {COUNT} Job(s) successfully",
