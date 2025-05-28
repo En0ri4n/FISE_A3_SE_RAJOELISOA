@@ -115,16 +115,24 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
             job.RunJob();
             job.Status = job.BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed) ? JobExecutionStrategy.ExecutionStatus.Completed : JobExecutionStrategy.ExecutionStatus.Failed;
-            
+
             Logger.Get().SaveDailyLog(job.BackupJobTasks.Select(task => task).Cast<JobTask>().ToList());
         }
 
         protected override void DoMultipleJob(ObservableCollection<BackupJob> jobs)
         {
+            //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
             IsRunning = true;
-            int jobsUnfinished = jobs.Count(); //TODO Temp name
+            int jobsUnfinished = jobs.Count();
             foreach (BackupJob job in jobs)
             {
+                if (ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+                {
+                    job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                    IsRunning = false;
+                    return;
+                }
                 job.ClearAndSetupJob();
                 Task.Run(() =>
                 {
@@ -133,35 +141,28 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
                     string targetPath = job.Target;
                     long diskSpaceMin = 10; //TODO Space from jobs
+                    if (!IsRunning) { return; }
                     if (!HasEnoughDiskSpace(targetPath, diskSpaceMin * 1024 * 1024 * 1024))
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                         _semaphoreObject.Release();
+                        IsRunning = false;
                         return;
                     }
-
-                    if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
-                    {
-                        job.RunJob();
-                        _semaphoreObject.Release();
-                        jobsUnfinished--;
-                    }
-                    else
-                    {
-                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
-                        _semaphoreObject.Release();
-                        return;
-                    }
+                    job.RunJob();
+                    _semaphoreObject.Release();
+                    jobsUnfinished--;
+                    JobThreadCompletedHandler?.Invoke(jobsUnfinished);
                     CurrentRunningJob = null;
                     lock (_lockObject)
                     {
                         Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
                     }
                 });
-                
+
             }
+            //JobCompleted
             //this wait until all jobs are finished without blocking the main program. A bit ugly
             Task.Run(() => //TODO prettier way for this ???
             {
