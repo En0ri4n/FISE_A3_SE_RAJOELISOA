@@ -285,10 +285,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
                 List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
 
-                if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job =>
-                        job.IsEncrypted && Configuration.ExtensionsToEncrypt.Any()))
+                if (!ExternalEncryptor.IsEncryptorPresent() || (ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job =>
+                        job.IsEncrypted && !Configuration.ExtensionsToEncrypt.Any())))
                 {
-                    if (!Configuration.ExtensionsToEncrypt.Any())
+                    if (!Configuration.ExtensionsToEncrypt.Any() && ExternalEncryptor.IsEncryptorPresent())
                     {
                         Logger.Log(LogLevel.Warning,
                             "No extensions to encrypt specified in the config file. Encryption will not be performed.");
