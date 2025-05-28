@@ -129,13 +129,13 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 foreach (var job in jobs)
                 {
                     string targetPath = job.Target;
-                    long diskSpaceMin = 10; //TODO Space from jobs
-                    if (!HasEnoughDiskSpace(targetPath, diskSpaceMin * 1024 * 1024 * 1024))
+                    if (!HasEnoughDiskSpace(targetPath, job.Size))
                     {
+                        IsRunning = false;
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job,
                             "Not enough disk space on target drive.");
-                        break;
+                        return;
                     }
 
                     if (!ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration) Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
@@ -144,15 +144,16 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     }
                     else
                     {
+                        IsRunning = false;
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job,
                             ((BackupJobConfiguration) Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist
                                 .FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
-                        break;
+                        return;
                     }
                 }
 
-                Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).Cast<JobTask>().ToList());
+                Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).ToList());
 
                 lock (_lockObject)
                 {

@@ -43,6 +43,7 @@ namespace EasySaveCore.Models
             TransferTime = -1L;
             EncryptionTime = -1L;
             TaskCompletedHandler += task => UpdateProgress();
+            ClearAndSetupJob();
         }
 
         public DateTime Timestamp { get; set; }
@@ -146,21 +147,10 @@ namespace EasySaveCore.Models
                 Directory.CreateDirectory(dirToCreate);
             }
 
-            string[] sourceFilesArray = Directory.GetFiles(Source, "*.*", SearchOption.AllDirectories);
-
-            foreach (var path in sourceFilesArray)
-            {
-                var jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
-                BackupJobTasks.Add(jobTask);
-            }
-
-            UpdateProgress();
-
             foreach (var jobTask in BackupJobTasks)
                 jobTask.ExecuteTask(StrategyType);
 
             TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
-            Size = BackupJobTasks.FindAll(x => x.TransferTime != -1).Select(x => x.Size).Sum();
             EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
 
             CompleteJob(BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
@@ -208,6 +198,8 @@ namespace EasySaveCore.Models
                 IsEncrypted = bool.Parse(data["IsEncrypted"]!.ToString());
             else
                 throw new KeyNotFoundException("Invalid JSON data: Missing 'IsEncrypted' property.");
+            
+            ClearAndSetupJob();
         }
 
         public XmlElement XmlSerialize(XmlDocument parent)
@@ -266,9 +258,21 @@ namespace EasySaveCore.Models
         public void ClearAndSetupJob()
         {
             BackupJobTasks.Clear();
-            Size = -1L;
+
+            if (!string.IsNullOrEmpty(Source))
+            {
+                string[] sourceFilesArray = Directory.GetFiles(Source, "*.*", SearchOption.AllDirectories);
+
+                foreach (var path in sourceFilesArray)
+                {
+                    var jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
+                    BackupJobTasks.Add(jobTask);
+                }
+            }
+
             TransferTime = -1L;
             EncryptionTime = -1L;
+            Size = BackupJobTasks.Select(x => x.Size).Sum();
             Status = JobExecutionStrategy.ExecutionStatus.InQueue;
             UpdateProgress();
         }
