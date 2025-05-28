@@ -9,6 +9,7 @@ using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
@@ -82,7 +83,6 @@ namespace EasySaveCore.Models
 
         public string Name { get; private set; }
 
-        private readonly int fileSizeThreshold = 100000; //TODO fetch real value in the config
         private readonly static Semaphore _semaphoreSizeThreshold = new Semaphore(1, 1);
 
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
@@ -155,7 +155,8 @@ namespace EasySaveCore.Models
 
             foreach (BackupJobTask jobTask in BackupJobTasks)
             {
-                if (jobTask.Size >= fileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code
+                // Compare if jobTask size in kB is greater than or equal to the threshold defined in the configuration
+                if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
                 {
                     _semaphoreSizeThreshold.WaitOne();
                     jobTask.ExecuteTask(StrategyType);
