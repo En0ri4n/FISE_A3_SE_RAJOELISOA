@@ -3,13 +3,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using CLEA.EasySaveCore;
-using CLEA.EasySaveCore.Jobs.Backup;
-using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.External;
-using EasySaveCore.Jobs.Backup.ViewModels;
-using EasySaveCore.Models;
+using CLEA.EasySaveCore.Translations;
+using CLEA.EasySaveCore.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace EasySaveCore.Jobs.Backup.Configurations
@@ -17,65 +13,63 @@ namespace EasySaveCore.Jobs.Backup.Configurations
     public class BackupJobConfiguration : EasySaveConfigurationBase
     {
         private const string ConfigPath = "config.json";
-        private static readonly BackupJobConfiguration Instance = new BackupJobConfiguration();
-
-        private static Logger Logger => Logger.Get();
-
-        private ObservableCollection<string> _extensionsToEncrypt;
-        public ObservableCollection<string> ExtensionsToEncrypt => _extensionsToEncrypt;
-
-        private ObservableCollection<string> _processesToBlacklist;
-        public ObservableCollection<string> ProcessesToBlacklist => _processesToBlacklist;
 
         private string _encryptionKey = ExternalEncryptor.ProcessEncryptionKey("SuperProtectedKey-CLEA-@.NET-2025");
-        public string EncryptionKey { 
+
+        public BackupJobConfiguration()
+        {
+            ExtensionsToEncrypt = new ObservableCollection<string>();
+            ProcessesToBlacklist = new ObservableCollection<string>();
+
+            ExtensionsToEncrypt.CollectionChanged += (sender, args) => SaveConfiguration();
+            ProcessesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
+        }
+
+        private static Logger Logger => Logger.Get();
+        public ObservableCollection<string> ExtensionsToEncrypt { get; private set; }
+
+        public ObservableCollection<string> ProcessesToBlacklist { get; private set; }
+
+        public string EncryptionKey
+        {
             get => _encryptionKey;
             set
             {
                 _encryptionKey = value;
                 SaveConfiguration();
-            } 
-        }
-
-        private BackupJobConfiguration()
-        {
-            _extensionsToEncrypt = new ObservableCollection<string>();
-            _processesToBlacklist = new ObservableCollection<string>();
-
-            _extensionsToEncrypt.CollectionChanged += (sender, args) => SaveConfiguration();
-            _processesToBlacklist.CollectionChanged += (sender, args) => SaveConfiguration();
+            }
         }
 
         /// <summary>
-        /// Serialize the configuration to a JSON object.
-        /// All properties have default values and are not null to avoid serialization issues.
+        ///     Serialize the configuration to a JSON object.
+        ///     All properties have default values and are not null to avoid serialization issues.
         /// </summary>
         /// <returns></returns>
         public override JsonObject JsonSerialize()
         {
-            JsonArray jobs = new JsonArray();
-            foreach (BackupJob job in BackupJobViewModel.Get().JobManager.GetJobs())
+            var jobs = new JsonArray();
+            foreach (var job in CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager.GetJobs())
                 if (job is IJsonSerializable jsonSerializable)
                     jobs.Add(jsonSerializable.JsonSerialize());
 
-            JsonArray extensionsToEncrypt = new JsonArray();
-            foreach (string extension in ExtensionsToEncrypt)
+            var extensionsToEncrypt = new JsonArray();
+            foreach (var extension in ExtensionsToEncrypt)
                 extensionsToEncrypt.Add(extension);
 
-            JsonArray processesToBlacklist = new JsonArray();
-            foreach (string process in ProcessesToBlacklist)
+            var processesToBlacklist = new JsonArray();
+            foreach (var process in ProcessesToBlacklist)
                 processesToBlacklist.Add(process);
 
-            JsonObject data = new JsonObject
+            var data = new JsonObject
             {
-                { "version", EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString() },
+                { "version", CLEA.EasySaveCore.Core.EasySaveCore.Version.ToString() },
                 { "language", L10N.Get().GetLanguage().LangId },
                 { "dailyLogPath", Logger.DailyLogPath },
                 { "statusLogPath", Logger.StatusLogPath },
                 { "dailyLogFormat", Logger.DailyLogFormat.ToString() },
                 { "encryptionKey", _encryptionKey },
-                { "extensionsToEncrypt",  extensionsToEncrypt},
-                { "processesToBlacklist",  processesToBlacklist},
+                { "extensionsToEncrypt", extensionsToEncrypt },
+                { "processesToBlacklist", processesToBlacklist },
                 { "jobs", jobs }
             };
 
@@ -83,109 +77,116 @@ namespace EasySaveCore.Jobs.Backup.Configurations
         }
 
         /// <summary>
-        /// This method deserializes the JSON object into the configuration properties.
-        /// All properties are validated to ensure they are not null and have valid values.
+        ///     This method deserializes the JSON object into the configuration properties.
+        ///     All properties are validated to ensure they are not null and have valid values.
         /// </summary>
         /// <param name="data">The JSON object representing the configuration to deserialize.</param>
         public override void JsonDeserialize(JsonObject data)
         {
             // Version
-            data.TryGetPropertyValue("version", out JsonNode? version);
+            data.TryGetPropertyValue("version", out var version);
             if (version == null)
                 throw new JsonException("Version not found in configuration file");
-            if (version.ToString() != EasySaveCore<BackupJob, BackupJobManager, BackupJobConfiguration>.Version.ToString())
+            if (version.ToString() !=
+                CLEA.EasySaveCore.Core.EasySaveCore.Version.ToString())
                 throw new JsonException("Version mismatch in configuration file");
 
             // Daily log path
-            data.TryGetPropertyValue("dailyLogPath", out JsonNode? dailyLogPath);
+            data.TryGetPropertyValue("dailyLogPath", out var dailyLogPath);
             if (dailyLogPath != null && dailyLogPath.ToString().IndexOfAny(Path.GetInvalidPathChars()) == -1)
                 Logger.DailyLogPath = dailyLogPath.ToString();
             if (!Directory.Exists(Logger.DailyLogPath))
                 Directory.CreateDirectory(Logger.DailyLogPath);
 
             // Status log path
-            data.TryGetPropertyValue("statusLogPath", out JsonNode? statusLogPath);
+            data.TryGetPropertyValue("statusLogPath", out var statusLogPath);
             if (statusLogPath != null && statusLogPath.ToString().IndexOfAny(Path.GetInvalidPathChars()) == -1)
                 Logger.StatusLogPath = statusLogPath.ToString();
             if (!Directory.Exists(Logger.StatusLogPath))
                 Directory.CreateDirectory(Logger.StatusLogPath);
 
             // Daily log Format
-            data.TryGetPropertyValue("dailyLogFormat", out JsonNode? dailyLogFormat);
+            data.TryGetPropertyValue("dailyLogFormat", out var dailyLogFormat);
             if (dailyLogFormat != null)
                 Logger.DailyLogFormat = (Format)Enum.Parse(typeof(Format), dailyLogFormat.ToString());
             if (!Directory.Exists(Logger.DailyLogPath))
                 Directory.CreateDirectory(Logger.DailyLogPath);
 
             // Encryption Key
-            data.TryGetPropertyValue("encryptionKey", out JsonNode? encryptionKey);
+            data.TryGetPropertyValue("encryptionKey", out var encryptionKey);
             if (encryptionKey != null)
                 _encryptionKey = encryptionKey.ToString();
 
             // Encrypted file extensions
-            ObservableCollection<string> extensionsToEncryptList = new ObservableCollection<string>();
-            data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
+            var extensionsToEncryptList = new ObservableCollection<string>();
+            data.TryGetPropertyValue("extensionsToEncrypt", out var extensionsToEncrypt);
             if (extensionsToEncrypt != null)
             {
-                foreach (JsonNode? format in extensionsToEncrypt.AsArray())
+                foreach (var format in extensionsToEncrypt.AsArray())
                     if (format is JsonValue formatValue)
                         extensionsToEncryptList.Add(formatValue.ToString());
 
                 extensionsToEncryptList.CollectionChanged += (sender, args) => SaveConfiguration();
-                _extensionsToEncrypt = extensionsToEncryptList;
+                ExtensionsToEncrypt = extensionsToEncryptList;
             }
             else
+            {
                 throw new JsonException("Encrypted file extensions not found in configuration file");
+            }
 
             // Processes to blacklist
-            ObservableCollection<string> processesToBlacklistList = new ObservableCollection<string>();
-            data.TryGetPropertyValue("processesToBlacklist", out JsonNode? processesToBlacklist);
+            var processesToBlacklistList = new ObservableCollection<string>();
+            data.TryGetPropertyValue("processesToBlacklist", out var processesToBlacklist);
             if (processesToBlacklist != null)
             {
-                foreach (JsonNode? process in processesToBlacklist.AsArray())
+                foreach (var process in processesToBlacklist.AsArray())
                     if (process is JsonValue processValue)
                         processesToBlacklistList.Add(processValue.ToString());
 
                 processesToBlacklistList.CollectionChanged += (sender, args) => SaveConfiguration();
-                _processesToBlacklist = processesToBlacklistList;
+                ProcessesToBlacklist = processesToBlacklistList;
             }
             else
+            {
                 throw new JsonException("Processes to Blacklist not found in configuration file");
+            }
 
             // Jobs
-            data.TryGetPropertyValue("jobs", out JsonNode? jobs);
+            data.TryGetPropertyValue("jobs", out var jobs);
             if (jobs != null)
             {
-                foreach (JsonNode? job in jobs.AsArray())
+                foreach (var job in jobs.AsArray())
                     if (job is JsonObject jobObject)
-                        BackupJobViewModel.Get().JobManager.AddJob(jobObject);
+                        CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager.AddJob(jobObject);
             }
             else
+            {
                 throw new JsonException("Jobs not found in configuration file");
+            }
 
             // Language
-            data.TryGetPropertyValue("language", out JsonNode? lang);
+            data.TryGetPropertyValue("language", out var lang);
             if (lang == null)
                 throw new JsonException("Language property not found in configuration file");
             if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
                 L10N.Get().SetLanguage(Languages.SupportedLangs.Find(li => li.LangId == lang.ToString()) ??
-                                             Languages.EnUs);
+                                       Languages.EnUs);
             else
                 throw new JsonException($"Language '{lang}' is not supported");
         }
 
         public override void SaveConfiguration()
         {
-            JsonObject data = Instance.JsonSerialize();
+            JsonObject data = JsonSerialize();
             File.WriteAllText(ConfigPath, data.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
         }
 
         public override void LoadConfiguration()
         {
-            FileStream fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
-            StreamReader streamReader = new StreamReader(fileStream);
+            var fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
+            var streamReader = new StreamReader(fileStream);
 
-            string json = streamReader.ReadToEnd();
+            var json = streamReader.ReadToEnd();
 
             streamReader.Close();
             fileStream.Close();
@@ -202,18 +203,13 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 return;
             }
 
-            JsonNode? configurationJson = JsonNode.Parse(json);
+            var configurationJson = JsonNode.Parse(json);
 
             if (configurationJson == null)
                 throw new JsonException("Failed to parse configuration file");
 
-            Instance.JsonDeserialize(configurationJson.AsObject());
+            JsonDeserialize(configurationJson.AsObject());
             Logger.LogInternal(LogLevel.Debug, "Successfully loaded configuration file");
-        }
-
-        public static BackupJobConfiguration Get()
-        {
-            return Instance;
         }
     }
 }

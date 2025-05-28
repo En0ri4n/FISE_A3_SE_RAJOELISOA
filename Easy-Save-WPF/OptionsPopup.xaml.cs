@@ -6,20 +6,23 @@ namespace Easy_Save_WPF
 {
     public partial class OptionsPopup : Window
     {
-        public OptionsPopup()
+        public OptionsPopup(BackupJobViewModel viewModel)
         {
-            BackupJobViewModel.Get().LoadEncryptionKeyCommand.Execute(null);
+            viewModel.LoadEncryptionKeyCommand.Execute(null);
             InitializeComponent();
-            DataContext = BackupJobViewModel.Get();
+            DataContext = viewModel;
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
 
         public void configFileBTN_Click(object sender, RoutedEventArgs e)
         {
             var path = "config.json";
 
-            using Process myProcess = new Process();
+            using var myProcess = new Process();
             myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.Verb = "open";
             myProcess.StartInfo.UseShellExecute = true;

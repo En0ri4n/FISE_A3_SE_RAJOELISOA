@@ -3,27 +3,27 @@
 namespace CLEA.EasySaveCore.Utilities
 {
     /// <summary>
-    /// Represents the configuration settings for the EasySave application.
-    /// It includes all the necessary settings for the application to run correctly.
-    /// When the application starts, it loads the configuration from a JSON file.
-    /// If the file does not exist or is empty, it creates a default configuration.
+    ///     Represents the configuration settings for the EasySave application.
+    ///     It includes all the necessary settings for the application to run correctly.
+    ///     When the application starts, it loads the configuration from a JSON file.
+    ///     If the file does not exist or is empty, it creates a default configuration.
     /// </summary>
     public abstract class EasySaveConfigurationBase : IJsonSerializable
     {
+        public abstract JsonObject JsonSerialize();
+        public abstract void JsonDeserialize(JsonObject data);
+
         /// <summary>
-        /// Saves the current configuration to a JSON file.
-        /// As <see cref="EasySaveConfigurationBase"/> is a singleton, it can be a static method.
+        ///     Saves the current configuration to a JSON file.
+        ///     As <see cref="EasySaveConfigurationBase" /> is a singleton, it can be a static method.
         /// </summary>
         public abstract void SaveConfiguration();
 
         /// <summary>
-        /// Loads the configuration from a JSON file.
-        /// As soon as the application starts, it loads the configuration from a JSON file.
-        /// As <see cref="EasySaveConfigurationBase"/> is a singleton, it can be a static method.
+        ///     Loads the configuration from a JSON file.
+        ///     As soon as the application starts, it loads the configuration from a JSON file.
+        ///     As <see cref="EasySaveConfigurationBase" /> is a singleton, it can be a static method.
         /// </summary>
         public abstract void LoadConfiguration();
-
-        public abstract JsonObject JsonSerialize();
-        public abstract void JsonDeserialize(JsonObject data);
     }
 }

@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace CLEA.EasySaveCore.L10N
+namespace CLEA.EasySaveCore.Translations
 {
     public class LangIdentifier
     {
-        public string LangId { get; }
-        public string Name { get; }
-        public string IsoCode { get; }
-
         public LangIdentifier(string langId, string name, string isoCode)
         {
             LangId = langId;
             Name = name;
             IsoCode = isoCode;
         }
+
+        public string LangId { get; }
+        public string Name { get; }
+        public string IsoCode { get; }
     }
 
     public static class Languages
