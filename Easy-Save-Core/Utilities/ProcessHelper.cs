@@ -9,8 +9,12 @@ namespace CLEA.EasySaveCore.Utilities
     public class ProcessHelper
     {
         private static readonly ProcessHelper Instance = new ProcessHelper();
-        public static ProcessHelper Get() => Instance;
-        
+
+        public static ProcessHelper Get()
+        {
+            return Instance;
+        }
+
         public static bool IsExactProcessRunning(string processName)
         {
             try
@@ -24,12 +28,12 @@ namespace CLEA.EasySaveCore.Utilities
                 return false;
             }
         }
-        
+
         public static bool IsProcessRunning(string processName)
         {
             try
             {
-                Regex regex = new Regex(processName, RegexOptions.IgnoreCase);
+                var regex = new Regex(processName, RegexOptions.IgnoreCase);
                 Process[] processes = Process.GetProcesses();
                 if (processes.Any(process => regex.IsMatch(process.ProcessName)))
                     return true;
@@ -57,9 +61,8 @@ namespace CLEA.EasySaveCore.Utilities
             return false;
         }
 
-        public static int GetProcessCount (string processName)
+        public static int GetProcessCount(string processName)
         {
-
             try
             {
                 Process[] processes = Process.GetProcessesByName(processName);
