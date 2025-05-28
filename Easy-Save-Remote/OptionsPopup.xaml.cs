@@ -2,7 +2,7 @@
 using System.Windows;
 using EasySaveCore.Jobs.Backup.ViewModels;
 
-namespace Easy_Save_WPF
+namespace Easy_Save_Remote
 {
     public partial class OptionsPopup : Window
     {

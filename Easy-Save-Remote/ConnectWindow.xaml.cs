@@ -14,15 +14,15 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace Easy_Save_WPF
+namespace Easy_Save_Remote
 {
     /// <summary>
     /// Logique d'interaction pour ConnectWindow.xaml
     /// </summary>
     public partial class ConnectWindow : Window
     {
-        static string URL;
-        static int port;
+        public string URL;
+        public int port;
 
 
         public ConnectWindow()
@@ -34,14 +34,14 @@ namespace Easy_Save_WPF
         {
 
             Client client = new Client();
+            MainWindow window = new MainWindow();   
             Socket clientSocket = client.Connect(URL, port);
 
-            Thread receiveThread = new Thread(() => client.LoadData(clientSocket));
+            Thread receiveThread = new Thread(() => client.LoadData());
             receiveThread.Start();
 
             Close();
-            client.Disconnect(clientSocket);
-
+            client.Disconnect();
         }
 
     }

@@ -16,7 +16,7 @@ using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 
-namespace Easy_Save_WPF
+namespace Easy_Save_Remote
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
@@ -25,7 +25,6 @@ namespace Easy_Save_WPF
     //TODO select all rows : https://www.youtube.com/watch?app=desktop&v=bxTkTOZV0eQ
     public partial class MainWindow : Window
     {
-
         public MainWindow()
         {
             // Initialize the EasySaveCore with the necessary components

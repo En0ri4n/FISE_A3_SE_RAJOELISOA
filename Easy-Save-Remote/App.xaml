@@ -1,8 +1,8 @@
-﻿<Application x:Class="Easy_Save_WPF.App"
+﻿<Application x:Class="Easy_Save_Remote.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             xmlns:local="clr-namespace:Easy_Save_WPF"
+             xmlns:local="clr-namespace:Easy_Save_Remote"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
