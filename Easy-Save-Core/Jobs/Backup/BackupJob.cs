@@ -128,7 +128,6 @@ namespace EasySaveCore.Models
                 return;
             }
 
-            BackupJobTasks.Clear();
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
             IsRunning = true;
