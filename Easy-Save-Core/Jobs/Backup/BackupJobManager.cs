@@ -160,7 +160,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 });
 
             }
-            //JobCompleted
             //this wait until all jobs are finished without blocking the main program. A bit ugly
             Task.Run(() => //TODO prettier way for this ???
             {

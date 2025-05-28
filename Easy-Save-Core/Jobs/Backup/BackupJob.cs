@@ -21,7 +21,9 @@ namespace EasySaveCore.Models
         private long _size;
         private long _transferTime;
         private long _encryptionTime;
-        
+
+        private readonly static Semaphore _semaphoreObject = new Semaphore(1, 1); //temp
+
         public DateTime Timestamp
         {
             get => _timestamp;
@@ -88,7 +90,9 @@ namespace EasySaveCore.Models
         public bool IsRunning { get => _isRunning; set => _isRunning = value; }
 
         public string Name { get; private set; }
-        
+
+        private readonly int fileSizeThreshold = 100000; //TODO fetch real value in the config
+
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
@@ -208,9 +212,21 @@ namespace EasySaveCore.Models
             
             UpdateProgress();
 
-            foreach(BackupJobTask jobTask in BackupJobTasks)
-                jobTask.ExecuteTask(StrategyType);
 
+            foreach (BackupJobTask jobTask in BackupJobTasks)
+            {
+                if (jobTask.Size >= fileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code
+                {
+                    //TODO RENAME THIS SEMAPHORE
+                    _semaphoreObject.WaitOne();
+                    jobTask.ExecuteTask(StrategyType);
+                    _semaphoreObject.Release();
+                }
+                else
+                {
+                    jobTask.ExecuteTask(StrategyType);
+                }
+            }
             TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
             Size = BackupJobTasks.FindAll(x=>x.TransferTime != -1).Select(x => x.Size).Sum();
             EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
