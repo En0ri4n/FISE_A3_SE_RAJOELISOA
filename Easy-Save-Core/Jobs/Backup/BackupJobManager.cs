@@ -141,7 +141,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
                     string targetPath = job.Target;
                     long diskSpaceMin = 10; //TODO Space from jobs
-                    if (!IsRunning) { return; }
                     if (!HasEnoughDiskSpace(targetPath, diskSpaceMin * 1024 * 1024 * 1024))
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
@@ -153,7 +152,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.RunJob();
                     _semaphoreObject.Release();
                     jobsUnfinished--;
-                    JobThreadCompletedHandler?.Invoke(jobsUnfinished);
                     CurrentRunningJob = null;
                     lock (_lockObject)
                     {
