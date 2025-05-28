@@ -73,14 +73,14 @@ namespace CLEA.EasySaveCore.Utilities
         /// <param name="format">The format in which the log should be saved (JSON or XML).</param>
         public void SaveDailyLog(List<JobTask> tasks)
         {
-            using var writer = new StreamWriter(GetDailyLogFilePath(), true);
+            using StreamWriter writer = new StreamWriter(GetDailyLogFilePath(), true);
             string fileContent;
             switch (DailyLogFormat)
             {
                 default:
                 case Format.Json:
                     // Pretty print JSON
-                    var json = JsonSerialize(tasks);
+                    JsonNode json = JsonSerialize(tasks);
                     fileContent = json.ToJsonString(new JsonSerializerOptions
                     {
                         WriteIndented = true
@@ -90,10 +90,10 @@ namespace CLEA.EasySaveCore.Utilities
 
                 case Format.Xml:
                     // Pretty print XML
-                    var xmlDoc = new XmlDocument();
+                    XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.AppendChild(xmlDoc.ImportNode(XmlSerialize(tasks), true));
-                    using (var stringWriter = new StringWriter())
-                    using (var xmlTextWriter = new XmlTextWriter(stringWriter))
+                    using (StringWriter stringWriter = new StringWriter())
+                    using (XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter))
                     {
                         xmlTextWriter.Formatting = Formatting.Indented;
                         xmlDoc.WriteTo(xmlTextWriter);
@@ -147,9 +147,9 @@ namespace CLEA.EasySaveCore.Utilities
         /// </summary>
         private JsonNode JsonSerialize(List<JobTask> tasks)
         {
-            var array = new JsonArray();
+            JsonArray array = new JsonArray();
 
-            foreach (var jobTask in tasks)
+            foreach (JobTask jobTask in tasks)
                 array.Add(jobTask.JsonSerialize());
 
             return array;
@@ -161,10 +161,10 @@ namespace CLEA.EasySaveCore.Utilities
         /// </summary>
         private XmlElement XmlSerialize(List<JobTask> tasks)
         {
-            var doc = new XmlDocument();
-            var root = doc.CreateElement("Tasks");
+            XmlDocument doc = new XmlDocument();
+            XmlElement root = doc.CreateElement("Tasks");
 
-            foreach (var jobTask in tasks)
+            foreach (JobTask jobTask in tasks)
                 root.AppendChild(jobTask.XmlSerialize(doc));
 
             doc.AppendChild(root);

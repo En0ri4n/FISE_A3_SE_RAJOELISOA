@@ -45,11 +45,8 @@ namespace CLEA.EasySaveCore.Models
 
         public bool RemoveJob(string name)
         {
-            var job = Jobs.FirstOrDefault(j => j.Name == name);
-            if (job == null)
-                return false;
-
-            return RemoveJob(job);
+            IJob? job = Jobs.FirstOrDefault(j => j.Name == name);
+            return job != null && RemoveJob(job);
         }
 
         public bool RemoveAllJobs()
@@ -57,7 +54,7 @@ namespace CLEA.EasySaveCore.Models
             if (Jobs.Count <= 0)
                 return false;
 
-            foreach (var job in Jobs)
+            foreach (IJob job in Jobs)
                 RemoveJob(job);
 
             return true;
@@ -77,7 +74,7 @@ namespace CLEA.EasySaveCore.Models
 
         public void DoJob(string name)
         {
-            var job = Jobs.FirstOrDefault(j => j.Name == name);
+            IJob? job = Jobs.FirstOrDefault(j => j.Name == name);
 
             if (job == null)
                 throw new Exception($"IJob[{typeof(IJob)}] with name {name} not found");
@@ -98,7 +95,7 @@ namespace CLEA.EasySaveCore.Models
         {
             try
             {
-                var drive = new DriveInfo(Path.GetPathRoot(path)!);
+                DriveInfo drive = new DriveInfo(Path.GetPathRoot(path)!);
                 return drive.AvailableFreeSpace >= minimumBytesRequired;
             }
             catch

@@ -75,7 +75,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         public override void UpdateJob(string name, JsonObject? jobJson)
         {
-            var job = Jobs.FirstOrDefault(j => j.Name == name);
+            IJob? job = Jobs.FirstOrDefault(j => j.Name == name);
             if (job == null)
                 throw new Exception($"BackupJob with name {name} not found");
 
@@ -87,7 +87,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         public override bool UpdateJob(string name, IJob? job)
         {
-            var existingJob = Jobs.FirstOrDefault(j => j.Name == name);
+            IJob? existingJob = Jobs.FirstOrDefault(j => j.Name == name);
             if (existingJob == null)
                 return false;
 
@@ -173,7 +173,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         {
             lock (_lockObject)
             {
-                foreach (var jobName in jobNames)
+                foreach (string jobName in jobNames)
                 {
                     IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
                     if (!(job is { IsRunning: true })) continue;

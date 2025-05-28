@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
-using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
@@ -14,7 +13,7 @@ using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
-    public class BackupJob : IJob, INotifyPropertyChanged
+    public sealed class BackupJob : IJob, INotifyPropertyChanged
     {
         public BackupJobManager Manager { get; }
         public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
@@ -69,8 +68,8 @@ namespace EasySaveCore.Models
                 if (JobTasks.Count == 0)
                     return 0.0D;
 
-                var totalTasksSize = JobTasks.Sum(jt => jt.Size);
-                var completedTasks = JobTasks
+                long totalTasksSize = JobTasks.Sum(jt => jt.Size);
+                long completedTasks = JobTasks
                     .FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
                     .Sum(task => task.Size);
                 return (double)completedTasks / totalTasksSize * 100D;
@@ -141,9 +140,9 @@ namespace EasySaveCore.Models
 
             string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
 
-            foreach (var directory in sourceDirectoriesArray)
+            foreach (string directory in sourceDirectoriesArray)
             {
-                var dirToCreate = directory.Replace(Source, Target);
+                string dirToCreate = directory.Replace(Source, Target);
                 Directory.CreateDirectory(dirToCreate);
             }
             
@@ -202,7 +201,7 @@ namespace EasySaveCore.Models
 
         public JsonObject JsonSerialize()
         {
-            var jsonObject = new JsonObject();
+            JsonObject jsonObject = new JsonObject();
 
             jsonObject.Add("Name", Name);
             jsonObject.Add("Source", Source);
@@ -246,7 +245,7 @@ namespace EasySaveCore.Models
 
         public XmlElement XmlSerialize(XmlDocument parent)
         {
-            var jobElement = parent.CreateElement("BackupJob");
+            XmlElement jobElement = parent.CreateElement("BackupJob");
 
             jobElement.SetAttribute("Name", Name);
             jobElement.SetAttribute("Source", Source);
@@ -306,9 +305,9 @@ namespace EasySaveCore.Models
             {
                 string[] sourceFilesArray = Directory.GetFiles(Source, "*.*", SearchOption.AllDirectories);
 
-                foreach (var path in sourceFilesArray)
+                foreach (string path in sourceFilesArray)
                 {
-                    var jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
+                    BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
                     JobTasks.Add(jobTask);
                 }
             }
@@ -335,7 +334,7 @@ namespace EasySaveCore.Models
             JobCompletedHandler?.Invoke(this);
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

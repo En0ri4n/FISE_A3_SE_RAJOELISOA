@@ -40,7 +40,7 @@ namespace CLEA.EasySaveCore.Translations
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            var binding = new Binding("Value")
+            Binding binding = new Binding("Value")
             {
                 Source = this,
                 Mode = BindingMode.OneWay

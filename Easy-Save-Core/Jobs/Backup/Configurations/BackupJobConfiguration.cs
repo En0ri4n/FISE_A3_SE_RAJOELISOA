@@ -152,7 +152,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             data.TryGetPropertyValue("extensionsToEncrypt", out JsonNode? extensionsToEncrypt);
             if (extensionsToEncrypt != null)
             {
-                foreach (var format in extensionsToEncrypt.AsArray())
+                foreach (JsonNode? format in extensionsToEncrypt.AsArray())
                     if (format is JsonValue formatValue)
                         extensionsToEncryptList.Add(formatValue.ToString());
 
@@ -169,7 +169,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             data.TryGetPropertyValue("processesToBlacklist", out JsonNode? processesToBlacklist);
             if (processesToBlacklist != null)
             {
-                foreach (var process in processesToBlacklist.AsArray())
+                foreach (JsonNode? process in processesToBlacklist.AsArray())
                     if (process is JsonValue processValue)
                         processesToBlacklistList.Add(processValue.ToString());
 
@@ -186,7 +186,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             data.TryGetPropertyValue("extensionsToPrioritize", out JsonNode? extensionsToPrioritize);
             if (extensionsToPrioritize != null)
             {
-                foreach (var extension in extensionsToPrioritize.AsArray())
+                foreach (JsonNode? extension in extensionsToPrioritize.AsArray())
                     if (extension is JsonValue extensionValue)
                         extensionsToPrioritizeList.Add(extensionValue.ToString());
 
@@ -199,10 +199,10 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             }
 
             // Jobs
-            data.TryGetPropertyValue("jobs", out var jobs);
+            data.TryGetPropertyValue("jobs", out JsonNode? jobs);
             if (jobs != null)
             {
-                foreach (var job in jobs.AsArray())
+                foreach (JsonNode? job in jobs.AsArray())
                     if (job is JsonObject jobObject)
                         CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager.AddJob(jobObject);
             }
@@ -212,7 +212,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
             }
 
             // Language
-            data.TryGetPropertyValue("language", out var lang);
+            data.TryGetPropertyValue("language", out JsonNode? lang);
             if (lang == null)
                 throw new JsonException("Language property not found in configuration file");
             if (Languages.SupportedLangs.Exists(li => li.LangId == lang.ToString()))
@@ -230,10 +230,10 @@ namespace EasySaveCore.Jobs.Backup.Configurations
 
         public override void LoadConfiguration()
         {
-            var fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
-            var streamReader = new StreamReader(fileStream);
+            FileStream fileStream = new FileStream(ConfigPath, FileMode.OpenOrCreate);
+            StreamReader streamReader = new StreamReader(fileStream);
 
-            var json = streamReader.ReadToEnd();
+            string json = streamReader.ReadToEnd();
 
             streamReader.Close();
             fileStream.Close();
@@ -250,7 +250,7 @@ namespace EasySaveCore.Jobs.Backup.Configurations
                 return;
             }
 
-            var configurationJson = JsonNode.Parse(json);
+            JsonNode? configurationJson = JsonNode.Parse(json);
 
             if (configurationJson == null)
                 throw new JsonException("Failed to parse configuration file");
