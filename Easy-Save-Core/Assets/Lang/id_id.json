@@ -61,14 +61,16 @@
   "error.path_with": "Kesalahan: Jalur salah pada pekerjaan {JOBNAME}",
 
   "options_popup.title": "Menu Konfigurasi Opsi",
-  "options_popup.subtitle": "Semua diperbarui secara real time",
+  "options_popup.subtitle": "Semua diperbarui secara real-time (kecuali kunci enkripsi dan ambang batas ukuran file)",
   "options_popup.language": "Bahasa: ",
   "options_popup.log_type": "Tipe Log: ",
   "options_popup.daily_log_dir": "Direktori Log Harian: ",
   "options_popup.status_log_dir": "Direktori Log Status: ",
   "options_popup.encryption_key": "Masukkan kunci enkripsi (maks 30 karakter):",
-  "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi (format: '.ext'):",
+  "options_popup.simultaneous_max_file_size_threshold": "Masukkan ambang batas ukuran file maksimum secara simultan (dalam kB, >0): ",
+  "options_popup.extensions_encryption": "Ekstensi yang akan dienkripsi (format: '.ext'): ",
   "options_popup.processes_blacklist": "Daftar hitam proses: ",
+  "options_popup.extensions_prioritization": "Ekstensi file yang diprioritaskan (format: '.ext'): ",
 
   "common.browse": "Telusuri",
   "common.yes": "Ya",
@@ -164,6 +166,15 @@
 
   "message_box.encryption_key_invalid.title": "Kunci Tidak Valid",
   "message_box.encryption_key_invalid.text": "Kunci enkripsi harus terdiri dari 8 hingga 30 karakter.",
+
+  "message_box.simultaneous_file_size_threshold_valid.title": "Berhasil",
+  "message_box.simultaneous_file_size_threshold_valid.text": "Ukuran maksimum file simultan berhasil disimpan.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title": "Ukuran file maksimum tidak valid (dalam kB)",
+  "message_box.simultaneous_file_size_threshold_invalid.text": "Ukuran maksimum file harus lebih besar atau sama dengan 1.",
+
+  "message_box.simultaneous_file_size_threshold_invalid.title.regex": "Format ukuran file tidak valid",
+  "message_box.simultaneous_file_size_threshold_invalid.text.regex": "Ukuran maksimum file harus terdiri dari angka saja.",
 
   "message_box.jobs_completed.title": "Berhasil",
   "message_box.jobs_completed.text": "Berhasil menyelesaikan {COUNT} pekerjaan",
