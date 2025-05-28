@@ -129,10 +129,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             int jobsUnfinished = jobs.Count();
             foreach (BackupJob job in jobs)
             {
-                if (ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
+                if (ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
-                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, ((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
                     IsRunning = false;
                     return;
                 }
@@ -158,7 +158,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     CurrentRunningJob = null;
                     lock (_lockObject)
                     {
-                        Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+                        Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).Cast<JobTask>().ToList());
                     }
                 });
 

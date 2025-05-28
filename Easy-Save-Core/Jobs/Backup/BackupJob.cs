@@ -83,7 +83,7 @@ namespace EasySaveCore.Models
         public string Name { get; private set; }
 
         private readonly int fileSizeThreshold = 100000; //TODO fetch real value in the config
-        private readonly static Semaphore _semaphoreObject = new Semaphore(1, 1); //TODO temp name
+        private readonly static Semaphore _semaphoreSizeThreshold = new Semaphore(1, 1);
 
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
@@ -157,10 +157,9 @@ namespace EasySaveCore.Models
             {
                 if (jobTask.Size >= fileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code
                 {
-                    //TODO RENAME THIS SEMAPHORE
-                    _semaphoreObject.WaitOne();
+                    _semaphoreSizeThreshold.WaitOne();
                     jobTask.ExecuteTask(StrategyType);
-                    _semaphoreObject.Release();
+                    _semaphoreSizeThreshold.Release();
                 }
                 else
                 {
