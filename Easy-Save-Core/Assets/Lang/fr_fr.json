@@ -44,14 +44,14 @@
   "settings_menu.title": "Menu des Options",
   "settings_menu.change_language": "Changer de langue (actuel : fr_fr)",
   "settings_menu.change_log_type": "Changer le type de Log (actuel : {LOGTYPE})",
-  "settings_menu.change_daily_log_path": "Changer le répertoire des Logs journalières (actuel : {PATH})",
-  "settings_menu.message_daily_log_path": "Quel est le répertoire des Logs journalières ?",
-  "settings_menu.change_status_log_path": "Changer le répertoire des Logs de statut (actuel : {PATH})",
-  "settings_menu.message_status_log_path": "Quel est le répertoire des Logs de statut ?",
+  "settings_menu.change_daily_log_path": "Changer le répertoire des Journaux Quotidiens (actuel : {PATH})",
+  "settings_menu.message_daily_log_path": "Quel est le répertoire des Journaux Quotidiens ?",
+  "settings_menu.change_status_log_path": "Changer le répertoire des Journaux de Statut (actuel : {PATH})",
+  "settings_menu.message_status_log_path": "Quel est le répertoire des Journaux de Statut ?",
 
   "language_menu.title": "Sélectionner la langue (actuel : Français - France)",
 
-  "logtype_menu.title": "Sélectionner un type pour les logs journalières (actuel : {LOGTYPE})",
+  "logtype_menu.title": "Sélectionner un type pour les journaux quotidiens (actuel : {LOGTYPE})",
 
   "job_modify_menu.title": "Modifier un Job (Selectionnez un Job puis appuyez sur Entrée)",
   "job_modify_menu.title_modify_page": "Appuyez sur Entrée pour utiliser la valeur par défaut (texte en vert)",
@@ -123,8 +123,8 @@
 
   "browse_folder.source": "Choisissez un dossier source",
   "browse_folder.target": "Choisissez un dossier cible",
-  "browse_folder.daily_log": "Choisissez un dossier pour les logs journalières",
-  "browse_folder.status_log": "Choisissez un dossier pour les logs de statut",
+  "browse_folder.daily_log": "Choisissez un dossier pour les journaux quotidiens",
+  "browse_folder.status_log": "Choisissez un dossier pour les journaux de statut",
 
   "message_box.delete_confirm.title": "Confirmation de suppression de Job(s)",
   "message_box.delete_confirm.text": "Supprimer un job(s) le retirera de la liste et de toutes ses tâches associées. Etes-vous sur de vouloir continuer ?",
@@ -154,10 +154,10 @@
   "message_box.cant_find_encryptor.text": "CLEA-Encryptor n'a pas été trouvé. Le chiffrement ne sera pas effectué pour les jobs avec chiffrement activé.",
 
   "message_box.no_daily_log.title": "Attention",
-  "message_box.no_daily_log.text": "Le fichier de Logs journalières n'existe pas.",
+  "message_box.no_daily_log.text": "Le fichier de journaux quotidiens n'existe pas.",
 
   "message_box.no_status_log.title": "Attention",
-  "message_box.no_status_log.text": "Le fichier de Logs de statut n'existe pas.",
+  "message_box.no_status_log.text": "Le fichier de journaux de statut n'existe pas.",
 
   "message_box.encryption_key_valid.title": "Réussite",
   "message_box.encryption_key_valid.text": "Clé de chiffrement enregistrée avec succès.",
