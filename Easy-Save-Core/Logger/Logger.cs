@@ -32,18 +32,17 @@ namespace CLEA.EasySaveCore.Utilities
         public Format DailyLogFormat { get => _dailyLogFormat; set => _dailyLogFormat = value; }
         
         private static readonly Logger Instance = new Logger();
-    
-    /// <summary>
-    /// Singleton instance of the Logger class.
-    /// </summary>
-    private Logger()
-    {
-        _dailyLogPath = @"logs\daily\";
-        _statusLogPath = @"logs\status\";
-        _dailyLogFormat = Format.Json;
+        private readonly object _lockObject = new object();
 
-
-            }
+        /// <summary>
+        /// Singleton instance of the Logger class.
+        /// </summary>
+        private Logger()
+        {
+            _dailyLogPath = @"logs\daily\";
+            _statusLogPath = @"logs\status\";
+            _dailyLogFormat = Format.Json;
+        }
 
         /// <summary>
         /// Logs a message to the status log file.
@@ -55,8 +54,11 @@ namespace CLEA.EasySaveCore.Utilities
 
         public void LogInternal(LogLevel level, string message)
         {
-            // _internalLogger.Log(level, message);
-            LogToFile(new StatusLogEntry(level, message));
+            lock (_lockObject)
+            {
+                // _internalLogger.Log(level, message);
+                LogToFile(new StatusLogEntry(level, message));
+            }
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
@@ -32,6 +33,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             }
         }
         private readonly object _lockObject = new object();
+        private readonly static Semaphore _semaphoreObject = new Semaphore(3, 3);
 
         public BackupJob? CurrentRunningJob { get; private set; }
 
@@ -120,14 +122,13 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         protected override void DoMultipleJob(ObservableCollection<BackupJob> jobs)
         {
             IsRunning = true;
-            
+            int jobsUnfinished = jobs.Count(); //TODO Temp name
             foreach (BackupJob job in jobs)
-                job.ClearAndSetupJob();
-            
-            Task.Run(() =>
             {
-                foreach (BackupJob job in jobs)
+                job.ClearAndSetupJob();
+                Task.Run(() =>
                 {
+                    _semaphoreObject.WaitOne();
                     CurrentRunningJob = job;
 
                     string targetPath = job.Target;
@@ -136,29 +137,37 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
-                        break;
+                        _semaphoreObject.Release();
+                        return;
                     }
 
                     if (!ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
                     {
                         job.RunJob();
+                        _semaphoreObject.Release();
+                        jobsUnfinished--;
                     }
                     else
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
-                        break;
+                        _semaphoreObject.Release();
+                        return;
                     }
-                }
-                CurrentRunningJob = null;
-
-                Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
-
-                lock (_lockObject)
-                {
-                    IsRunning = false;
-                    MultipleJobCompletedHandler?.Invoke(jobs);
-                }
+                    CurrentRunningJob = null;
+                    lock (_lockObject)
+                    {
+                        Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+                    }
+                });
+                
+            }
+            //this wait until all jobs are finished without blocking the main program. A bit ugly
+            Task.Run(() => //TODO prettier way for this ???
+            {
+                while (jobsUnfinished != 0) { }
+                IsRunning = false;
+                MultipleJobCompletedHandler?.Invoke(jobs);
             });
         }
 
