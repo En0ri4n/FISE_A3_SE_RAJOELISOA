@@ -106,6 +106,8 @@ namespace CLEA.EasySaveCore.Models
                 return false;
             }
         }
+
+        public abstract void PauseMultipleJobs(List<string> jobNames);
     }
 
     public enum JobInterruptionReasons

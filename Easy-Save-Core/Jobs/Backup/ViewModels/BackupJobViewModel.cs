@@ -154,6 +154,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
 
         public bool CanJobBeRun => !JobManager.IsRunning;
+        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !job.IsPaused);
 
         public ICommand BuildJobCommand { get; private set; }
         public ICommand LoadJobInBuilderCommand { get; private set; }
@@ -173,6 +174,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
+        public ICommand PauseMultipleJobsCommand { get; set; }
 
         public ICommand LoadSimultaneousFileSizeThresholdCommand { get; set; }
         public ICommand SaveSimultaneousFileSizeThresholdCommand { get; set; }
@@ -215,6 +217,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxImage.Information);
                 });
             };
+            
+            PauseMultipleJobsCommand = new RelayCommand(jobNameList =>
+            {
+                if(!(jobNameList is List<string> jobNames) || jobNames.Count == 0)
+                    return;
+                
+                JobManager.PauseMultipleJobs(jobNames);
+            }, _ => true);
 
             BuildJobCommand = new RelayCommand(isCreation =>
             {

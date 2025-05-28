@@ -28,18 +28,6 @@ namespace EasySaveCore.Models
             EncryptionTime = -1L;
         }
 
-        public DateTime Timestamp { get; set; }
-
-        public string Source { get; set; }
-
-        public string Target { get; set; }
-
-        public long Size { get; set; }
-
-        public long TransferTime { get; set; }
-
-        public long EncryptionTime { get; set; }
-
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
         {
             Timestamp = DateTime.Now;
@@ -147,7 +135,7 @@ namespace EasySaveCore.Models
 
         private void CopyFileWithThrottle(string source, string target)
         {
-            const int bufferSize = 4 * 1024 * 1024;
+            const int bufferSize = 512 * 1024;
             using (var sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read))
             using (var targetStream = new FileStream(target, FileMode.Create, FileAccess.Write))
             {

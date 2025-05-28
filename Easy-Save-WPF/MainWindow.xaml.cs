@@ -138,9 +138,7 @@ namespace Easy_Save_WPF
                 MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes) return;
 
-            IJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
-
-            foreach (var selectedJob in selectedJobs) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
+            foreach (var selectedJob in GetSelectedJobs()) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
         }
 
         public void StopBTN_Click(object sender, RoutedEventArgs e)
@@ -148,15 +146,19 @@ namespace Easy_Save_WPF
             // TODO: Implement the logic to stop the selected job(s)
         }
 
-        public void PauseBTN_Click(object sender, RoutedEventArgs e)
+        public void OnPauseJobsButtonClicked(object sender, RoutedEventArgs e)
         {
-            //TODO: Implement the logic to pause the selected job(s)
+            ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
         }
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            IJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
-            ViewModel.RunMultipleJobsCommand.Execute(selectedJobs.Select(bj => bj.Name).ToList());
+            ViewModel.RunMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+        }
+        
+        private IJob[] GetSelectedJobs()
+        {
+            return jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
         }
 
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)

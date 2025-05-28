@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -13,14 +14,14 @@ using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup
 {
-    public class BackupJobManager : JobManager
+    public sealed class BackupJobManager : JobManager
     {
-
         private bool _isRunning;
 
         public BackupJobManager() : base(-1)
         {
             Jobs.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Jobs));
+            JobInterruptedHandler += (reason, job, name) => IsRunning = false;
         }
 
         public override bool IsRunning
@@ -37,9 +38,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobInterrupted? JobInterruptedHandler;
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         private readonly object _lockObject = new object();
-        private readonly static Semaphore _semaphoreObject = new Semaphore(3, 3);
-
-        public BackupJob? CurrentRunningJob { get; private set; }
+        private static readonly Semaphore _semaphoreObject = new Semaphore(3, 3);
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -107,8 +106,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         }
 
 
+        // Unused
         protected override void DoJob(IJob job)
-            //unused
         {
             if (!job.CanRunJob())
                 throw new Exception($"Job {job.Name} cannot be run");
@@ -119,7 +118,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed;
 
-            Logger.Get().SaveDailyLog(job.JobTasks.Select(task => task).Cast<JobTask>().ToList());
+            Logger.Get().SaveDailyLog(job.JobTasks.Select(task => task).ToList());
         }
 
         protected override void DoMultipleJob(ObservableCollection<IJob> jobs)
@@ -140,12 +139,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 Task.Run(() =>
                 {
                     _semaphoreObject.WaitOne();
-                    CurrentRunningJob = job;
 
                     string targetPath = job.Target;
                     if (!HasEnoughDiskSpace(targetPath, job.Size))
                     {
-                        IsRunning = false;
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                         _semaphoreObject.Release();
@@ -155,7 +152,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.RunJob();
                     _semaphoreObject.Release();
                     jobsUnfinished--;
-                    CurrentRunningJob = null;
                     lock (_lockObject)
                     {
                         Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).Cast<JobTask>().ToList());
@@ -172,12 +168,31 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             });
         }
 
+        // TODO: Pause all instead of choosing which ones to pause, so it's easier to manage
+        public override void PauseMultipleJobs(List<string> jobNames)
+        {
+            lock (_lockObject)
+            {
+                foreach (var jobName in jobNames)
+                {
+                    IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
+                    if (!(job is { IsRunning: true })) continue;
+
+                    if (!job.IsPaused)
+                        job.PauseJob();
+                    else
+                        job.ResumeJob();
+                    OnPropertyChanged(nameof(Jobs));
+                }
+            }
+        }
+
         public override void DoAllJobs()
         {
             DoMultipleJob(Jobs);
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

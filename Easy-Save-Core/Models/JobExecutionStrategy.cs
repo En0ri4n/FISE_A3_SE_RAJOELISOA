@@ -16,7 +16,9 @@
             SourceNotFound,
             DirectoriesNotSpecified,
             SameSourceAndTarget,
-            NotEnoughDiskSpace
+            NotEnoughDiskSpace,
+            Paused,
+            Stopped
         }
 
         public enum StrategyType
