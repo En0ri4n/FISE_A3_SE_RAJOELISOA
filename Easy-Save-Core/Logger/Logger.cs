@@ -23,7 +23,7 @@ namespace CLEA.EasySaveCore.Utilities
     public class Logger
     {
         private static readonly Logger Instance = new Logger();
-
+        private readonly object _lockObject = new object();
         /// <summary>
         ///     Singleton instance of the Logger class.
         /// </summary>
@@ -50,8 +50,11 @@ namespace CLEA.EasySaveCore.Utilities
 
         public void LogInternal(LogLevel level, string message)
         {
-            // _internalLogger.Log(level, message);
-            LogToFile(new StatusLogEntry(level, message));
+            lock (_lockObject)
+            {
+                // _internalLogger.Log(level, message);
+                LogToFile(new StatusLogEntry(level, message));
+            }
         }
 
         /// <summary>

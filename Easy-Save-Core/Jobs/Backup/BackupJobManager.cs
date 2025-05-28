@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
@@ -14,7 +15,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public class BackupJobManager : JobManager
     {
-        private readonly object _lockObject = new object();
 
         private bool _isRunning;
 
@@ -36,6 +36,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event PropertyChangedEventHandler? PropertyChanged;
         public override event OnJobInterrupted? JobInterruptedHandler;
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
+        private readonly object _lockObject = new object();
+        private readonly static Semaphore _semaphoreObject = new Semaphore(3, 3);
+
+        public BackupJob? CurrentRunningJob { get; private set; }
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -120,47 +124,51 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         protected override void DoMultipleJob(ObservableCollection<IJob> jobs)
         {
+            //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
             IsRunning = true;
-
-            foreach (var job in jobs)
-                job.ClearAndSetupJob();
-
-            Task.Run(() =>
+            int jobsUnfinished = jobs.Count();
+            foreach (BackupJob job in jobs)
             {
-                foreach (var job in jobs)
+                if (ProcessHelper.IsAnyProcessRunning(BackupJobConfiguration.Get().ProcessesToBlacklist.ToArray()))
                 {
+                    job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, BackupJobConfiguration.Get().ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                    IsRunning = false;
+                    return;
+                }
+                job.ClearAndSetupJob();
+                Task.Run(() =>
+                {
+                    _semaphoreObject.WaitOne();
+                    CurrentRunningJob = job;
+
                     string targetPath = job.Target;
                     if (!HasEnoughDiskSpace(targetPath, job.Size))
                     {
                         IsRunning = false;
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job,
-                            "Not enough disk space on target drive.");
-                        return;
-                    }
-
-                    if (!ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration) Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
-                    {
-                        job.RunJob();
-                    }
-                    else
-                    {
+                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
+                        _semaphoreObject.Release();
                         IsRunning = false;
-                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job,
-                            ((BackupJobConfiguration) Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist
-                                .FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
                         return;
                     }
-                }
+                    job.RunJob();
+                    _semaphoreObject.Release();
+                    jobsUnfinished--;
+                    CurrentRunningJob = null;
+                    lock (_lockObject)
+                    {
+                        Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.BackupJobTasks).Cast<JobTask>().ToList());
+                    }
+                });
 
-                Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).ToList());
-
-                lock (_lockObject)
-                {
-                    IsRunning = false;
-                    MultipleJobCompletedHandler?.Invoke(jobs);
-                }
+            }
+            //this wait until all jobs are finished without blocking the main program. A bit ugly
+            Task.Run(() => //TODO prettier way for this ???
+            {
+                while (jobsUnfinished != 0) { }
+                IsRunning = false;
+                MultipleJobCompletedHandler?.Invoke(jobs);
             });
         }
 

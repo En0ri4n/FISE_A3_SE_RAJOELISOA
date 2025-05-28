@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
@@ -81,8 +82,10 @@ namespace EasySaveCore.Models
 
         public string Name { get; private set; }
 
-        public JobExecutionStrategy.ExecutionStatus Status { get; set; } =
-            JobExecutionStrategy.ExecutionStatus.NotStarted;
+        private readonly int fileSizeThreshold = 100000; //TODO fetch real value in the config
+        private readonly static Semaphore _semaphoreObject = new Semaphore(1, 1); //TODO temp name
+
+        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
         public event IJob.JobCompletedDelegate? JobCompletedHandler;
@@ -146,9 +149,24 @@ namespace EasySaveCore.Models
                 Directory.CreateDirectory(dirToCreate);
             }
 
-            foreach (var jobTask in BackupJobTasks)
-                jobTask.ExecuteTask(StrategyType);
 
+
+
+
+            foreach (BackupJobTask jobTask in BackupJobTasks)
+            {
+                if (jobTask.Size >= fileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code
+                {
+                    //TODO RENAME THIS SEMAPHORE
+                    _semaphoreObject.WaitOne();
+                    jobTask.ExecuteTask(StrategyType);
+                    _semaphoreObject.Release();
+                }
+                else
+                {
+                    jobTask.ExecuteTask(StrategyType);
+                }
+            }
             TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
             EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
 
