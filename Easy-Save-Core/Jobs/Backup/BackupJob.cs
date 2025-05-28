@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Models;
 
@@ -22,7 +23,6 @@ namespace EasySaveCore.Models
         private long _transferTime;
         private long _encryptionTime;
 
-        private readonly static Semaphore _semaphoreObject = new Semaphore(1, 1); //temp
 
         public DateTime Timestamp
         {
@@ -92,6 +92,7 @@ namespace EasySaveCore.Models
         public string Name { get; private set; }
 
         private readonly int fileSizeThreshold = 100000; //TODO fetch real value in the config
+        private readonly static Semaphore _semaphoreObject = new Semaphore(1, 1); //TODO temp name
 
         public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
