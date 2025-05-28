@@ -6,28 +6,33 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using CLEA.EasySaveCore.Jobs.Backup;
-using CLEA.EasySaveCore.L10N;
+using CLEA.EasySaveCore.External;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Translations;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
-using CLEA.EasySaveCore.External;
 using EasySaveCore.Jobs.Backup.Configurations;
-using EasySaveCore.Models;
-using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
-using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
-using System.Windows;
 using Microsoft.Extensions.Logging;
+using static CLEA.EasySaveCore.Models.JobExecutionStrategy;
+using Application = System.Windows.Application;
+using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 using MessageBox = System.Windows.MessageBox;
 
 namespace EasySaveCore.Jobs.Backup.ViewModels
 {
-    public class BackupJobViewModel : EasySaveViewModelBase<BackupJob, BackupJobManager>
+    public class BackupJobViewModel : EasySaveViewModelBase
     {
-        private static readonly BackupJobViewModel Instance = new BackupJobViewModel();
-        public static BackupJobViewModel Get() => Instance;
+        private string _newExtensionToEncrypt;
+
+        private string _newProcessToBlacklist;
+
+        private string _tempEncryptionKey;
+
+        public override bool IsRunning { get; set; }
+        public override event PropertyChangedEventHandler? PropertyChanged;
 
 
         // Languages
@@ -39,7 +44,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             set
             {
                 L10N.Get().SetLanguage(value);
-                BackupJobConfiguration.Get().SaveConfiguration();
+                Configuration.SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -53,7 +58,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             set
             {
                 Logger.Get().DailyLogFormat = value;
-                BackupJobConfiguration.Get().SaveConfiguration();
+                Configuration.SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -64,7 +69,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             set
             {
                 Logger.Get().DailyLogPath = value;
-                BackupJobConfiguration.Get().SaveConfiguration();
+                Configuration.SaveConfiguration();
                 OnPropertyChanged();
             }
         }
@@ -75,30 +80,17 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             set
             {
                 Logger.Get().StatusLogPath = value;
-                BackupJobConfiguration.Get().SaveConfiguration();
+                Configuration.SaveConfiguration();
                 OnPropertyChanged();
             }
         }
-        
+
         public string StatusLogFilePath => Logger.Get().GetStatusLogFilePath();
         public string DailyLogFilePath => Logger.Get().GetDailyLogFilePath();
 
 
-        public ObservableCollection<BackupJob> AvailableJobs => JobManager.GetJobs();
+        public ObservableCollection<IJob> AvailableJobs => JobManager.GetJobs();
 
-        private BackupJob _selectedJob;
-
-        public BackupJob SelectedJob
-        {
-            get => _selectedJob;
-            set
-            {
-                _selectedJob = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _tempEncryptionKey;
         public string TempEncryptionKey
         {
             get => _tempEncryptionKey;
@@ -109,10 +101,9 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
-        public ObservableCollection<string> ExtensionsToEncrypt => BackupJobConfiguration.Get().ExtensionsToEncrypt;
-        public ObservableCollection<string> ProcessesToBlacklist => BackupJobConfiguration.Get().ProcessesToBlacklist;
+        public ObservableCollection<string> ExtensionsToEncrypt => Configuration.ExtensionsToEncrypt;
+        public ObservableCollection<string> ProcessesToBlacklist => Configuration.ProcessesToBlacklist;
 
-        private string _newExtensionToEncrypt;
         public string NewExtensionToEncrypt
         {
             get => _newExtensionToEncrypt;
@@ -123,7 +114,6 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
-        private string _newProcessToBlacklist;
         public string NewProcessToBlacklist
         {
             get => _newProcessToBlacklist;
@@ -136,14 +126,13 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public bool CanJobBeRun => !JobManager.IsRunning;
 
-        public ICommand BuildJobCommand { get; set; }
-        public ICommand SelectedJobCommand { get; set; }
-        public ICommand LoadJobInBuilderCommand { get; set; }
-        public ICommand DeleteJobCommand { get; set; }
-        public ICommand RunJobCommand { get; set; }
-        public ICommand RunMultipleJobsCommand { get; set; }
-        public ICommand RunAllJobsCommand { get; set; }
-        public ICommand ChangeRunStrategyCommand { get; set; }
+        public ICommand BuildJobCommand { get; private set; }
+        public ICommand LoadJobInBuilderCommand { get; private set; }
+        public ICommand DeleteJobCommand { get; private set; }
+        public ICommand RunJobCommand { get; private set; }
+        public ICommand RunMultipleJobsCommand { get; private set; }
+        public ICommand RunAllJobsCommand { get; private set; }
+        public ICommand ChangeRunStrategyCommand { get; private set; }
         public ICommand ShowFolderDialogCommand { get; set; }
         public ICommand ResetFolderLogPathCommand { get; set; }
         public ICommand AddProcessToBlacklistCommand { get; set; }
@@ -154,12 +143,17 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ICommand SaveEncryptionKeyCommand { get; set; }
 
         public Action CloseAction { get; set; }
-        //public Action DeactivateButtons { get; set; }
-        //public Action ReactivateButtons { get; set; }
+        
+        private BackupJobConfiguration Configuration => (BackupJobConfiguration)JobConfiguration;
+
+        public BackupJobViewModel(EasySaveConfigurationBase configuration) : base(configuration)
+        {
+            
+        }
 
         protected override void InitializeCommand()
         {
-            _tempEncryptionKey = BackupJobConfiguration.Get().EncryptionKey;
+            _tempEncryptionKey = Configuration.EncryptionKey;
             JobManager.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(JobManager.IsRunning))
@@ -170,14 +164,15 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (jobs == null || jobs.Count == 0)
                     return;
 
-                var dispatcher = System.Windows.Application.Current.Dispatcher;
+                var dispatcher = Application.Current.Dispatcher;
                 dispatcher.Invoke(() =>
                 {
-                    var mainWindow = System.Windows.Application.Current.MainWindow;
+                    var mainWindow = Application.Current.MainWindow;
                     MessageBox.Show(
                         mainWindow,
-                        L10N.Get().GetTranslation($"message_box.jobs_completed.text").Replace("{COUNT}", jobs.Count.ToString()),
-                        L10N.Get().GetTranslation($"message_box.jobs_completed.title"),
+                        L10N.Get().GetTranslation("message_box.jobs_completed.text")
+                            .Replace("{COUNT}", jobs.Count.ToString()),
+                        L10N.Get().GetTranslation("message_box.jobs_completed.title"),
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 });
@@ -185,92 +180,94 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             BuildJobCommand = new RelayCommand(isCreation =>
             {
-                bool isJobCreation = bool.Parse((string)isCreation!);
-                
-                if (JobBuilder == null)
+                var isJobCreation = bool.Parse((string)isCreation!);
+
+                if (JobBuilderBase == null)
                     throw new NullReferenceException("BackupJob builder is not defined !");
 
                 if (string.IsNullOrWhiteSpace(GetJobBuilder().Name) ||
-                     string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
-                     string.IsNullOrWhiteSpace(GetJobBuilder().Target))
+                    string.IsNullOrWhiteSpace(GetJobBuilder().Source) ||
+                    string.IsNullOrWhiteSpace(GetJobBuilder().Target))
                 {
-                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.missing_data.text"), L10N.Get().GetTranslation($"message_box.missing_data.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.missing_data.text"),
+                        L10N.Get().GetTranslation("message_box.missing_data.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                     return;
                 }
 
                 if (isJobCreation)
                 {
-                    if (!JobManager.AddJob(SelectedJob = JobBuilder.Build(false), true))
+                    if (!JobManager.AddJob(JobBuilderBase.Build(false), true))
                     {
-                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.existing_job.text"), L10N.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(L10N.Get().GetTranslation("message_box.existing_job.text"),
+                            L10N.Get().GetTranslation("message_box.existing_job.title"), MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
                         return;
                     }
                 }
-                else
-                    if (!JobManager.UpdateJob(JobBuilder.InitialName, JobBuilder.Build(false)))
-                    {
-                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.existing_job.text"), L10N.Get().GetTranslation($"message_box.existing_job.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
+                else if (!JobManager.UpdateJob(JobBuilderBase.InitialName, JobBuilderBase.Build(false)))
+                {
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.existing_job.text"),
+                        L10N.Get().GetTranslation("message_box.existing_job.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
                 CloseAction();
-            }, _ => true);
-
-            SelectedJobCommand = new RelayCommand(jobName =>
-            {
-                if (jobName is string name)
-                    SelectedJob = JobManager.GetJob(name);
             }, _ => true);
 
             LoadJobInBuilderCommand = new RelayCommand(jobName =>
             {
                 if (jobName is string name)
-                    JobBuilder?.GetFrom(JobManager.GetJob(name));
+                    JobBuilderBase?.GetFrom(JobManager.GetJob(name));
             }, _ => true);
 
             DeleteJobCommand = new RelayCommand(jobName =>
             {
-                if (jobName is string name)
-                {
-                    JobManager.RemoveJob(name);
-                }
+                if (jobName is string name) JobManager.RemoveJob(name);
             }, _ => true); //Todo utiliser commandes pour désactiver boutons
 
             RunJobCommand = new RelayCommand(jobName =>
             {
-                if (jobName is string name)
-                {
-                    JobManager.DoJob(name);
-                }
+                if (jobName is string name) JobManager.DoJob(name);
             }, _ => true);
 
             RunMultipleJobsCommand = new RelayCommand(jobNameList =>
             {
                 if (!(jobNameList is List<string> jobNames))
                     return;
-                
+
                 if (jobNames.Count == 0)
                 {
-                    MessageBox.Show(L10N.Get().GetTranslation($"message_box.run_no_selected.text"), L10N.Get().GetTranslation($"message_box.run_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.run_no_selected.text"),
+                        L10N.Get().GetTranslation("message_box.run_no_selected.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                     return;
                 }
 
-                List<BackupJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
-                
-                if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job => job.IsEncrypted && BackupJobConfiguration.Get().ExtensionsToEncrypt.Any()))
+                var jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+
+                if (!ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job =>
+                        job.IsEncrypted && Configuration.ExtensionsToEncrypt.Any()))
                 {
-                    if (!BackupJobConfiguration.Get().ExtensionsToEncrypt.Any())
+                    if (!Configuration.ExtensionsToEncrypt.Any())
                     {
-                        Logger.Log(LogLevel.Warning, "No extensions to encrypt specified in the config file. Encryption will not be performed.");
-                        MessageBox.Show(L10N.Get().GetTranslation("message_box.no_extension_encrypt.text"), L10N.Get().GetTranslation("message_box.no_extension_encrypt.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Logger.Log(LogLevel.Warning,
+                            "No extensions to encrypt specified in the config file. Encryption will not be performed.");
+                        MessageBox.Show(L10N.Get().GetTranslation("message_box.no_extension_encrypt.text"),
+                            L10N.Get().GetTranslation("message_box.no_extension_encrypt.title"), MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
                     }
                     else
                     {
-                        Logger.Log(LogLevel.Warning, "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
-                        MessageBox.Show(L10N.Get().GetTranslation($"message_box.cant_find_encryptor.text"), L10N.Get().GetTranslation($"message_box.cant_find_encryptor.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Logger.Log(LogLevel.Warning,
+                            "'CLEA-Encryptor.exe' not found. Encryption will not be performed.");
+                        MessageBox.Show(L10N.Get().GetTranslation("message_box.cant_find_encryptor.text"),
+                            L10N.Get().GetTranslation("message_box.cant_find_encryptor.title"), MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
                     }
                 }
-                
+
                 // deactivateButtons()
                 JobManager.DoMultipleJob(jobNames);
                 // reactivateButtons()
@@ -279,33 +276,34 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
             {
                 if (strategy is string strategyName)
-                {
                     JobManager.Strategy = strategyName switch
                     {
                         "Full" => StrategyType.Full,
                         "Differential" => StrategyType.Differential,
                         _ => throw new NotImplementedException()
                     };
-                }
             }, _ => true);
 
             ShowFolderDialogCommand = new RelayCommand(input =>
             {
-                bool isDailyLog = bool.Parse((string)input!);
+                var isDailyLog = bool.Parse((string)input!);
 
-                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = L10N.Get().GetTranslation("browse_folder.status_log");
+                var folderBrowserDialog = new FolderBrowserDialog();
+                var title = L10N.Get().GetTranslation("browse_folder.status_log");
 
                 folderBrowserDialog.Title = title;
-                string path = StatusLogPath;
+                var path = StatusLogPath;
 
-                if (isDailyLog) {
-                    folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.daily_log"); ;
+                if (isDailyLog)
+                {
+                    folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.daily_log");
+                    ;
                     path = DailyLogPath;
                 }
 
-                string fullPath = Path.IsPathRooted(path) ? path
-                : Path.GetFullPath(Path.Combine(".", path));
+                var fullPath = Path.IsPathRooted(path)
+                    ? path
+                    : Path.GetFullPath(Path.Combine(".", path));
 
                 folderBrowserDialog.InitialFolder = fullPath;
                 folderBrowserDialog.AllowMultiSelect = false;
@@ -314,20 +312,16 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                     return;
 
                 if (isDailyLog)
-                {
                     DailyLogPath = folderBrowserDialog.SelectedFolder;
-                }
                 else
-                {
                     StatusLogPath = folderBrowserDialog.SelectedFolder;
-                }
             }, _ => true);
 
             ResetFolderLogPathCommand = new RelayCommand(input =>
             {
-                bool isDailyLogPath = bool.Parse((string)input!);
+                var isDailyLogPath = bool.Parse((string)input!);
 
-                string path = @"logs\";
+                var path = @"logs\";
 
                 if (isDailyLogPath)
                 {
@@ -336,7 +330,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
                 else
                 {
-                    path += @"status\"; 
+                    path += @"status\";
                     StatusLogPath = path;
                 }
             }, _ => true);
@@ -348,21 +342,25 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             SaveEncryptionKeyCommand = new RelayCommand(input =>
             {
-                string encryptionKey = (input as string)?.Trim() ?? string.Empty;
+                var encryptionKey = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(encryptionKey) || encryptionKey.Length < 8 || encryptionKey.Length > 30)
                 {
-                    MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_invalid.text"), L10N.Get().GetTranslation("message_box.encryption_key_invalid.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_invalid.text"),
+                        L10N.Get().GetTranslation("message_box.encryption_key_invalid.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                     return;
                 }
 
-                BackupJobConfiguration.Get().EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
-                MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_valid.text"), L10N.Get().GetTranslation("message_box.encryption_key_valid.title"), MessageBoxButton.OK, MessageBoxImage.Information);
+                Configuration.EncryptionKey = ExternalEncryptor.ProcessEncryptionKey(encryptionKey);
+                MessageBox.Show(L10N.Get().GetTranslation("message_box.encryption_key_valid.text"),
+                    L10N.Get().GetTranslation("message_box.encryption_key_valid.title"), MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             });
 
             AddExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                string extension = (input as string)?.Trim() ?? string.Empty;
+                var extension = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(extension))
                     return;
@@ -379,16 +377,14 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RemoveExtensionToEncryptCommand = new RelayCommand(input =>
             {
-                string extensionToRemove = (input as string)?.Trim() ?? string.Empty;
+                var extensionToRemove = (input as string)?.Trim() ?? string.Empty;
                 if (!string.IsNullOrEmpty(extensionToRemove) && ExtensionsToEncrypt.Contains(extensionToRemove))
-                {
                     ExtensionsToEncrypt.Remove(extensionToRemove);
-                }
             }, _ => true);
 
             AddProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                string process = (input as string)?.Trim() ?? string.Empty;
+                var process = (input as string)?.Trim() ?? string.Empty;
 
                 if (string.IsNullOrEmpty(process))
                     return;
@@ -405,25 +401,17 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
             RemoveProcessToBlacklistCommand = new RelayCommand(input =>
             {
-                string processToRemove = input as string ?? string.Empty;
+                var processToRemove = input as string ?? string.Empty;
                 if (!string.IsNullOrEmpty(processToRemove) && ProcessesToBlacklist.Contains(processToRemove))
-                {
                     ProcessesToBlacklist.Remove(processToRemove);
-                }
             }, _ => true);
 
             RunAllJobsCommand = new RelayCommand(_ => { JobManager.DoAllJobs(); }, _ => true);
         }
 
-        public override event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         public ViewModelBackupJobBuilder GetJobBuilder()
         {
-            return (ViewModelBackupJobBuilder) JobBuilder;
+            return (ViewModelBackupJobBuilder)JobBuilderBase;
         }
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
@@ -448,7 +436,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         {
             try
             {
-                string fullPath = Path.GetFullPath(path);
+                var fullPath = Path.GetFullPath(path);
 
                 return !Path.HasExtension(fullPath);
             }
@@ -461,15 +449,20 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public bool IsNameValid(string name, bool isCreation)
         {
-            BackupJob existingJob = JobManager.GetJob(name);
-            bool exists = existingJob != null;
+            var existingJob = JobManager.GetJob(name);
+            var exists = existingJob != null;
 
             return isCreation ? !exists : exists;
         }
 
         public void UpdateFromJobBuilder()
         {
-            JobManager?.UpdateJob(JobBuilder?.InitialName, JobBuilder.Build());
+            JobManager?.UpdateJob(JobBuilderBase?.InitialName, JobBuilderBase.Build());
+        }
+        
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

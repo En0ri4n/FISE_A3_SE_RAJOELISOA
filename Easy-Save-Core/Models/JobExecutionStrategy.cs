@@ -2,12 +2,6 @@
 {
     public static class JobExecutionStrategy
     {
-        public enum StrategyType
-        {
-            Full,
-            Differential
-        }
-    
         public enum ExecutionStatus
         {
             NotStarted,
@@ -23,6 +17,12 @@
             DirectoriesNotSpecified,
             SameSourceAndTarget,
             NotEnoughDiskSpace
+        }
+
+        public enum StrategyType
+        {
+            Full,
+            Differential
         }
     }
 }

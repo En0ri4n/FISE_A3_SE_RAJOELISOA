@@ -5,7 +5,7 @@ using CLEA.EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.ViewModel
 {
-    public abstract class ViewModelJobBuilder<TJob> : INotifyPropertyChanged where TJob : IJob
+    public abstract class ViewModelJobBuilderBase : INotifyPropertyChanged
     {
         private string _initialName = string.Empty;
 
@@ -18,26 +18,32 @@ namespace CLEA.EasySaveCore.ViewModel
                 OnPropertyChanged();
             }
         }
+        
+        public abstract string Name { get; set; }
+        public abstract string Source { get; set; }
+        public abstract string Target { get; set; }
+        public abstract JobExecutionStrategy.StrategyType StrategyType { get; set; }
+        public abstract bool IsEncrypted { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
-        /// Clears the current state of the builder.
+        ///     Clears the current state of the builder.
         /// </summary>
         public abstract void Clear();
 
         /// <summary>
-        /// Copies the state of the given job into the builder.
-        /// This is useful for updating the builder with an existing job's properties.
+        ///     Copies the state of the given job into the builder.
+        ///     This is useful for updating the builder with an existing job's properties.
         /// </summary>
-        public abstract void GetFrom(TJob job);
+        public abstract void GetFrom(IJob job);
 
         /// <summary>
-        /// Builds the job object from the current state of the builder.
-        /// Can be used to create a new job or update an existing one.
-        /// Clear() should be called after using this method to ensure a clean state.
+        ///     Builds the job object from the current state of the builder.
+        ///     Can be used to create a new job or update an existing one.
+        ///     Clear() should be called after using this method to ensure a clean state.
         /// </summary>
-        public abstract TJob Build(bool clear = true);
-
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public abstract IJob Build(bool clear = true);
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

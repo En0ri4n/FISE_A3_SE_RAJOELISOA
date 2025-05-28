@@ -6,21 +6,15 @@ namespace CLEA.EasySaveCore.Models
 {
     public abstract class JobTask : IJsonSerializable, IXmlSerializable
     {
-        public JobExecutionStrategy.ExecutionStatus Status { get; protected set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
-
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set => _name = value;
-        }
-
         protected JobTask(string name)
         {
-            _name = name;
+            Name = name;
         }
-    
-        public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
+
+        public JobExecutionStrategy.ExecutionStatus Status { get; protected set; } =
+            JobExecutionStrategy.ExecutionStatus.NotStarted;
+
+        public string Name { get; set; }
 
         public abstract JsonObject JsonSerialize();
 
@@ -28,5 +22,7 @@ namespace CLEA.EasySaveCore.Models
 
         public abstract XmlElement XmlSerialize(XmlDocument parent);
         public abstract void XmlDeserialize(XmlElement data);
+
+        public abstract void ExecuteTask(JobExecutionStrategy.StrategyType strategyType);
     }
 }
