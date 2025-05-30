@@ -142,6 +142,10 @@ namespace EasySaveCore.Server
             {
                 ViewModel.DeleteJobCommand.Execute(name);
             }
+            else if (action.ToString() == "delete")
+            {
+                ViewModel.RunJobCommand.Execute(name);
+            }
         }
     }
 }

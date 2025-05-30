@@ -136,7 +136,7 @@ namespace Easy_Save_Remote
             if (result != MessageBoxResult.Yes) return;
 
             var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-            client.SendData(client.ClientJsonSerialize("selectedJobName", "", "", "delete"));
+            client.SendData(client.ClientJsonSerialize(selectedJobName, "", "", "delete"));
             
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
@@ -149,8 +149,10 @@ namespace Easy_Save_Remote
         }
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            BackupJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<BackupJob>().ToArray();
-            BackupJobViewModel.Get().RunMultipleJobsCommand.Execute(selectedJobs.Select(bj => bj.Name).ToList());
+            Client client = new Client();
+
+            var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            client.SendData(client.ClientJsonSerialize(selectedJobName, "", "", "run"));
         }
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {
