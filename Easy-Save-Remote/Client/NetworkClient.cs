@@ -1,11 +1,15 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using EasySaveCore.Server.DataStructures;
+using EasySaveRemote.Client.DataStructures;
 using Newtonsoft.Json;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote.Client
 {
+    /// <summary>
+    /// Represents a client that connects to a remote server to send and receive network messages.
+    /// This class handles the connection, message sending, and receiving operations.<br/>
+    /// </summary>
     public class NetworkClient
     {
         //TODO classe clients config avec attributs de config.json
@@ -19,6 +23,12 @@ namespace Easy_Save_Remote
             _clientNetworkHandler = new ClientNetworkHandler(this);
         }
 
+        /// <summary>
+        /// Connects to a remote server using the specified URL and port.<br/>
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
         public Socket Connect(string url, int port)
         {
             IPAddress address = IPAddress.Parse(url);
@@ -29,7 +39,7 @@ namespace Easy_Save_Remote
             return _clientSocket = clientSocket;
         }
 
-        public void LoadData()
+        public void ListenToServer()
         {
             byte[] buffer = new byte[1024];
             while (true)
@@ -57,6 +67,11 @@ namespace Easy_Save_Remote
             }
         }
 
+        /// <summary>
+        /// Sends a network message to the connected server.<br/>
+        /// This method serializes the message to JSON format before sending it over the socket connection.<br/>
+        /// </summary>
+        /// <param name="message"></param>
         public void SendMessage(NetworkMessage message)
         {
             _clientSocket.Send(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message)));

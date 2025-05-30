@@ -36,7 +36,7 @@ namespace Easy_Save_Remote
             ManageJobsWindow window = new ManageJobsWindow();   
             Socket clientSocket = networkClient.Connect(URL, port);
 
-            Thread receiveThread = new Thread(() => networkClient.LoadData());
+            Thread receiveThread = new Thread(() => networkClient.ListenToServer());
             receiveThread.Start();
 
             Close();

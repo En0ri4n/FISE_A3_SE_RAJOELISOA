@@ -17,6 +17,10 @@ using EasySaveCore.Server.DataStructures;
 
 namespace EasySaveCore.Server
 {
+    /// <summary>
+    /// Represents a network server that listens for incoming client connections and handles communication with them.
+    /// This server can accept multiple clients and broadcast messages to all connected clients.
+    /// </summary>
     public class NetworkServer
     {
         private readonly List<Socket> _clients = new List<Socket>();
@@ -36,6 +40,10 @@ namespace EasySaveCore.Server
         //     Start();
         // }
 
+        /// <summary>
+        /// Starts the network server and begins listening for incoming client connections.<br/>
+        /// This method will block the current thread and run indefinitely until the server is stopped.<br/>
+        /// </summary>
         public void Start()
         {
             _serverSocket = Connect();
@@ -71,6 +79,11 @@ namespace EasySaveCore.Server
             return serverSocket;
         }
 
+        /// <summary>
+        /// Listens for incoming messages from a connected client.<br/>
+        /// This method runs in a separate thread for each client and processes messages until the client disconnects.<br/>
+        /// </summary>
+        /// <param name="client"></param>
         private void ListenToClient(Socket client)
         {
             byte[] buffer = new byte[1024];

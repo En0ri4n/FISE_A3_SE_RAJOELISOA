@@ -1,8 +1,16 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace EasySaveCore.Server.DataStructures
+namespace EasySaveRemote.Client.DataStructures
 {
+    /// <summary>
+    /// Represents a message sent over the network.<br/>
+    /// This class encapsulates the type of message and the associated data.<br/>
+    /// Example:
+    /// <code>
+    ///   NetworkMessage message = NetworkMessage.Create(MessageType.BackupJobAdd, new ClientBackupJob("job1", "sourcePath", "targetPath", ClientJobExecutionStrategyType.Full, false));
+    /// </code>
+    /// </summary>
     public class NetworkMessage
     {
         [JsonPropertyName("type")]
@@ -25,6 +33,9 @@ namespace EasySaveCore.Server.DataStructures
         }
     }
     
+    /// <summary>
+    /// Represents the type of message being sent over the network.
+    /// </summary>
     public enum MessageType
     {
         BackupJobList,

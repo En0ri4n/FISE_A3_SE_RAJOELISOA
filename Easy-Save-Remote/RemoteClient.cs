@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Easy_Save_Remote.ViewModel;
-using EasySaveCore.Server.DataStructures;
+using EasySaveRemote.Client;
+using EasySaveRemote.Client.DataStructures;
 using Newtonsoft.Json;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote
 {
+    /// <summary>
+    /// Singleton class representing the remote client.<br/>
+    /// It manages the network client, view model, and backup jobs.<br/>
+    /// </summary>
     public class RemoteClient
     {
         private static RemoteClient? _instance;

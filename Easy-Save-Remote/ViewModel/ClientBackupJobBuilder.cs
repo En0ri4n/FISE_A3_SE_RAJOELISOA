@@ -4,8 +4,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Input;
-using EasySaveCore.Server.DataStructures;
 using EasySaveRemote.Client.Commands;
+using EasySaveRemote.Client.DataStructures;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
 namespace Easy_Save_Remote

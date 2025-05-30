@@ -1,7 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿
+using System.Text.Json.Serialization;
 
-namespace EasySaveCore.Server.DataStructures
+namespace EasySaveRemote.Client.DataStructures
 {
+    /// <summary>
+    /// Represents a backup job for the client.
+    /// </summary>
     public class ClientBackupJob
     {
         [JsonPropertyName("initialName")] public string InitialName { get; set; }

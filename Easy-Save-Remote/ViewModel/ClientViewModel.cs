@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using EasySaveCore.Server.DataStructures;
+using EasySaveRemote;
+using EasySaveRemote.Client.DataStructures;
 
 namespace Easy_Save_Remote.ViewModel
 {

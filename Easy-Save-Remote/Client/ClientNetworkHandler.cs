@@ -1,9 +1,13 @@
 ﻿using System;
-using EasySaveCore.Server.DataStructures;
+using EasySaveRemote.Client.DataStructures;
 using Newtonsoft.Json;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote.Client
 {
+    /// <summary>
+    /// Handles network messages received by the client from the server.<br/>
+    /// This class is responsible for processing different types of messages such as backup job updates, additions, and removals.<br/>
+    /// </summary>
     public class ClientNetworkHandler
     {
         
@@ -15,6 +19,11 @@ namespace Easy_Save_Remote
             _networkClient = networkClient;
         }
         
+        /// <summary>
+        /// Handles incoming network messages from the server.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void HandleNetworkMessage(NetworkMessage message)
         {
             lock (_lockObject)
@@ -49,7 +58,7 @@ namespace Easy_Save_Remote
 
         private void HandleBackupJobAdd(ClientBackupJob backupJob)
         {
-            
+            RemoteClient.Get().AddBackupJob(backupJob);
         }
     }
 }
