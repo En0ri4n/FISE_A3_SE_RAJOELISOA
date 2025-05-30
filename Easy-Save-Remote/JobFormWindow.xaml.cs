@@ -34,11 +34,11 @@ namespace Easy_Save_Remote
         }
 
         public void CreateJobBTN_Click() {
-            Client client = new Client();
+            NetworkClient networkClient = new NetworkClient();
 
             BackupJobViewModel.Get().BuildJobCommand.Execute(this.DataContext);
             
-            client.SendData(client.ClientJsonSerialize(nameInput.Text, sourceInput.Text, targetInput.Text, "create"));
+            networkClient.SendData(networkClient.ClientJsonSerialize(nameInput.Text, sourceInput.Text, targetInput.Text, "create"));
         }
 
     }

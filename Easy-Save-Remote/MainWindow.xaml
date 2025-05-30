@@ -1,103 +1,42 @@
 ﻿<Window x:Class="Easy_Save_Remote.MainWindow"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      mc:Ignorable="d"
-      Background="{DynamicResource MaterialDesignPaper}"
-      Closing="OnCustomClosing"
-      Title="Easy Save" Icon="/EasySave.ico">
-
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    WindowStartupLocation="CenterScreen"
+    Height="450" Width="800">
     <Window.Resources>
-        <!-- Couleurs -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#303030"/>
-        <SolidColorBrush x:Key="DangerBrush" Color="#BB1000"/>
-        <SolidColorBrush x:Key="PressedBrush" Color="SlateGray"/>
 
-        <!-- Style bouton icône -->
-        <Style x:Key="ColoredIconButton" TargetType="Button">
-            <Setter Property="Width" Value="48"/>
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="6,0"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="6"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                BorderBrush="{TemplateBinding BorderBrush}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Button.Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PressedBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#BDBDBD"/>
-                                <Setter Property="Foreground" Value="#757575"/>
-                                <Setter Property="Cursor" Value="Arrow"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <!-- FROM Options_PopUp.xaml -->
 
-        <!-- Style bouton texte -->
-        <Style x:Key="ActionButton" TargetType="Button">
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Margin" Value="6,0"/>
-            <Setter Property="Padding" Value="12,0"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+        <!-- Main buttons style -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#4A90E2"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="6"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              Margin="{TemplateBinding Margin}"
-                                              Content="{TemplateBinding Content}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            CornerRadius="5" 
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Button.Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="4" BlurRadius="10" Opacity="0.5" />
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter Property="Background" Value="#357ABD"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PressedBrush}"/>
+                                <Setter Property="Background" Value="#2E5C9D"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#BDBDBD"/>
-                                <Setter Property="Foreground" Value="#757575"/>
-                                <Setter Property="Cursor" Value="Arrow"/>
+                                <Setter Property="Background" Value="#B0B0B0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -105,72 +44,32 @@
             </Setter>
         </Style>
 
-        <!-- Style label header -->
-        <Style TargetType="Label">
-            <Setter Property="FontSize" Value="48"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-
-        <!-- Style DataGrid -->
-        <Style TargetType="DataGrid" BasedOn="{StaticResource MaterialDesignDataGrid}">
-            <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
-            <Setter Property="GridLinesVisibility" Value="None"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+        <!-- Secondary buttons style -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#4A90E2"/>
+            <Setter Property="BorderBrush" Value="#4A90E2"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="#222"/>
-            <Setter Property="FontSize" Value="14"/>
-        </Style>
-
-        <!-- Style DataGridRow -->
-        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#85aded"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        
-        <!-- Style DataGridCell -->
-        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#afc8f0"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Style DataGridColumnHeader -->
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="8,4"/>
-        </Style>
-        
-        <!-- Style ProgressBar -->
-        <Style TargetType="ProgressBar" x:Key="ModernProgressBar">
-            <Setter Property="Height" Value="16"/>
-            <Setter Property="Foreground" Value="#4CAF50"/>
-            <Setter Property="Background" Value="#808080"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ProgressBar">
+                    <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="4" 
-                                SnapsToDevicePixels="true">
-                            <Grid>
-                                <Rectangle x:Name="PART_Track" Fill="{TemplateBinding Background}" RadiusX="4" RadiusY="4"/>
-                                <Rectangle x:Name="PART_Indicator" Fill="{TemplateBinding Foreground}" RadiusX="4" RadiusY="4"
-                                           HorizontalAlignment="Left" Width="0"/>
-                            </Grid>
+                           BorderBrush="{TemplateBinding BorderBrush}"
+                           BorderThickness="{TemplateBinding BorderThickness}" 
+                           CornerRadius="5" 
+                           Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsIndeterminate" Value="True">
-                                <Setter TargetName="PART_Indicator" Property="Visibility" Value="Collapsed"/>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E6F0FF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#C3D6FF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#B0B0B0"/>
+                                <Setter Property="BorderBrush" Value="#B0B0B0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -178,144 +77,126 @@
             </Setter>
         </Style>
 
-    </Window.Resources>
+        <!-- Reset buttons style -->
+        <Style x:Key="ResetButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#A9A9A9"/>
+            <Setter Property="Foreground" Value="#A9A9A9"/>
+            <Setter Property="BorderBrush" Value="#A9A9A9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+           BorderBrush="{TemplateBinding BorderBrush}"
+           BorderThickness="{TemplateBinding BorderThickness}" 
+           CornerRadius="5" 
+           Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="#FAF9F6"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#36454F"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#36454F"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#36454F"/>
+                                <Setter Property="BorderBrush" Value="	#36454F"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-    <Grid Margin="24">
+        <!-- TextBlock for Labels style -->
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="auto"/>
+        </Style>
+
+        <!-- ListBox style -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <!-- TextBox white background -->
+        <Style x:Key="InfoBoxStyle" TargetType="TextBlock">
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Width" Value="400"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20,20,20,15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Grid Grid.Row="0" Margin="0 0 0 24">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <!-- Title -->
+        <TextBlock FontSize="30" FontWeight="Bold" Margin="0,0,0,8" Grid.Row="0" HorizontalAlignment="Center" Foreground="#333" Width="auto" Text="Connect to App"/>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <!--<Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
-                    <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
-                </Button>-->
-                
-            </StackPanel>
+        <!-- Subtitle -->
+        <TextBlock FontSize="18" Margin="0,0,0,20" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Foreground="#666" Width="auto" Text="Please enter URL and port number : "/>
+
+        <!-- Body -->
+        <StackPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">
+            <!-- URL -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Path -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Height="31" VerticalAlignment="Bottom">
+                    <TextBlock Text="URL : " Style="{StaticResource LabelStyle}" />
+                    <TextBlock Text="{Binding URL, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}"
+                               Margin="10,0,0,0" Width="460"/>
+                </StackPanel>
+
+            </Grid>
+
+            <!-- Port -->
+            <Grid Margin="0 0 0 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Label + Path -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <TextBlock Text="Port number : " Style="{StaticResource LabelStyle}" />
+                    <TextBlock Text="{Binding port, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}"
+                               Margin="10,0,0,0"/>
+                </StackPanel>
+
+            </Grid>
             
-            <Label Grid.Column="1" Content="{local:Loc main_menu.jobs}"/>
+        </StackPanel>
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click">
-                    <TextBlock Text="{local:Loc manage_job.status_log}" />
-                </Button>
-                <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click">
-                    <TextBlock Text="{local:Loc manage_job.daily_log}" />
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <!-- Controls -->
-        <Grid Grid.Row="1" Margin="0 0 0 12" VerticalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <CheckBox Content="{local:Loc manage_job.select_all}" 
-                      VerticalAlignment="Center" 
-                      FontSize="16" 
-                      Margin="0,0,20,0"
-                      Foreground="Black"
-                      Background="DodgerBlue"
-                      Click="SelectAll_Click"
-                      Name="SelectAll_Checkbox"/>
-
-            <StackPanel Name="Buttons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}"
-                        Click="RunJob_Click"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="{local:Loc main_menu.tool_tip.run}">
-                    <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
-                </Button>
-                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}">
-                    <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
-                </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
-                    <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
-                </Button> -->
-                <Button Style="{StaticResource ColoredIconButton}" 
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="DeleteWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.remove_job}">
-                    <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
-                </Button>
-                <Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="CreateWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.add_job}">
-                    <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="2" Name="jobsDatagrid"
-                  AutoGenerateColumns="False"
-                  SelectionMode="Extended"
-                  SelectionUnit="FullRow"
-                  MouseDoubleClick="ModifyWindow_Click"
-                  CanUserAddRows="False"
-                  CanUserSortColumns="True"
-                  CanUserDeleteRows="False"
-                  Margin="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  HeadersVisibility="Column"
-                  ColumnHeaderHeight="36"
-                  GridLinesVisibility="Horizontal">
-            <DataGrid.Resources>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="FontWeight" Value="Bold"/>
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="Padding" Value="8,4"/>
-                </Style>
-            </DataGrid.Resources>
-
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="{local:Loc common.name}" Binding="{Binding Name}" Width="150" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.source}" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.target}" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.strategy}" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="{local:Loc common.encryption}" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="{local:Loc common.status}" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="{local:Loc common.progress}" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" 
-                                           Text="{Binding Progress, Mode=OneWay, StringFormat={}{0:F1}%}"
-                                           HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center" 
-                                           Margin="0,0,5,0"
-                                           FontWeight="SemiBold"/>
-
-                                <ProgressBar Grid.Column="1" 
-                                             Value="{Binding Progress, Mode=OneWay}"
-                                             Style="{StaticResource ModernProgressBar}" 
-                                             VerticalAlignment="Center"
-                                             Height="16"/>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-            </DataGrid.Columns>
-
-        </DataGrid>
+        <!-- Footer -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0" Width="200" Name="FooterConnect">
+            <Button x:Name="DoneButton" Width="90" Command="{Binding Connect}" Click="ConnectButton_Click" Content="Connect"/>
+            <!-- Not working ???? -->
+            <Button Content="Close" Style="{StaticResource SecondaryButtonStyle}" Width="90" Click="CloseButton_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

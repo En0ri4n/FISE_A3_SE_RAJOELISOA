@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core" xmlns:viewmodel="clr-namespace:CLEA.EasySaveCore.ViewModel;assembly=Easy-Save-Core" d:DataContext="{d:DesignInstance Type=viewmodel:ViewModelBackupJobBuilder}"
+        xmlns:local="clr-namespace:CLEA.EasySaveCore.L10N;assembly=Easy-Save-Core"
+        xmlns:viewmodel="clr-namespace:CLEA.EasySaveCore.ViewModel;assembly=Easy-Save-Core"
+        d:DataContext="{d:DesignInstance Type=viewmodel:ViewModelBackupJobBuilder}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Height="450" Width="800">
