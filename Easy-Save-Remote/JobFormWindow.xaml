@@ -172,7 +172,7 @@
                 <!-- Label + Value -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <TextBlock Text="{local:Loc common.name}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding Name, Mode=TwoWay}" VerticalAlignment="Center" Width="300" Margin="10,0,0,0"/>
+                    <TextBox Name="nameInput" Text="{Binding Name, Mode=TwoWay}" VerticalAlignment="Center" Width="300" Margin="10,0,0,0"/>
                 </StackPanel>
             </Grid>
 
@@ -186,7 +186,7 @@
                 <!-- Label + Path -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <TextBlock Text="{local:Loc common.source}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Source, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBlock Name="sourceInput" Text="{Binding Source, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
 
                 <!-- Buttons -->
@@ -203,7 +203,7 @@
                 <!-- Label + Path -->
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <TextBlock Text="{local:Loc common.target}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Target, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBlock Name="targetInput" Text="{Binding Target, Mode=TwoWay}" Style="{StaticResource InfoBoxStyle}" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
 
                 <!-- Buttons -->
@@ -211,31 +211,12 @@
             </Grid>
 
 
-            <!--Backup Type & Encryption -->
-
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <TextBlock Text="{local:Loc common.strategy}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                    <ComboBox SelectedItem="{Binding StrategyType}" ItemsSource="{Binding AvailableStrategies}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" Margin="5,0,0,0" VerticalAlignment="Center" FontWeight="Normal"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel  Orientation="Horizontal" Grid.Column="0">
-                <TextBlock Text="{local:Loc common.encryption}" Style="{StaticResource LabelStyle}" VerticalAlignment="Center"/>
-                <CheckBox x:Name="Encryption_checkbox" IsChecked="{Binding IsEncrypted}" Foreground="Black"
-                    Background="DodgerBlue" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            </StackPanel>
+           
         </StackPanel>
 
         <!-- Footer -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0" Width="200" Name="FooterCreateJob">
-            <Button x:Name="DoneButton" Width="90" Command="{Binding BuildJobCommand}" Click="CreateJobBTN_Click"/> <!-- Not working ???? -->
+            <Button x:Name="DoneButton" Width="90"  Click="CreateJobBTN_Click"/> <!-- Not working ???? -->
             <Button Content="{local:Loc common.close}" Style="{StaticResource SecondaryButtonStyle}" Width="90" Click="CloseButton_Click"/>
         </StackPanel>
     </Grid>

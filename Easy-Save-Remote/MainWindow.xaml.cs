@@ -11,6 +11,7 @@ using CLEA.EasySaveCore;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.L10N;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Translations;
 using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Jobs.Backup.Configurations;
 using EasySaveCore.Jobs.Backup.ViewModels;
@@ -25,6 +26,7 @@ namespace Easy_Save_Remote
     //TODO select all rows : https://www.youtube.com/watch?app=desktop&v=bxTkTOZV0eQ
     public partial class MainWindow : Window
     {
+        JobFormWindow jobForm;
         public MainWindow()
         {
             // Initialize the EasySaveCore with the necessary components
@@ -98,40 +100,44 @@ namespace Easy_Save_Remote
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            if (!BackupJobViewModel.Get().CanJobBeRun)
+            if (!ViewModel.CanJobBeRun)
                 return;
-            
-            string selectedJobName = ((BackupJob)this.jobsDatagrid.SelectedItem)?.Name;
+
+            var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
 
             if (selectedJobName == null)
                 return;
 
-            BackupJobViewModel.Get().LoadJobInBuilderCommand.Execute(selectedJobName);
+            ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
 
-            JobFormWindow modifyJobFormWindow = new JobFormWindow("edit_job", false);
+            var modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
             modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
             modifyJobFormWindow.ShowDialog();
+
+            Client client = new Client();
+            client.SendData(client.ClientJsonSerialize(jobForm.nameInput.Text, jobForm.sourceInput.Text, jobForm.targetInput.Text, "modify"));
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {
+            Client client = new Client();
+
             if (jobsDatagrid.SelectedItem == null)
             {
-                MessageBox.Show(L10N.Get().GetTranslation($"message_box.delete_no_selected.text"), L10N.Get().GetTranslation($"message_box.delete_no_selected.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
-                
+                MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_no_selected.text"),
+                    L10N.Get().GetTranslation("message_box.delete_no_selected.title"), MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
                 return;
             }
+
+            var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
+                L10N.Get().GetTranslation("message_box.delete_confirm.title"), MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) return;
+
+            var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            client.SendData(client.ClientJsonSerialize("selectedJobName", "", "", "delete"));
             
-            MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation($"message_box.delete_confirm.text"), L10N.Get().GetTranslation($"message_box.delete_confirm.title"), MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-            BackupJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<BackupJob>().ToArray();
-
-            foreach (var selectedJob in selectedJobs) {
-                BackupJobViewModel.Get().DeleteJobCommand.Execute(selectedJob.Name); 
-            }
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
         {

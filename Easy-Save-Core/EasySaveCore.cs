@@ -6,6 +6,7 @@ using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Translations;
 using CLEA.EasySaveCore.Utilities;
 using CLEA.EasySaveCore.ViewModel;
+using EasySaveCore.Server;
 using Microsoft.Extensions.Logging;
 
 namespace CLEA.EasySaveCore.Core
@@ -16,6 +17,7 @@ namespace CLEA.EasySaveCore.Core
         public static readonly Version Version = new Version(3, 0, 0);
 
         private static EasySaveCore _instance;
+        Server server = new Server();
         
         public EasySaveConfigurationBase Configuration { get; private set; }
         public JobManager JobManager { get; private set; }
@@ -25,6 +27,7 @@ namespace CLEA.EasySaveCore.Core
             EasySaveConfigurationBase configuration)
         {
             _instance = this;
+            server.Start();
             Configuration = configuration;
             JobManager = jobManager;
             EasySaveViewModelBase = easySaveViewModelBase;

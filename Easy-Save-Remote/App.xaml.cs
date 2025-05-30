@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Easy_Save_WPF
+namespace Easy_Save_Remote
 {
     /// <summary>
     /// Interaction logic for App.xaml
