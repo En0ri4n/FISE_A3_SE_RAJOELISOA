@@ -38,7 +38,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobInterrupted? JobInterruptedHandler;
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         private readonly object _lockObject = new object();
-        private static readonly Semaphore _semaphoreObject = new Semaphore(3, 3);
+        private static readonly Semaphore _semaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
 
         public override bool AddJob(IJob job, bool save)
         {
