@@ -17,7 +17,7 @@ namespace CLEA.EasySaveCore.Core
         public static readonly Version Version = new Version(3, 0, 0);
 
         private static EasySaveCore _instance;
-        Server server = new Server();
+        public NetworkServer NetworkServer { get; }
         
         public EasySaveConfigurationBase Configuration { get; private set; }
         public JobManager JobManager { get; private set; }
@@ -27,7 +27,9 @@ namespace CLEA.EasySaveCore.Core
             EasySaveConfigurationBase configuration)
         {
             _instance = this;
-            server.Start();
+            // Initialize the server
+            NetworkServer = new NetworkServer();
+            NetworkServer.Start();
             Configuration = configuration;
             JobManager = jobManager;
             EasySaveViewModelBase = easySaveViewModelBase;

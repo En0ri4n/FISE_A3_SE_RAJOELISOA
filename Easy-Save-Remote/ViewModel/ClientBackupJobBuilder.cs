@@ -1,100 +1,22 @@
 ﻿using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using Newtonsoft.Json;
-using CLEA.EasySaveCore.Models;
-using CLEA.EasySaveCore.ViewModel;
-using EasySaveCore.Models;
-using System.Windows.Input;
-using System.IO;
-using System.Windows.Forms;
-using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 using System.ComponentModel;
-using CLEA.EasySaveCore.Translations;
+using System.IO;
 using System.Runtime.CompilerServices;
-using Easy_Save_Remote.Models;
-using EasySaveCore.Jobs.Backup.Configurations;
-using CLEA.EasySaveCore.Utilities;
-using System.Text.Json.Nodes;
-using System.Xml.Linq;
-
+using System.Windows.Forms;
+using System.Windows.Input;
+using EasySaveCore.Server.DataStructures;
+using EasySaveRemote.Client.Commands;
+using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
 namespace Easy_Save_Remote
 {
-
-    internal class Client
-    {
-        //TODO classe clients config avec attributs de config.json
-
-        private static Socket socket;
-        private static BackupJobConfiguration config = new BackupJobConfiguration();
-
-
-        public Socket Connect(string url, int port)
-        {
-            IPAddress address = IPAddress.Parse(url);
-            IPEndPoint serverEndPoint = new IPEndPoint(address, port);
-            Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Connect(serverEndPoint);
-            Console.WriteLine("Connected to server.");
-            return socket = clientSocket;
-        }
-
-        public void LoadData()
-        {
-            byte[] buffer = new byte[1024];
-            while (true)
-            {
-                try
-                {
-                    int received = socket.Receive(buffer);
-                    if (received == 0) break;
-
-                    string message = Encoding.UTF8.GetString(buffer, 0, received);
-                    dynamic json = JsonConvert.SerializeObject(message);
-                    config.JsonDeserialize(json);
-
-                }
-                catch
-                {
-                    //Console.WriteLine("Disconnected from server.");
-                    break;
-                }
-            }
-        }
-
-        public void SendData(JsonObject message)
-        {
-            socket.Send(Encoding.UTF8.GetBytes(config.JsonSerialize().ToString()));
-        }
-
-        public void Disconnect()
-        {
-            socket.Close();
-        }
-
-        public JsonObject ClientJsonSerialize(string name, string source, string target, string action)
-        {
-            var data = new JsonObject
-            {
-                { "name", name},
-                { "source", source},
-                { "target", target },
-                { "action", action},
-            };
-
-            return data;
-        }
-    }
-
     public sealed class ClientBackupJobBuilder : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private string _name = string.Empty;
         private string _source = string.Empty;
         private string _target = string.Empty;
-        private JobExecutionStrategy.StrategyType _strategyType = JobExecutionStrategy.StrategyType.Full;
+        private ClientJobExecutionStrategyType _strategyType = ClientJobExecutionStrategyType.Full;
         private bool _isEncrypted = false;
 
         private string _initialName = string.Empty;
@@ -127,7 +49,7 @@ namespace Easy_Save_Remote
             set { _target = value; OnPropertyChanged(); }
         }
 
-        public JobExecutionStrategy.StrategyType StrategyType
+        public ClientJobExecutionStrategyType StrategyType
         {
             get => _strategyType;
             set { _strategyType = value; OnPropertyChanged(); }
@@ -139,12 +61,12 @@ namespace Easy_Save_Remote
             set { _isEncrypted = value; OnPropertyChanged(); }
         }
 
-        public JobExecutionStrategy.StrategyType[] AvailableStrategies
+        public ClientJobExecutionStrategyType[] AvailableStrategies
         {
             get
             {
-                return Enum.GetValues(typeof(JobExecutionStrategy.StrategyType)) as JobExecutionStrategy.StrategyType[]
-                       ?? Array.Empty<JobExecutionStrategy.StrategyType>();
+                return Enum.GetValues(typeof(ClientJobExecutionStrategyType)) as ClientJobExecutionStrategyType[]
+                       ?? Array.Empty<ClientJobExecutionStrategyType>();
             }
         }
 
@@ -157,14 +79,14 @@ namespace Easy_Save_Remote
                 bool isSource = bool.Parse((string)input!);
 
                 FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-                string title = L10N.Get().GetTranslation("browse_folder.target");
+                const string title = "Choose a target folder";
 
                 folderBrowserDialog.Title = title;
                 string path = Target;
 
                 if (isSource)
                 {
-                    folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.source");
+                    folderBrowserDialog.Title = "Choose a source folder";
                     Source = path;
                 }
 
@@ -193,13 +115,13 @@ namespace Easy_Save_Remote
             Name = string.Empty;
             Source = string.Empty;
             Target = string.Empty;
-            StrategyType = JobExecutionStrategy.StrategyType.Full;
+            StrategyType = ClientJobExecutionStrategyType.Full;
             IsEncrypted = false;
         }
 
-        public void GetFrom(BackupJob job)
+        public void GetFrom(ClientBackupJob job)
         {
-            InitialName = job.Name;
+            InitialName = job.InitialName;
             Name = job.Name;
             Source = job.Source;
             Target = job.Target;
@@ -219,8 +141,5 @@ namespace Easy_Save_Remote
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
-        
     }
 }
