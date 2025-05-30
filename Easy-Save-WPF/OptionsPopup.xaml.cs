@@ -9,6 +9,7 @@ namespace Easy_Save_WPF
         public OptionsPopup(BackupJobViewModel viewModel)
         {
             viewModel.LoadEncryptionKeyCommand.Execute(null);
+            viewModel.LoadSimultaneousFileSizeThresholdCommand.Execute(null);
             InitializeComponent();
             DataContext = viewModel;
         }
@@ -20,9 +21,9 @@ namespace Easy_Save_WPF
 
         public void configFileBTN_Click(object sender, RoutedEventArgs e)
         {
-            var path = "config.json";
+            string path = "config.json";
 
-            using var myProcess = new Process();
+            using Process myProcess = new Process();
             myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.Verb = "open";
             myProcess.StartInfo.UseShellExecute = true;

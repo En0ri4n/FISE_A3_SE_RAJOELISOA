@@ -28,18 +28,6 @@ namespace EasySaveCore.Models
             EncryptionTime = -1L;
         }
 
-        public DateTime Timestamp { get; set; }
-
-        public string Source { get; set; }
-
-        public string Target { get; set; }
-
-        public long Size { get; set; }
-
-        public long TransferTime { get; set; }
-
-        public long EncryptionTime { get; set; }
-
         public override void ExecuteTask(JobExecutionStrategy.StrategyType strategyType)
         {
             Timestamp = DateTime.Now;
@@ -75,7 +63,7 @@ namespace EasySaveCore.Models
                     }
             }
 
-            var watch = Stopwatch.StartNew();
+            Stopwatch watch = Stopwatch.StartNew();
 
             try
             {
@@ -84,7 +72,7 @@ namespace EasySaveCore.Models
 
                 if (ExternalEncryptor.IsEncryptorPresent() && _backupJob.IsEncrypted && ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext)))
                 {
-                    var encryptionWatch = Stopwatch.StartNew();
+                    Stopwatch encryptionWatch = Stopwatch.StartNew();
                     ExternalEncryptor.ProcessFile(Source, $"{Target}.encrypted");
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
@@ -112,18 +100,16 @@ namespace EasySaveCore.Models
         public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
         {
             const int bufferSize = 128 * 1024; // limite l'usage disque
-            var buffer = new byte[bufferSize];
+            byte[] buffer = new byte[bufferSize];
 
-            using var sourceStream =
-                new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write,
-                FileShare.None);
-            using var bufferedSource = new BufferedStream(sourceStream, bufferSize);
-            using var bufferedTarget = new BufferedStream(targetStream, bufferSize);
+            using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
+            using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
 
             long bytesRead;
             long bytesTransferredThisSecond = 0;
-            var secondTimer = Stopwatch.StartNew();
+            Stopwatch secondTimer = Stopwatch.StartNew();
 
             while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
             {
@@ -136,7 +122,7 @@ namespace EasySaveCore.Models
 
                 if (bytesTransferredThisSecond >= maxBytesPerSecond)
                 {
-                    var elapsed = secondTimer.ElapsedMilliseconds;
+                    long elapsed = secondTimer.ElapsedMilliseconds;
                     if (elapsed < 1000) Thread.Sleep((int)(1000 - elapsed));
 
                     bytesTransferredThisSecond = 0;
@@ -147,23 +133,22 @@ namespace EasySaveCore.Models
 
         private void CopyFileWithThrottle(string source, string target)
         {
-            const int bufferSize = 4 * 1024 * 1024;
-            using (var sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read))
-            using (var targetStream = new FileStream(target, FileMode.Create, FileAccess.Write))
+            const int bufferSize = 512 * 1024;
+            using FileStream sourceStream = new FileStream(source, FileMode.Open, FileAccess.Read);
+            using FileStream targetStream = new FileStream(target, FileMode.Create, FileAccess.Write);
+            
+            byte[] buffer = new byte[bufferSize];
+            int bytesRead;
+            while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
             {
-                var buffer = new byte[bufferSize];
-                int bytesRead;
-                while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    targetStream.Write(buffer, 0, bytesRead);
-                    Thread.Sleep(5);
-                }
+                targetStream.Write(buffer, 0, bytesRead);
+                Thread.Sleep(5);
             }
         }
 
         public override JsonObject JsonSerialize()
         {
-            var json = new JsonObject
+            JsonObject json = new JsonObject
             {
                 ["Name"] = Name,
                 ["Timestamp"] = Timestamp.ToString("dd/MM/yyyy HH:mm:ss"),
@@ -186,39 +171,39 @@ namespace EasySaveCore.Models
 
         public override XmlElement XmlSerialize(XmlDocument document)
         {
-            var jobElement = document.CreateElement("BackupJobTask");
+            XmlElement jobElement = document.CreateElement("BackupJobTask");
 
-            var nameElement = document.CreateElement("Name");
+            XmlElement nameElement = document.CreateElement("Name");
             nameElement.InnerText = Name;
             jobElement.AppendChild(nameElement);
 
-            var sourceElement = document.CreateElement("Source");
+            XmlElement sourceElement = document.CreateElement("Source");
             sourceElement.InnerText = Source;
             jobElement.AppendChild(sourceElement);
 
-            var targetElement = document.CreateElement("Target");
+            XmlElement targetElement = document.CreateElement("Target");
             targetElement.InnerText = ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToEncrypt.Any(ext => Source.EndsWith(ext))
                 ? $"{Target}.encrypted"
                 : Target;
             jobElement.AppendChild(targetElement);
 
-            var sizeElement = document.CreateElement("Size");
+            XmlElement sizeElement = document.CreateElement("Size");
             sizeElement.InnerText = Size.ToString();
             jobElement.AppendChild(sizeElement);
 
-            var fileTransferTimeElement = document.CreateElement("FileTransferTime");
+            XmlElement fileTransferTimeElement = document.CreateElement("FileTransferTime");
             fileTransferTimeElement.InnerText = TransferTime == -1 ? "-1" : $"{TransferTime / 1000D:F3}";
             jobElement.AppendChild(fileTransferTimeElement);
 
-            var timestampElement = document.CreateElement("Timestamp");
+            XmlElement timestampElement = document.CreateElement("Timestamp");
             timestampElement.InnerText = Timestamp.ToString("dd/MM/yyyy HH:mm:ss");
             jobElement.AppendChild(timestampElement);
 
-            var encryptionTimeElement = document.CreateElement("EncryptionTime");
+            XmlElement encryptionTimeElement = document.CreateElement("EncryptionTime");
             encryptionTimeElement.InnerText = EncryptionTime == -1 ? "-1" : $"{EncryptionTime / 1000D:F3}";
             jobElement.AppendChild(encryptionTimeElement);
 
-            var statusElement = document.CreateElement("Status");
+            XmlElement statusElement = document.CreateElement("Status");
             statusElement.InnerText = Status.ToString();
             jobElement.AppendChild(statusElement);
 

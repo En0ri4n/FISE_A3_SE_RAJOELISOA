@@ -44,21 +44,21 @@ namespace CLEA.EasySaveCore.Translations
             _translations.Clear();
 
             // Construct the resource name based on the current language
-            var resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
+            string resourceName = $"EasySaveCore.Assets.Lang.{_currentLang.LangId}.json";
 
             // Get the current assembly
-            var assembly = Assembly.GetExecutingAssembly();
+            Assembly assembly = Assembly.GetExecutingAssembly();
 
             // Try to load the resource
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (Stream? stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream == null)
                     throw new FileNotFoundException("Translation file not found", resourceName);
 
                 // Read the JSON content from the stream
-                using (var reader = new StreamReader(stream))
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    var json = reader.ReadToEnd();
+                    string json = reader.ReadToEnd();
                     _translations = JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ??
                                     new Dictionary<string, string>();
                 }
@@ -71,7 +71,7 @@ namespace CLEA.EasySaveCore.Translations
         
         public string GetTranslation(string key, string[]? parameters = null)
         {
-            _translations.TryGetValue(key, out var translation);
+            _translations.TryGetValue(key, out string? translation);
 
             return translation ?? key;
         }

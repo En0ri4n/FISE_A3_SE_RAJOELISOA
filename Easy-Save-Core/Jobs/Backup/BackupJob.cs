@@ -5,26 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
-    public class BackupJob : IJob, INotifyPropertyChanged
+    public sealed class BackupJob : IJob, INotifyPropertyChanged
     {
         public BackupJobManager Manager { get; }
-        public readonly List<BackupJobTask> BackupJobTasks = new List<BackupJobTask>();
-        
-        public List<JobTask> JobTasks
-        {
-            get => BackupJobTasks.Cast<JobTask>().ToList();
-            set
-            {
-                BackupJobTasks.Clear();
-                BackupJobTasks.AddRange(value.Cast<BackupJobTask>());
-            }
-        }
+        public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
+
+        public bool IsPaused { get; set; }
+        public bool WasPaused { get; set; }
+
+        public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
+        public event IJob.JobCompletedDelegate? JobCompletedHandler;
+        public event IJob.JobPausedDelegate? JobPausedHandler;
 
         public BackupJob(BackupJobManager manager) : this( manager, string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
         {
@@ -66,11 +65,11 @@ namespace EasySaveCore.Models
         {
             get
             {
-                if (BackupJobTasks.Count == 0)
+                if (JobTasks.Count == 0)
                     return 0.0D;
 
-                var totalTasksSize = BackupJobTasks.Sum(bjt => bjt.Size);
-                var completedTasks = BackupJobTasks
+                long totalTasksSize = JobTasks.Sum(jt => jt.Size);
+                long completedTasks = JobTasks
                     .FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
                     .Sum(task => task.Size);
                 return (double)completedTasks / totalTasksSize * 100D;
@@ -81,11 +80,9 @@ namespace EasySaveCore.Models
 
         public string Name { get; private set; }
 
-        public JobExecutionStrategy.ExecutionStatus Status { get; set; } =
-            JobExecutionStrategy.ExecutionStatus.NotStarted;
+        private readonly static Semaphore _semaphoreSizeThreshold = new Semaphore(1, 1);
 
-        public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
-        public event IJob.JobCompletedDelegate? JobCompletedHandler;
+        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public void ClearTaskCompletedHandler()
         {
@@ -104,7 +101,7 @@ namespace EasySaveCore.Models
 
         public void RunJob()
         {
-            if (!CanRunJob())
+            if (!CanRunJob() && !IsPaused)
             {
                 CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
                 return;
@@ -128,11 +125,13 @@ namespace EasySaveCore.Models
                 return;
             }
 
-            BackupJobTasks.Clear();
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
-            IsRunning = true;
-            Timestamp = DateTime.Now;
+            if (!WasPaused)
+            {
+                IsRunning = true;
+                Timestamp = DateTime.Now;
+            }
 
             UpdateProgress();
 
@@ -141,26 +140,68 @@ namespace EasySaveCore.Models
 
             string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
 
-            foreach (var directory in sourceDirectoriesArray)
+            foreach (string directory in sourceDirectoriesArray)
             {
-                var dirToCreate = directory.Replace(Source, Target);
+                string dirToCreate = directory.Replace(Source, Target);
                 Directory.CreateDirectory(dirToCreate);
             }
+            
+            foreach (JobTask jobTask in JobTasks)
+            {
+                // Wait until the job is resumed
+                while (IsPaused) {
+                    Thread.Sleep(100); // Sleep to avoid busy waiting
+                }
+                
+                if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
+                    continue;
+                
+                // Compare if jobTask size in kB is greater than or equal to the threshold defined in the configuration
+                if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
+                {
+                    _semaphoreSizeThreshold.WaitOne();
+                    jobTask.ExecuteTask(StrategyType);
+                    _semaphoreSizeThreshold.Release();
+                }
+                else
+                {
+                    jobTask.ExecuteTask(StrategyType);
+                }
+            }
+            TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
+            EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
-            foreach (var jobTask in BackupJobTasks)
-                jobTask.ExecuteTask(StrategyType);
-
-            TransferTime = BackupJobTasks.Select(x => x.TransferTime).Sum();
-            EncryptionTime = BackupJobTasks.Select(x => x.EncryptionTime).Sum();
-
-            CompleteJob(BackupJobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+            CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed);
         }
 
+        public void PauseJob()
+        {
+            if (!IsRunning || IsPaused)
+                return;
+            
+            IsPaused = true;
+            Status = JobExecutionStrategy.ExecutionStatus.Paused;
+            UpdateProgress();
+            JobPausedHandler?.Invoke(this);
+        }
+
+        public Action ResumeJob()
+        {
+            if (!IsRunning || !IsPaused)
+                return () => {};
+
+            IsPaused = false;
+            WasPaused = true;
+            Status = JobExecutionStrategy.ExecutionStatus.InProgress;
+            UpdateProgress();
+            return RunJob;
+        }
+
         public JsonObject JsonSerialize()
         {
-            var jsonObject = new JsonObject();
+            JsonObject jsonObject = new JsonObject();
 
             jsonObject.Add("Name", Name);
             jsonObject.Add("Source", Source);
@@ -204,7 +245,7 @@ namespace EasySaveCore.Models
 
         public XmlElement XmlSerialize(XmlDocument parent)
         {
-            var jobElement = parent.CreateElement("BackupJob");
+            XmlElement jobElement = parent.CreateElement("BackupJob");
 
             jobElement.SetAttribute("Name", Name);
             jobElement.SetAttribute("Source", Source);
@@ -248,6 +289,7 @@ namespace EasySaveCore.Models
 
         private void UpdateProgress()
         {
+            OnPropertyChanged(nameof(IsRunning));
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(Progress));
             OnPropertyChanged(nameof(Size));
@@ -257,23 +299,23 @@ namespace EasySaveCore.Models
 
         public void ClearAndSetupJob()
         {
-            BackupJobTasks.Clear();
+            JobTasks.Clear();
 
             if (!string.IsNullOrEmpty(Source))
             {
                 string[] sourceFilesArray = Directory.GetFiles(Source, "*.*", SearchOption.AllDirectories);
 
-                foreach (var path in sourceFilesArray)
+                foreach (string path in sourceFilesArray)
                 {
-                    var jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
-                    BackupJobTasks.Add(jobTask);
+                    BackupJobTask jobTask = new BackupJobTask(this, path, path.Replace(Source, Target));
+                    JobTasks.Add(jobTask);
                 }
             }
 
             TransferTime = -1L;
             EncryptionTime = -1L;
-            Size = BackupJobTasks.Select(x => x.Size).Sum();
-            Status = JobExecutionStrategy.ExecutionStatus.InQueue;
+            Size = JobTasks.Select(x => x.Size).Sum();
+            Status = JobExecutionStrategy.ExecutionStatus.NotStarted;
             UpdateProgress();
         }
 
@@ -286,11 +328,13 @@ namespace EasySaveCore.Models
         {
             Status = status;
             IsRunning = false;
+            IsPaused = false;
+            WasPaused = false;
             UpdateProgress();
             JobCompletedHandler?.Invoke(this);
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

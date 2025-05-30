@@ -68,7 +68,7 @@ namespace Easy_Save_WPF
             if (ViewModel.CanJobBeRun)
                 return;
 
-            var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"),
+            MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"),
                 L10N.Get().GetTranslation("message_box.close_confirm.title"),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -77,7 +77,7 @@ namespace Easy_Save_WPF
 
         public void OptionsBTN_Click(object sender, RoutedEventArgs e)
         {
-            var options = new OptionsPopup(ViewModel);
+            OptionsPopup options = new OptionsPopup(ViewModel);
             options.Owner = GetWindow(App.Current.MainWindow);
             options.ShowDialog();
         }
@@ -100,7 +100,7 @@ namespace Easy_Save_WPF
         {
             ViewModel.JobBuilderBase.Clear();
 
-            var jobFormWindow = new JobFormWindow(ViewModel, "create_job", true);
+            JobFormWindow jobFormWindow = new JobFormWindow(ViewModel, "create_job", true);
             jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
             jobFormWindow.ShowDialog();
         }
@@ -110,14 +110,14 @@ namespace Easy_Save_WPF
             if (!ViewModel.CanJobBeRun)
                 return;
 
-            var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            string selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
 
             if (selectedJobName == null)
                 return;
 
             ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
 
-            var modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
+            JobFormWindow modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
             modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
             modifyJobFormWindow.ShowDialog();
         }
@@ -133,14 +133,12 @@ namespace Easy_Save_WPF
                 return;
             }
 
-            var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
+            MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
                 L10N.Get().GetTranslation("message_box.delete_confirm.title"), MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes) return;
 
-            IJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
-
-            foreach (var selectedJob in selectedJobs) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
+            foreach (IJob selectedJob in GetSelectedJobs()) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
         }
 
         public void StopBTN_Click(object sender, RoutedEventArgs e)
@@ -148,20 +146,24 @@ namespace Easy_Save_WPF
             // TODO: Implement the logic to stop the selected job(s)
         }
 
-        public void PauseBTN_Click(object sender, RoutedEventArgs e)
+        public void OnPauseJobsButtonClicked(object sender, RoutedEventArgs e)
         {
-            //TODO: Implement the logic to pause the selected job(s)
+            ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
         }
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            IJob[] selectedJobs = jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
-            ViewModel.RunMultipleJobsCommand.Execute(selectedJobs.Select(bj => bj.Name).ToList());
+            ViewModel.RunMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+        }
+        
+        private IJob[] GetSelectedJobs()
+        {
+            return jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
         }
 
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {
-            var path = ViewModel.DailyLogFilePath;
+            string path = ViewModel.DailyLogFilePath;
 
             if (!File.Exists(path))
             {
@@ -171,7 +173,7 @@ namespace Easy_Save_WPF
                 return;
             }
 
-            using var myProcess = new Process();
+            using Process myProcess = new Process();
             myProcess.StartInfo.Verb = "open";
             myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.UseShellExecute = true;
@@ -180,7 +182,7 @@ namespace Easy_Save_WPF
 
         public void statusLogBTN_Click(object sender, RoutedEventArgs e)
         {
-            var path = ViewModel.StatusLogFilePath;
+            string path = ViewModel.StatusLogFilePath;
 
             if (!File.Exists(path))
             {
@@ -190,7 +192,7 @@ namespace Easy_Save_WPF
                 return;
             }
 
-            using var myProcess = new Process();
+            using Process myProcess = new Process();
             myProcess.StartInfo.FileName = path;
             myProcess.StartInfo.Verb = "open";
             myProcess.StartInfo.UseShellExecute = true;

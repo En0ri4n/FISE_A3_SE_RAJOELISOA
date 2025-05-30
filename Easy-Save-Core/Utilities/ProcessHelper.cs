@@ -19,7 +19,7 @@ namespace CLEA.EasySaveCore.Utilities
         {
             try
             {
-                var processes = Process.GetProcessesByName(processName);
+                Process[] processes = Process.GetProcessesByName(processName);
                 return processes.Length > 0;
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace CLEA.EasySaveCore.Utilities
         {
             try
             {
-                var regex = new Regex(processName, RegexOptions.IgnoreCase);
+                Regex regex = new Regex(processName, RegexOptions.IgnoreCase);
                 Process[] processes = Process.GetProcesses();
                 if (processes.Any(process => regex.IsMatch(process.ProcessName)))
                     return true;

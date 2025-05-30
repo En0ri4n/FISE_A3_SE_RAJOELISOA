@@ -4,7 +4,7 @@
         xmlns:Flags="clr-namespace:FamFamFam.Flags.Wpf;assembly=FamFamFam.Flags.Wpf"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:CLEA.EasySaveCore.Translations;assembly=Easy-Save-Core"
-        Title="Options" Height="800" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA"
+        Title="Options" Height="700" Width="800" WindowStartupLocation="CenterOwner" Background="#FAFAFA"
         ResizeMode="NoResize"
         FontFamily="Segoe UI" Icon="/Options_PopUp.ico">
 
@@ -249,7 +249,6 @@
             <Setter Property="Background" Value="#F0F0F0" />
             <Setter Property="Padding" Value="6" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Width" Value="400" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
@@ -260,7 +259,6 @@
             <Setter Property="Background" Value="#F0F0F0" />
             <Setter Property="Padding" Value="6" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Width" Value="400" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
         </Style>
@@ -289,10 +287,11 @@
 
             <!-- Subtitle -->
             <TextBlock Text="{local:Loc options_popup.subtitle}" FontSize="18" Margin="0,0,0,20" Grid.Row="1"
-                       HorizontalAlignment="Center" Foreground="#666" Width="auto" />
+                       HorizontalAlignment="Center" Foreground="#666" Width="auto"
+                       TextWrapping="WrapWithOverflow"/>
 
             <!-- Body -->
-            <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="594">
+            <StackPanel Grid.Row="2" VerticalAlignment="Center" Height="auto">
                 <!-- Language -->
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 18">
                     <TextBlock Text="{local:Loc options_popup.language}" Style="{StaticResource LabelStyle}" />
@@ -341,12 +340,17 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Label + Path -->
-                    <StackPanel Orientation="Horizontal" Grid.Column="0">
-                        <TextBlock Text="{local:Loc options_popup.daily_log_dir}" Style="{StaticResource LabelStyle}" />
-                        <TextBlock Name="DailyLogPathText" Text="{Binding DailyLogPath}"
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="{local:Loc options_popup.daily_log_dir}" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="1" Name="DailyLogPathText" Text="{Binding DailyLogPath}"
                                    Style="{StaticResource InfoBoxStyle}"
                                    Margin="10,0,0,0" />
-                    </StackPanel>
+                    </Grid>
 
                     <!-- Buttons -->
                     <Button Grid.Column="1" Content="{local:Loc common.browse}"
@@ -366,12 +370,17 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Label + Path -->
-                    <StackPanel Orientation="Horizontal" Grid.Column="0">
-                        <TextBlock Text="{local:Loc options_popup.status_log_dir}" Style="{StaticResource LabelStyle}" />
-                        <TextBlock Name="StatusLogPathText" Text="{Binding StatusLogPath}"
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="{local:Loc options_popup.status_log_dir}" Style="{StaticResource LabelStyle}" />
+                        <TextBlock Grid.Column="1" Name="StatusLogPathText" Text="{Binding StatusLogPath}"
                                    Style="{StaticResource InfoBoxStyle}"
                                    Margin="10,0,0,0" />
-                    </StackPanel>
+                    </Grid>
 
                     <!-- Buttons -->
                     <Button Grid.Column="1" Content="{local:Loc common.browse}"
@@ -390,16 +399,49 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Label + Path -->
-                    <StackPanel Orientation="Horizontal" Grid.Column="0">
-                        <TextBlock Text="{local:Loc options_popup.encryption_key}" Style="{StaticResource LabelStyle}" />
-                        <TextBox Name="EncryptionKeyText" Text="{Binding TempEncryptionKey}"
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{local:Loc options_popup.encryption_key}" Style="{StaticResource LabelStyle}" />
+                        <TextBox Grid.Column="1" Name="EncryptionKeyText" Text="{Binding TempEncryptionKey}"
                                  Style="{StaticResource TextBoxStyle}"
                                  Margin="10,0,0,0" />
-                    </StackPanel>
+                    </Grid>
 
                     <!-- Buttons -->
                     <Button Grid.Column="1" Content="{local:Loc common.save}"
                             Command="{Binding SaveEncryptionKeyCommand}" CommandParameter="{Binding TempEncryptionKey}"
+                            Style="{StaticResource SaveButtonStyle}" Margin="10,0,0,0" />
+                </Grid>
+
+
+                <!-- Simultaneous Max File Threshold -->
+                <Grid Margin="0 0 0 18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Label + Path -->
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{local:Loc options_popup.simultaneous_max_file_size_threshold}" Style="{StaticResource LabelStyle}" />
+                        <TextBox Grid.Column="1" Name="TempSimultaneousFileSizeThreshold" Text="{Binding TempSimultaneousFileSizeThreshold}"
+                                 Style="{StaticResource TextBoxStyle}"
+                                Margin="10,0,0,0"/>
+                    </Grid>
+
+
+                    <!-- Buttons -->
+                    <Button Grid.Column="1" Content="{local:Loc common.save}"
+                            Command="{Binding SaveSimultaneousFileSizeThresholdCommand}" CommandParameter="{Binding TempSimultaneousFileSizeThreshold}"
                             Style="{StaticResource SaveButtonStyle}" Margin="10,0,0,0" />
                 </Grid>
 
@@ -471,6 +513,43 @@
                                  Width="150" Margin="0 0 10 0" Padding="4" Style="{x:Null}" />
                         <Button Content="{local:Loc common.add}" Command="{Binding AddProcessToBlacklistCommand}"
                                 CommandParameter="{Binding NewProcessToBlacklist}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                    </StackPanel>
+                </StackPanel>
+
+
+                <!-- Processes prioritization -->
+                <StackPanel Margin="0 0 0 18">
+                    <TextBlock Text="{local:Loc options_popup.extensions_prioritization}" FontSize="16" FontWeight="SemiBold"
+                               Margin="0 0 0 0" />
+
+                    <ListBox ItemsSource="{Binding ExtensionsToPrioritize}" Height="100" HorizontalAlignment="Stretch"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch" Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding}" FontSize="14" VerticalAlignment="Center"
+                                               Grid.Column="0" Style="{x:Null}" />
+                                    <Button Content="{local:Loc common.delete}" Grid.Column="1"
+                                            Command="{Binding DataContext.RemoveExtensionToPrioritizeCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource DeleteButtonStyle}"
+                                            Margin="0 0 5 0" Padding="3,1" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 6 0 0">
+                        <TextBox Text="{Binding NewExtensionToPrioritize, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="150" Margin="0 0 10 0" Padding="4" Style="{x:Null}" />
+                        <Button Content="{local:Loc common.add}" Command="{Binding AddExtensionToPrioritizeCommand}"
+                                CommandParameter="{Binding NewExtensionToPrioritize}"
                                 Style="{StaticResource SecondaryButtonStyle}" />
                     </StackPanel>
                 </StackPanel>

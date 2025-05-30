@@ -242,12 +242,15 @@
                         ToolTip="{local:Loc main_menu.tool_tip.run}">
                     <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28" />
                 </Button>
-                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}">
+                <Button Style="{StaticResource ColoredIconButton}"
+                        Click="OnPauseJobsButtonClicked"
+                        IsEnabled="True"
+                        ToolTip="{local:Loc main_menu.tool_tip.pause}">
                     <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
-                </Button> -->
+                </Button>
                 <Button Style="{StaticResource ColoredIconButton}"
                         IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         Click="DeleteWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.remove_job}">
@@ -315,8 +318,26 @@
 
                                 <ProgressBar Grid.Column="1"
                                              Value="{Binding Progress, Mode=OneWay}"
-                                             Style="{StaticResource ModernProgressBar}"
-                                             VerticalAlignment="Center" />
+                                             VerticalAlignment="Center">
+                                    <ProgressBar.Style>
+                                        <Style TargetType="ProgressBar" BasedOn="{StaticResource ModernProgressBar}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Paused">
+                                                    <Setter Property="Foreground" Value="#FFA500" /> <!-- Orange -->
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="InProgress">
+                                                    <Setter Property="Foreground" Value="#4CAF50" /> <!-- Green -->
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                    <Setter Property="Foreground" Value="#2196F3" /> <!-- Blue -->
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Stopped">
+                                                    <Setter Property="Foreground" Value="#F44336" /> <!-- Red -->
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ProgressBar.Style>
+                                </ProgressBar>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

@@ -23,21 +23,21 @@ namespace CLEA.EasySaveCore.ViewModel
             Manager = manager;
             ShowFolderDialogCommand = new RelayCommand(input =>
             {
-                var isSource = bool.Parse((string)input!);
+                bool isSource = bool.Parse((string)input!);
 
-                var folderBrowserDialog = new FolderBrowserDialog();
-                var title = L10N.Get().GetTranslation("browse_folder.target");
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+                string title = L10N.Get().GetTranslation("browse_folder.target");
 
                 folderBrowserDialog.Title = title;
-                var path = Target;
+                string path = Target;
 
                 if (isSource)
                 {
                     folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.source");
-                    Source = path;
+                    path = Source;
                 }
 
-                var fullPath = Path.IsPathRooted(path)
+                string fullPath = Path.IsPathRooted(path)
                     ? path
                     : Path.GetFullPath(Path.Combine(".", path));
 
