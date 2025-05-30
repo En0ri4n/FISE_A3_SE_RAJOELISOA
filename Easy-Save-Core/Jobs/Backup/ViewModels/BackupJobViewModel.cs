@@ -343,7 +343,6 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (isDailyLog)
                 {
                     folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.daily_log");
-                    ;
                     path = DailyLogPath;
                 }
 

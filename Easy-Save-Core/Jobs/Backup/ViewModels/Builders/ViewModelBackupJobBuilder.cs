@@ -34,7 +34,7 @@ namespace CLEA.EasySaveCore.ViewModel
                 if (isSource)
                 {
                     folderBrowserDialog.Title = L10N.Get().GetTranslation("browse_folder.source");
-                    Source = path;
+                    path = Source;
                 }
 
                 string fullPath = Path.IsPathRooted(path)
