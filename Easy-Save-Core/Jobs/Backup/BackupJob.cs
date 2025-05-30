@@ -6,9 +6,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
+using System.Windows;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
@@ -19,11 +21,16 @@ namespace EasySaveCore.Models
         public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
 
         public bool IsPaused { get; set; }
+
         public bool WasPaused { get; set; }
+
+        public bool IsStopped { get; set; }
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
         public event IJob.JobCompletedDelegate? JobCompletedHandler;
         public event IJob.JobPausedDelegate? JobPausedHandler;
+        public event IJob.JobStoppedDelegate? JobStoppedHandler;
+
 
         public BackupJob(BackupJobManager manager) : this( manager, string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
         {
@@ -101,6 +108,12 @@ namespace EasySaveCore.Models
 
         public void RunJob()
         {
+            if (IsStopped)
+            {
+                CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                return;
+            }
+
             if (!CanRunJob() && !IsPaused)
             {
                 CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
@@ -156,10 +169,18 @@ namespace EasySaveCore.Models
                 if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
                     continue;
                 
+                //TODO Make checks between each file
+
                 // Compare if jobTask size in kB is greater than or equal to the threshold defined in the configuration
                 if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
                 {
                     _semaphoreSizeThreshold.WaitOne();
+                    if (IsStopped)
+                    {
+                        _semaphoreSizeThreshold.Release();
+                        CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                        return;
+                    }
                     jobTask.ExecuteTask(StrategyType);
                     _semaphoreSizeThreshold.Release();
                 }
@@ -185,6 +206,17 @@ namespace EasySaveCore.Models
             Status = JobExecutionStrategy.ExecutionStatus.Paused;
             UpdateProgress();
             JobPausedHandler?.Invoke(this);
+        }
+
+        public void StopJob()
+        {
+            if (!IsRunning)
+                return;
+
+            IsStopped = true;
+            IsPaused = false;
+            Status = JobExecutionStrategy.ExecutionStatus.Stopped;
+            JobStoppedHandler?.Invoke(this);
         }
 
         public Action ResumeJob()

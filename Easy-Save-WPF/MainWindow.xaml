@@ -248,7 +248,10 @@
                         ToolTip="{local:Loc main_menu.tool_tip.pause}">
                     <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
+                <Button Style="{StaticResource ColoredIconButton}"  
+                        Click="OnStopJobsButtonClicked"
+                        IsEnabled="True"
+                        ToolTip="{local:Loc main_menu.tool_tip.stop}">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}"

@@ -12,6 +12,10 @@ namespace CLEA.EasySaveCore.Models
         public event TaskCompletedDelegate TaskCompletedHandler;
         public delegate void JobPausedDelegate(IJob job);
         public event JobPausedDelegate JobPausedHandler;
+        public delegate void JobStoppedDelegate(IJob job);
+        public event JobStoppedDelegate JobStoppedHandler;
+
+
 
         string Name { get; }
         DateTime Timestamp { get; set; }
@@ -36,6 +40,8 @@ namespace CLEA.EasySaveCore.Models
         public void ClearJobCompletedHandler();
         
         void PauseJob();
+        void StopJob();
+
         Action ResumeJob();
 
         bool CanRunJob();

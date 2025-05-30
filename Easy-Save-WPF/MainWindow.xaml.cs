@@ -53,6 +53,12 @@ namespace Easy_Save_WPF
                             L10N.Get().GetTranslation("message_box.interrupt_process.title"), MessageBoxButton.OK,
                             MessageBoxImage.Error);
                         break;
+                    case JobInterruptionReasons.ManualStop:
+                        MessageBox.Show(
+                            L10N.Get().GetTranslation("message_box.interrupt_process.text").Replace("{JOB}", job.Name),
+                            L10N.Get().GetTranslation("message_box.interrupt_process.title"), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        break;
                     default:
                         MessageBox.Show(
                             L10N.Get().GetTranslation("message_box.interrupt_unknown.text").Replace("{JOB}", job.Name),
@@ -141,14 +147,13 @@ namespace Easy_Save_WPF
             foreach (IJob selectedJob in GetSelectedJobs()) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
         }
 
-        public void StopBTN_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Implement the logic to stop the selected job(s)
-        }
-
         public void OnPauseJobsButtonClicked(object sender, RoutedEventArgs e)
         {
             ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+        }
+        public void OnStopJobsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.StopMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
         }
 
         public void RunJob_Click(object sender, RoutedEventArgs e)

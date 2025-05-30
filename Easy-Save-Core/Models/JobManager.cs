@@ -105,11 +105,14 @@ namespace CLEA.EasySaveCore.Models
         }
 
         public abstract void PauseMultipleJobs(List<string> jobNames);
+
+        public abstract void StopMultipleJobs(List<string> jobNames);
     }
 
     public enum JobInterruptionReasons
     {
         NotEnoughDiskSpace,
-        ProcessRunning
+        ProcessRunning,
+        ManualStop
     }
 }

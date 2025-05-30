@@ -128,27 +128,47 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             int jobsUnfinished = jobs.Count();
             foreach (BackupJob job in jobs)
             {
+                if (job.IsStopped)
+                {
+                    job.CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job, null);
+                    _semaphoreObject.Release();
+                    IsRunning = false;
+                    continue;
+                }
+
                 if (ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, ((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
+                    _semaphoreObject.Release();
                     IsRunning = false;
                     return;
                 }
+
+                if (!HasEnoughDiskSpace(job.Target, job.Size))
+                {
+                    job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
+                    _semaphoreObject.Release();
+                    IsRunning = false;
+                    return;
+                }
+
                 job.ClearAndSetupJob();
                 Task.Run(() =>
                 {
                     _semaphoreObject.WaitOne();
 
-                    string targetPath = job.Target;
-                    if (!HasEnoughDiskSpace(targetPath, job.Size))
+                    if (job.IsStopped)
                     {
-                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
+                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job, null);
                         _semaphoreObject.Release();
                         IsRunning = false;
                         return;
                     }
+
                     job.RunJob();
                     _semaphoreObject.Release();
                     jobsUnfinished--;
@@ -182,6 +202,21 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                         job.PauseJob();
                     else
                         job.ResumeJob();
+                    OnPropertyChanged(nameof(Jobs));
+                }
+            }
+        }
+        public override void StopMultipleJobs(List<string> jobNames)
+        {
+            lock (_lockObject)
+            {
+                foreach (string jobName in jobNames)
+                {
+                    IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
+                    if (!(job is { IsRunning: true })) continue;
+
+                    job.StopJob();
+
                     OnPropertyChanged(nameof(Jobs));
                 }
             }
