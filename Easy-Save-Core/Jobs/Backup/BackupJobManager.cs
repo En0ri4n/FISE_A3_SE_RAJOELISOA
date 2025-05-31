@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -33,12 +32,16 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 OnPropertyChanged();
             }
         }
-        
+
+        public override bool IsPaused { get; set; }
+        public override bool IsStopped { get; set; }
+
         public override event PropertyChangedEventHandler? PropertyChanged;
         public override event OnJobInterrupted? JobInterruptedHandler;
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
+        public override event OnJobsStopped? JobsStoppedHandler;
         private readonly object _lockObject = new object();
-        private static readonly Semaphore _semaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private static readonly Semaphore SemaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -126,14 +129,15 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
             IsRunning = true;
             int jobsUnfinished = jobs.Count();
-            foreach (BackupJob job in jobs)
+            foreach (IJob job in jobs)
             {
-                if (job.IsStopped)
+                if (IsStopped)
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job, null);
-                    _semaphoreObject.Release();
+                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job);
+                    SemaphoreObject.Release();
                     IsRunning = false;
+                    UpdateProperties();
                     continue;
                 }
 
@@ -141,8 +145,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, ((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
-                    _semaphoreObject.Release();
+                    SemaphoreObject.Release();
                     IsRunning = false;
+                    UpdateProperties();
                     return;
                 }
 
@@ -150,31 +155,34 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
-                    _semaphoreObject.Release();
+                    SemaphoreObject.Release();
                     IsRunning = false;
+                    UpdateProperties();
                     return;
                 }
 
                 job.ClearAndSetupJob();
+                
                 Task.Run(() =>
                 {
-                    _semaphoreObject.WaitOne();
+                    SemaphoreObject.WaitOne();
 
-                    if (job.IsStopped)
+                    if (IsStopped)
                     {
-                        job.CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job, null);
-                        _semaphoreObject.Release();
+                        job.StopJob();
+                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job);
+                        SemaphoreObject.Release();
                         IsRunning = false;
+                        UpdateProperties();
                         return;
                     }
 
                     job.RunJob();
-                    _semaphoreObject.Release();
+                    SemaphoreObject.Release();
                     jobsUnfinished--;
                     lock (_lockObject)
                     {
-                        Logger.Get().SaveDailyLog(jobs.SelectMany(job => job.JobTasks).Cast<JobTask>().ToList());
+                        Logger.Get().SaveDailyLog(jobs.SelectMany(j => j.JobTasks).ToList());
                     }
                 });
 
@@ -182,44 +190,62 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             //this wait until all jobs are finished without blocking the main program. A bit ugly
             Task.Run(() => //TODO prettier way for this ???
             {
-                while (jobsUnfinished != 0) { }
+                while (jobsUnfinished != 0)
+                {
+                    if (IsStopped)
+                        return;
+                }
                 IsRunning = false;
+                UpdateProperties();
                 MultipleJobCompletedHandler?.Invoke(jobs);
             });
         }
 
-        // TODO: Pause all instead of choosing which ones to pause, so it's easier to manage
-        public override void PauseMultipleJobs(List<string> jobNames)
+        public override void PauseJobs()
         {
             lock (_lockObject)
             {
-                foreach (string jobName in jobNames)
+                foreach (IJob job in Jobs)
                 {
-                    IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
                     if (!(job is { IsRunning: true })) continue;
 
-                    if (!job.IsPaused)
+                    if (!IsPaused)
                         job.PauseJob();
                     else
                         job.ResumeJob();
-                    OnPropertyChanged(nameof(Jobs));
                 }
+                
+                IsPaused = !IsPaused;
+                UpdateProperties();
             }
         }
-        public override void StopMultipleJobs(List<string> jobNames)
+        public override void StopJobs()
         {
+            IsStopped = true;
             lock (_lockObject)
             {
-                foreach (string jobName in jobNames)
+                foreach (IJob job in Jobs)
                 {
-                    IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
                     if (!(job is { IsRunning: true })) continue;
 
                     job.StopJob();
 
-                    OnPropertyChanged(nameof(Jobs));
+                    UpdateProperties();
                 }
+                IsRunning = false;
+                IsPaused = false;
+                IsStopped = false;
+                UpdateProperties();
+                JobsStoppedHandler?.Invoke();
             }
+        }
+
+        public override void UpdateProperties()
+        {
+            OnPropertyChanged(nameof(IsRunning));
+            OnPropertyChanged(nameof(IsPaused));
+            OnPropertyChanged(nameof(IsStopped));
+            OnPropertyChanged(nameof(Jobs));
         }
 
         public override void DoAllJobs()

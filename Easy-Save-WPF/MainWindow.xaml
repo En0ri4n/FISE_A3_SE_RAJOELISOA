@@ -246,7 +246,18 @@
                         Click="OnPauseJobsButtonClicked"
                         IsEnabled="True"
                         ToolTip="{local:Loc main_menu.tool_tip.pause}">
-                    <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
+                    <materialDesign:PackIcon Width="28" Height="28">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="Kind" Value="PauseCircle" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AreJobsPaused}" Value="true">
+                                        <Setter Property="Kind" Value="PlayCircle" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}"  
                         Click="OnStopJobsButtonClicked"

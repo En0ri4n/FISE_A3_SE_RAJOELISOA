@@ -149,11 +149,11 @@ namespace Easy_Save_WPF
 
         public void OnPauseJobsButtonClicked(object sender, RoutedEventArgs e)
         {
-            ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+            ViewModel.PauseJobsCommand.Execute(null);
         }
         public void OnStopJobsButtonClicked(object sender, RoutedEventArgs e)
         {
-            ViewModel.StopMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+            ViewModel.StopJobsCommand.Execute(null);
         }
 
         public void RunJob_Click(object sender, RoutedEventArgs e)

@@ -20,11 +20,7 @@ namespace EasySaveCore.Models
         public BackupJobManager Manager { get; }
         public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
 
-        public bool IsPaused { get; set; }
-
         public bool WasPaused { get; set; }
-
-        public bool IsStopped { get; set; }
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
         public event IJob.JobCompletedDelegate? JobCompletedHandler;
@@ -108,13 +104,7 @@ namespace EasySaveCore.Models
 
         public void RunJob()
         {
-            if (IsStopped)
-            {
-                CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                return;
-            }
-
-            if (!CanRunJob() && !IsPaused)
+            if (!CanRunJob() && !Manager.IsPaused)
             {
                 CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
                 return;
@@ -162,7 +152,7 @@ namespace EasySaveCore.Models
             foreach (JobTask jobTask in JobTasks)
             {
                 // Wait until the job is resumed
-                while (IsPaused) {
+                while (Manager.IsPaused) {
                     Thread.Sleep(100); // Sleep to avoid busy waiting
                 }
                 
@@ -175,7 +165,7 @@ namespace EasySaveCore.Models
                 if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
                 {
                     _semaphoreSizeThreshold.WaitOne();
-                    if (IsStopped)
+                    if (Manager.IsStopped)
                     {
                         _semaphoreSizeThreshold.Release();
                         CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
@@ -186,6 +176,12 @@ namespace EasySaveCore.Models
                 }
                 else
                 {
+                    if (Manager.IsStopped)
+                    {
+                        CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                        return;
+                    }
+                    
                     jobTask.ExecuteTask(StrategyType);
                 }
             }
@@ -199,10 +195,10 @@ namespace EasySaveCore.Models
 
         public void PauseJob()
         {
-            if (!IsRunning || IsPaused)
+            if (!IsRunning)
                 return;
             
-            IsPaused = true;
+            WasPaused = true;
             Status = JobExecutionStrategy.ExecutionStatus.Paused;
             UpdateProgress();
             JobPausedHandler?.Invoke(this);
@@ -212,23 +208,20 @@ namespace EasySaveCore.Models
         {
             if (!IsRunning)
                 return;
-
-            IsStopped = true;
-            IsPaused = false;
+            
             Status = JobExecutionStrategy.ExecutionStatus.Stopped;
+            UpdateProgress();
             JobStoppedHandler?.Invoke(this);
         }
 
-        public Action ResumeJob()
+        public void ResumeJob()
         {
-            if (!IsRunning || !IsPaused)
-                return () => {};
+            if (!IsRunning)
+                return;
 
-            IsPaused = false;
             WasPaused = true;
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
             UpdateProgress();
-            return RunJob;
         }
 
         public JsonObject JsonSerialize()
@@ -360,10 +353,10 @@ namespace EasySaveCore.Models
         {
             Status = status;
             IsRunning = false;
-            IsPaused = false;
             WasPaused = false;
             UpdateProgress();
-            JobCompletedHandler?.Invoke(this);
+            if (status != JobExecutionStrategy.ExecutionStatus.Stopped)
+                JobCompletedHandler?.Invoke(this);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

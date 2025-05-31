@@ -154,7 +154,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
 
         public bool CanJobBeRun => !JobManager.IsRunning;
-        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !job.IsPaused);
+        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !JobManager.IsPaused);
+        public bool AreJobsPaused => JobManager.IsPaused;
 
         public ICommand BuildJobCommand { get; private set; }
         public ICommand LoadJobInBuilderCommand { get; private set; }
@@ -174,8 +175,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
-        public ICommand PauseMultipleJobsCommand { get; set; }
-        public ICommand StopMultipleJobsCommand { get; set; }
+        public ICommand PauseJobsCommand { get; set; }
+        public ICommand StopJobsCommand { get; set; }
 
 
         public ICommand LoadSimultaneousFileSizeThresholdCommand { get; set; }
@@ -220,19 +221,28 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 });
             };
             
-            PauseMultipleJobsCommand = new RelayCommand(jobNameList =>
+            JobManager.JobsStoppedHandler += () =>
             {
-                if(!(jobNameList is List<string> jobNames) || jobNames.Count == 0)
-                    return;
-                
-                JobManager.PauseMultipleJobs(jobNames);
+                Dispatcher dispatcher = Application.Current.Dispatcher;
+                dispatcher.Invoke(() =>
+                {
+                    Window mainWindow = Application.Current.MainWindow;
+                    MessageBox.Show(
+                        mainWindow,
+                        L10N.Get().GetTranslation("message_box.jobs_stopped.text"),
+                        L10N.Get().GetTranslation("message_box.jobs_stopped.title"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                });
+            };
+            
+            PauseJobsCommand = new RelayCommand(_ =>
+            {
+                JobManager.PauseJobs();
             }, _ => true);
 
-            StopMultipleJobsCommand = new RelayCommand(jobNameList =>
+            StopJobsCommand = new RelayCommand(_ =>
             {
-                if (!(jobNameList is List<string> jobNames) || jobNames.Count == 0)
-                    return;
-
                 MessageBoxResult messageBoxResult = MessageBox.Show("Jobs are running, are you sure you want to stop them?",
                     "Stop Jobs", MessageBoxButton.YesNo, MessageBoxImage.Warning,
                     MessageBoxResult.No);
@@ -240,7 +250,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (messageBoxResult != MessageBoxResult.Yes)
                     return;
 
-                JobManager.StopMultipleJobs(jobNames);
+                JobManager.StopJobs();
             }, _ => true);
 
             BuildJobCommand = new RelayCommand(isCreation =>

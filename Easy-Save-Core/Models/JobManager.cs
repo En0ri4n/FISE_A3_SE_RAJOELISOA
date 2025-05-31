@@ -13,9 +13,11 @@ namespace CLEA.EasySaveCore.Models
         public abstract event PropertyChangedEventHandler? PropertyChanged;
         public abstract event OnJobInterrupted? JobInterruptedHandler;
         public abstract event OnMultipleJobCompleted? MultipleJobCompletedHandler;
+        public abstract event OnJobsStopped? JobsStoppedHandler;
         
         public delegate void OnJobInterrupted(JobInterruptionReasons reason, IJob job, string processName = "");
         public delegate void OnMultipleJobCompleted(ObservableCollection<IJob> jobs);
+        public delegate void OnJobsStopped();
         
         protected JobManager(int size)
         {
@@ -27,6 +29,8 @@ namespace CLEA.EasySaveCore.Models
         protected int Size { get; }
         
         public abstract bool IsRunning { get; set; }
+        public abstract bool IsPaused { get; set; }
+        public abstract bool IsStopped { get; set; }
 
         public int JobCount => Jobs.Count;
 
@@ -104,9 +108,11 @@ namespace CLEA.EasySaveCore.Models
             }
         }
 
-        public abstract void PauseMultipleJobs(List<string> jobNames);
+        public abstract void PauseJobs();
 
-        public abstract void StopMultipleJobs(List<string> jobNames);
+        public abstract void StopJobs();
+        
+        public abstract void UpdateProperties();
     }
 
     public enum JobInterruptionReasons

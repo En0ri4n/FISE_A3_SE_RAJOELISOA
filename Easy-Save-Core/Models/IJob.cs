@@ -28,7 +28,6 @@ namespace CLEA.EasySaveCore.Models
         long EncryptionTime { get; set; }
         double Progress { get; }
         
-        bool IsPaused { get; set; }
         bool WasPaused { get; set; }
         
         List<JobTask> JobTasks { get; set; }
@@ -42,7 +41,7 @@ namespace CLEA.EasySaveCore.Models
         void PauseJob();
         void StopJob();
 
-        Action ResumeJob();
+        void ResumeJob();
 
         bool CanRunJob();
         void RunJob();
