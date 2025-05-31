@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models
@@ -39,7 +40,7 @@ namespace CLEA.EasySaveCore.Models
         Action ResumeJob();
 
         bool CanRunJob();
-        void RunJob();
+        void RunJob(int threadsHandlingPriority, ManualResetEventSlim canStartNonPriority, List<String> priority_extensions);
         void ClearAndSetupJob();
         void CompleteJob(JobExecutionStrategy.ExecutionStatus notEnoughDiskSpace);
     }

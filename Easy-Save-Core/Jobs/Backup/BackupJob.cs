@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +11,9 @@ using System.Threading;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.ViewModel;
 using EasySaveCore.Jobs.Backup.Configurations;
+using EasySaveCore.Jobs.Backup.ViewModels;
 
 namespace EasySaveCore.Models
 {
@@ -100,7 +103,7 @@ namespace EasySaveCore.Models
             return !IsRunning;
         }
 
-        public void RunJob()
+        public void RunJob(int threadsHandlingPriority, ManualResetEventSlim canStartNonPriority, List<String> priority_extensions)
         {
             if (!CanRunJob() && !IsPaused)
             {
@@ -151,9 +154,17 @@ namespace EasySaveCore.Models
             List<JobTask> NonPriorityJobTasks = new List<JobTask>();
             foreach (JobTask jobTask in JobTasks) //check for priority queue.
             {
-                List<String> priority_extensions = new List<String>(); //TODO REMOVE when seraching in the config
+                //ExtensionsToPrioritize;
+                //TODO HOW TO ACCESS THAT
+
+                //List<String> priority_extensions = new List<String>(); //TODO REMOVE when seraching in the config
                 //TODO : what if a file has no extension ???
-                if (priority_extensions.Contains(jobTask.Name.Substring(jobTask.Name.LastIndexOf(".")))) // cut to the extension only TODO CHECK. 
+                int index_extension = jobTask.Name.LastIndexOf(".");
+                if (index_extension == -1)
+                {
+                    PriorityJobTasks.Add(jobTask);
+                }
+                else if (priority_extensions.Contains(jobTask.Name.Substring(index_extension))) // cut to the extension only TODO CHECK. 
                 {
                     PriorityJobTasks.Add(jobTask);
                 }
@@ -167,10 +178,9 @@ namespace EasySaveCore.Models
             int remainingPriority = Interlocked.Decrement(ref threadsHandlingPriority);
             if (remainingPriority == 0)
             {
-                Console.WriteLine("All A items processed. Releasing B items.");
                 canStartNonPriority.Set(); // Allow B to start
             }
-            canStartLowPriority.Wait();
+            canStartNonPriority.Wait();
             runTasks(NonPriorityJobTasks);
             TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
             EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
@@ -217,8 +227,8 @@ namespace EasySaveCore.Models
             UpdateProgress();
             JobPausedHandler?.Invoke(this);
         }
-
-        public Action ResumeJob()
+        //URGENT TODO
+        /*public Action ResumeJob()
         {
             if (!IsRunning || !IsPaused)
                 return () => {};
@@ -228,6 +238,12 @@ namespace EasySaveCore.Models
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
             UpdateProgress();
             return RunJob;
+        }*/
+
+        //THIS IS TEMPORRARY BUT AWFUL/ Changes to the runJob function
+        public Action ResumeJob()
+        {
+            return PauseJob;
         }
 
         public JsonObject JsonSerialize()

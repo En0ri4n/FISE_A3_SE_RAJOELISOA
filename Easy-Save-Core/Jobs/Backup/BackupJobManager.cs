@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Jobs.Backup.Configurations;
+using EasySaveCore.Jobs.Backup.ViewModels;
 using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup
@@ -118,7 +119,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 throw new Exception($"Job {job.Name} cannot be run");
 
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-            job.RunJob();
+            job.RunJob(threadsHandlingPriority, canStartNonPriority, ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList()); //FIXME CEDRIC added a tolist for my ease of use
             job.Status = job.JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed;
@@ -159,7 +160,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                         IsRunning = false;
                         return;
                     }
-                    job.RunJob();
+
+                    job.RunJob(threadsHandlingPriority, canStartNonPriority, ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList()); //FIXME CEDRIC added a tolist for my ease of use
                     _semaphoreObject.Release();
                     jobsUnfinished--;
                     lock (_lockObject)
