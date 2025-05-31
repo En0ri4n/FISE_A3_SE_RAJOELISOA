@@ -14,11 +14,14 @@ namespace CLEA.EasySaveCore.Models
         public abstract event OnJobInterrupted? JobInterruptedHandler;
         public abstract event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         public abstract event OnJobsStopped? JobsStoppedHandler;
-        
+        public abstract event OnJobsPaused? JobsPausedHandler;
+
         public delegate void OnJobInterrupted(JobInterruptionReasons reason, IJob job, string processName = "");
         public delegate void OnMultipleJobCompleted(ObservableCollection<IJob> jobs);
         public delegate void OnJobsStopped();
-        
+        public delegate void OnJobsPaused();
+
+
         protected JobManager(int size)
         {
             Size = size;
@@ -76,17 +79,17 @@ namespace CLEA.EasySaveCore.Models
 
         public abstract void DoAllJobs();
 
-        public void DoJob(string name)
-        {
-            IJob? job = Jobs.FirstOrDefault(j => j.Name == name);
+        //public void DoJob(string name)
+        //{
+        //    IJob? job = Jobs.FirstOrDefault(j => j.Name == name);
 
-            if (job == null)
-                throw new Exception($"IJob[{typeof(IJob)}] with name {name} not found");
+        //    if (job == null)
+        //        throw new Exception($"IJob[{typeof(IJob)}] with name {name} not found");
 
-            DoJob(job);
-        }
+        //    DoJob(job);
+        //}
 
-        protected abstract void DoJob(IJob job);
+        //protected abstract void DoJob(IJob job);
 
         public void DoMultipleJob(List<string> jobs)
         {
@@ -108,10 +111,13 @@ namespace CLEA.EasySaveCore.Models
             }
         }
 
-        public abstract void PauseJobs();
+        public abstract void PauseJobs(List<IJob> selectedJobs, bool forcePause = false);
 
-        public abstract void StopJobs();
-        
+        public abstract void StopJobs(List<IJob> selectedJobs);
+
+        public abstract void StopJob(string jobName);
+
+
         public abstract void UpdateProperties();
     }
 

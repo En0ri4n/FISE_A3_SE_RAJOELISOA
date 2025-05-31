@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using CLEA.EasySaveCore.Utilities;
 
 namespace CLEA.EasySaveCore.Models
@@ -27,9 +28,14 @@ namespace CLEA.EasySaveCore.Models
         long TransferTime { get; set; }
         long EncryptionTime { get; set; }
         double Progress { get; }
-        
+
+        bool IsPaused { get; set; }
+
         bool WasPaused { get; set; }
-        
+
+        bool IsStopped { get; set; }
+
+
         List<JobTask> JobTasks { get; set; }
 
         JobExecutionStrategy.ExecutionStatus Status { get; set; }
@@ -44,7 +50,7 @@ namespace CLEA.EasySaveCore.Models
         void ResumeJob();
 
         bool CanRunJob();
-        void RunJob();
+        void RunJob(CountdownEvent countdown);
         void ClearAndSetupJob();
         void CompleteJob(JobExecutionStrategy.ExecutionStatus notEnoughDiskSpace);
     }

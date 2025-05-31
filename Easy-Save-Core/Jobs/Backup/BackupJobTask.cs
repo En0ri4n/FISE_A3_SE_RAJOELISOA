@@ -142,11 +142,11 @@ namespace EasySaveCore.Models
             while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 //TODO Check if job has been stopped or paused
-                while (_backupJob.Manager.IsPaused) {
+                while (_backupJob.IsPaused) {
                     Thread.Sleep(100);
                 }
 
-                if (_backupJob.Manager.IsStopped) {
+                if (_backupJob.IsStopped) {
                     return;
                 }
 
