@@ -8,7 +8,7 @@ using EasySaveRemote.Client.Commands;
 using EasySaveRemote.Client.DataStructures;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote.Client.ViewModel
 {
     public sealed class ClientBackupJobBuilder : INotifyPropertyChanged
     {
@@ -61,14 +61,9 @@ namespace Easy_Save_Remote
             set { _isEncrypted = value; OnPropertyChanged(); }
         }
 
-        public ClientJobExecutionStrategyType[] AvailableStrategies
-        {
-            get
-            {
-                return Enum.GetValues(typeof(ClientJobExecutionStrategyType)) as ClientJobExecutionStrategyType[]
-                       ?? Array.Empty<ClientJobExecutionStrategyType>();
-            }
-        }
+        public ClientJobExecutionStrategyType[] AvailableStrategies =>
+            Enum.GetValues(typeof(ClientJobExecutionStrategyType)) as ClientJobExecutionStrategyType[]
+            ?? Array.Empty<ClientJobExecutionStrategyType>();
 
         public ICommand ShowFolderDialogCommand { get; set; }
 
@@ -131,13 +126,13 @@ namespace Easy_Save_Remote
 
         public ClientBackupJob Build(bool clear = true)
         {
-            ClientBackupJob job = new ClientBackupJob(Name, Source, Target, StrategyType, IsEncrypted);
+            ClientBackupJob job = new ClientBackupJob(InitialName, Name, Source, Target, StrategyType, IsEncrypted);
             if (clear)
                 Clear();
             return job;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

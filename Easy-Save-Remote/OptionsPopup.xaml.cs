@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using EasySaveCore.Jobs.Backup.ViewModels;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote
 {
     public partial class OptionsPopup : Window
     {
         public OptionsPopup()
         {
-            BackupJobViewModel.Get().LoadEncryptionKeyCommand.Execute(null);
+            // RemoteClient.Get().ViewModel.LoadEncryptionKeyCommand.Execute(null);
             InitializeComponent();
-            DataContext = BackupJobViewModel.Get();
+            DataContext = RemoteClient.Get().ViewModel;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();

@@ -1,23 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Security.Policy;
-using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
-using CLEA.EasySaveCore;
-using CLEA.EasySaveCore.Jobs.Backup;
-using CLEA.EasySaveCore.L10N;
-using CLEA.EasySaveCore.Models;
-using CLEA.EasySaveCore.Translations;
-using CLEA.EasySaveCore.ViewModel;
-using EasySaveCore.Jobs.Backup.Configurations;
-using EasySaveCore.Jobs.Backup.ViewModels;
-using EasySaveCore.Models;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml

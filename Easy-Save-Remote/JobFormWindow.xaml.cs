@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Windows;
-using System.Windows.Forms;
-using CLEA.EasySaveCore.L10N;
-using EasySaveCore.Jobs.Backup.ViewModels;
-using EasySaveCore.Models;
+using EasySaveRemote;
 
-namespace Easy_Save_Remote
+namespace EasySaveRemote
 {
     /// <summary>
     /// Logique d'interaction pour CreateJob_Window.xaml
@@ -16,30 +10,48 @@ namespace Easy_Save_Remote
 
     public partial class JobFormWindow : Window
     {
+        private readonly JobFormWindowType _menuType;
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
-        public JobFormWindow(string menuName, bool isJobCreation)
+        public JobFormWindow(JobFormWindowType menuType, bool isJobCreation)
         {
+            _menuType = menuType;
             InitializeComponent();
-            DataContext = BackupJobViewModel.Get().GetJobBuilder();
-            FooterCreateJob.DataContext = BackupJobViewModel.Get();
+            DataContext = RemoteClient.Get().ViewModel.BackupJobBuilder;
+            FooterCreateJob.DataContext = RemoteClient.Get().ViewModel;
 
-            BackupJobViewModel.Get().CloseAction = Close;
+            // BackupJobViewModel.Get().CloseAction = Close;
 
-            Title = L10N.Get().GetTranslation($"{menuName}.title");
+            Title = menuType switch
+            {
+                JobFormWindowType.Create => "Create Job",
+                JobFormWindowType.Edit => "Edit Job",
+                _ => throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null)
+            };
             MainTitle.Text = Title;
-            MainSubtitle.Text = L10N.Get().GetTranslation($"{menuName}.subtitle");
+            MainSubtitle.Text = menuType switch
+            {
+                JobFormWindowType.Create => "Create a new job",
+                JobFormWindowType.Edit => "Edit an existing job",
+                _ => throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null)
+            };
 
-            DoneButton.Content = L10N.Get().GetTranslation($"{menuName}.button.done");
+            DoneButton.Content = menuType switch
+            {
+                JobFormWindowType.Create => "Create",
+                JobFormWindowType.Edit => "Save",
+                _ => throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null)
+            };
             DoneButton.CommandParameter = isJobCreation.ToString();
         }
 
-        public void CreateJobBTN_Click() {
-            NetworkClient networkClient = new NetworkClient();
-
-            BackupJobViewModel.Get().BuildJobCommand.Execute(this.DataContext);
-            
-            networkClient.SendData(networkClient.ClientJsonSerialize(nameInput.Text, sourceInput.Text, targetInput.Text, "create"));
+        public void CreateJobBTN_Click(object sender, RoutedEventArgs routedEventArgs) {
+            RemoteClient.Get().ViewModel.BuildJobCommand.Execute(_menuType == JobFormWindowType.Create);
         }
+    }
 
+    public enum JobFormWindowType
+    {
+        Create,
+        Edit
     }
 }
