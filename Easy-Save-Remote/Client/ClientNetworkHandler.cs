@@ -31,24 +31,42 @@ namespace EasySaveRemote.Client
                 switch (message.Type)
                 {
                     case MessageType.BackupJobList:
-                        // HandleBackupJobList(message.Data);
+                        ClientBackupJob? backupJobList = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJobList == null)
+                        {
+                            Console.WriteLine("Failed to deserialize backup job from message data.");
+                            return;
+                        }
+                        HandleBackupJobList(backupJobList);
                         break;
                     case MessageType.BackupJobUpdate:
-                        // HandleBackupJobUpdate(message.Data);
+                        ClientBackupJob? backupJobUpdate = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJobUpdate == null)
+                        {
+                            Console.WriteLine("Failed to deserialize backup job from message data.");
+                            return;
+                        }
+                        HandleBackupJobUpdate(backupJobUpdate);
                         break;
                     case MessageType.BackupJobAdd:
                         // Deserialize the data into a ClientBackupJob object
-                        ClientBackupJob? backupJob = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJob == null)
+                        ClientBackupJob? backupJobAdd = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJobAdd == null)
                         {
                             Console.WriteLine("Failed to deserialize backup job from message data.");
                             return;
                         }
                         // Call the method to handle the addition of the backup job
-                        HandleBackupJobAdd(backupJob);
+                        HandleBackupJobAdd(backupJobAdd);
                         break;
                     case MessageType.BackupJobRemove:
-                        // HandleBackupJobRemove(message.Data);
+                        ClientBackupJob? backupJobRemove = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJobRemove == null)
+                        {
+                            Console.WriteLine("Failed to deserialize backup job from message data.");
+                            return;
+                        }
+                        HandleBackupJobRemove(backupJobRemove);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(message.Type), message.Type, null);
@@ -59,6 +77,21 @@ namespace EasySaveRemote.Client
         private void HandleBackupJobAdd(ClientBackupJob backupJob)
         {
             RemoteClient.Get().AddBackupJob(backupJob);
+        }
+
+        private void HandleBackupJobRemove(ClientBackupJob backupJob)
+        {
+            RemoteClient.Get().RemoveBackupJob(backupJob);
+        }
+
+        private void HandleBackupJobList(ClientBackupJob backupJobList)
+        {
+            RemoteClient.Get().ListBackupJob(backupJobList);
+        }
+
+        private void HandleBackupJobUpdate(ClientBackupJob backupJob)
+        {
+            RemoteClient.Get().UpdateBackupJob(backupJob);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
@@ -29,10 +30,17 @@ namespace EasySaveCore.Server
                 switch (message.Type)
                 {
                     case MessageType.BackupJobList:
-                        // HandleBackupJobList(message.Data);
+                        HandleBackupJobList(sender);
                         break;
                     case MessageType.BackupJobUpdate:
-                        // HandleBackupJobUpdate(message.Data);
+                        ClientBackupJob? backupJob =
+                            JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJob == null)
+                        {
+                            Logger.Log(LogLevel.Error, "Failed to deserialize backup job from message data.");
+                            return;
+                        }
+                        HandleBackupJobUpdate(sender, backupJob);
                         break;
                     case MessageType.BackupJobAdd:
                         ClientBackupJob? backupJob =
@@ -46,7 +54,14 @@ namespace EasySaveCore.Server
                         HandleBackupJobAdd(sender, backupJob);
                         break;
                     case MessageType.BackupJobRemove:
-                        // HandleBackupJobRemove(message.Data);
+                        ClientBackupJob? backupJob =
+                            JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (backupJob == null)
+                        {
+                            Logger.Log(LogLevel.Error, "Failed to deserialize backup job from message data.");
+                            return;
+                        }
+                        HandleBackupJobRemove(sender, backupJob);
                         break;
                     default:
                         throw new ArgumentException("Unknown message type");
@@ -64,6 +79,21 @@ namespace EasySaveCore.Server
         {
             _backupJobManager.AddJob(TransformToBackupJob(backupJob), true);
             _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+        }
+        private void HandleBackupJobRemove(Socket sender, ClientBackupJob backupJob)
+        {
+            _backupJobManager.RemoveJob(TransformToBackupJob(backupJob));
+            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+        }
+        private void HandleBackupJobUpdate(Socket sender, ClientBackupJob backupJob, string name)
+        {
+            _backupJobManager.UpdateJob(name, TransformToBackupJob(backupJob));
+            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+        }
+        private void HandleBackupJobList(Socket sender)
+        {
+            //TODO
+            _backupJobManager.GetJobs();
         }
 
         private BackupJob TransformToBackupJob(ClientBackupJob clientBackupJob)

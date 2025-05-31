@@ -35,6 +35,27 @@ namespace EasySaveRemote
             
             _backupJobs.Add(job);
         }
+        public void RemoveBackupJob(ClientBackupJob job)
+        {
+            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
+
+            _backupJobs.Remove(job);
+        }
+
+        public void ListBackupJob(ClientBackupJob job)
+        {
+            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
+            ManageJobsWindow window = new ManageJobsWindow();
+            //TODO
+            window.jobsDatagrid.DataContext = _backupJobs;
+        }
+
+        public void UpdateBackupJob(ClientBackupJob job)
+        {
+            //TODO
+            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
+            _backupJobs[_backupJobs.IndexOf(job)] = job;
+        }
 
         public static void Initialize()
         {
