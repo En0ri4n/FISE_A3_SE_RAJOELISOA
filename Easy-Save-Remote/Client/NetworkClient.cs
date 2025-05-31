@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using EasySaveRemote.Client.DataStructures;
 using Newtonsoft.Json;
 
@@ -17,6 +19,7 @@ namespace EasySaveRemote.Client
         private readonly ClientNetworkHandler _clientNetworkHandler;
         private Socket _clientSocket = null!;
         private bool IsRunning { get; set; }
+        private Task _clientThread = null!;
 
         public NetworkClient()
         {
@@ -29,17 +32,26 @@ namespace EasySaveRemote.Client
         /// <param name="url"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public Socket Connect(string url, int port)
+        public bool Connect(string url, int port)
         {
-            IPAddress address = IPAddress.Parse(url);
-            IPEndPoint serverEndPoint = new IPEndPoint(address, port);
-            Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Connect(serverEndPoint);
-            IsRunning = true;
-            return _clientSocket = clientSocket;
+            try
+            {
+                IPAddress address = IPAddress.Parse(url);
+                IPEndPoint serverEndPoint = new IPEndPoint(address, port);
+                Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                clientSocket.Connect(serverEndPoint);
+                IsRunning = true;
+                _clientThread = Task.Run(ListenToServer);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
+            return true;
         }
 
-        public void ListenToServer()
+        private void ListenToServer()
         {
             byte[] buffer = new byte[1024];
             while (true)
@@ -79,6 +91,9 @@ namespace EasySaveRemote.Client
 
         public void Disconnect()
         {
+            if (!IsRunning)
+                return;
+            
             _clientSocket.Close();
         }
     }

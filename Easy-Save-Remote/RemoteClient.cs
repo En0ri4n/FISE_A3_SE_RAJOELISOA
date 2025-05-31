@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Easy_Save_Remote.ViewModel;
 using EasySaveRemote.Client;
 using EasySaveRemote.Client.DataStructures;
-using Newtonsoft.Json;
+using EasySaveRemote.Client.ViewModel;
 
 namespace EasySaveRemote
 {
@@ -26,6 +24,8 @@ namespace EasySaveRemote
             NetworkClient = new NetworkClient();
             ViewModel = new ClientViewModel();
             _backupJobs = new ObservableCollection<ClientBackupJob>();
+            
+            ViewModel.InitializeCommands();
         }
         
         public void AddBackupJob(ClientBackupJob job)

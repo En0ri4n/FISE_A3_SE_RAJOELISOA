@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
 using EasySaveCore.Server.DataStructures;
@@ -23,6 +24,7 @@ namespace EasySaveCore.Server
         private readonly BackupJobManager _backupJobManager;
         private readonly object _lockObj = new object();
         private Socket _serverSocket;
+        private Task _serverThread = null!;
         
         public bool IsRunning { get; private set; }
 
@@ -45,22 +47,25 @@ namespace EasySaveCore.Server
         {
             _serverSocket = Connect();
             IsRunning = true;
-            
-            while (true)
+
+            _serverThread = Task.Run(() =>
             {
-                Socket clientSocket = _serverSocket.Accept();
-                lock (_lockObj)
+                while (true)
                 {
-                    _clients.Add(clientSocket);
+                    Socket clientSocket = _serverSocket.Accept();
+                    lock (_lockObj)
+                    {
+                        _clients.Add(clientSocket);
+                    }
+
+                    // No, we don't need to broadcast the message immediately after accepting a client.
+                    // BroadcastMessage(clientSocket); //message = backup job object list
+
+                    // Create a new thread to handle the client
+                    Thread clientThread = new Thread(() => ListenToClient(clientSocket));
+                    clientThread.Start();
                 }
-
-                // No, we don't need to broadcast the message immediately after accepting a client.
-                // BroadcastMessage(clientSocket); //message = backup job object list
-
-                // Create a new thread to handle the client
-                Thread clientThread = new Thread(() => ListenToClient(clientSocket));
-                clientThread.Start();
-            }
+            });
         }
 
         private Socket Connect()
