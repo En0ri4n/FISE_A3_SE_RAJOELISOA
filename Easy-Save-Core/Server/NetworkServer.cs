@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
-using EasySaveCore.Jobs.Backup.ViewModels;
+using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
-using EasySaveCore.Jobs.Backup.Configurations;
-using CLEA.EasySaveCore.Translations;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Text.Json.Nodes;
 using EasySaveCore.Server.DataStructures;
+using Newtonsoft.Json;
 
 namespace EasySaveCore.Server
 {
@@ -25,14 +20,16 @@ namespace EasySaveCore.Server
     {
         private readonly List<Socket> _clients = new List<Socket>();
         private readonly ServerNetworkHandler _serverNetworkHandler;
+        private readonly BackupJobManager _backupJobManager;
         private readonly object _lockObj = new object();
         private Socket _serverSocket;
         
         public bool IsRunning { get; private set; }
 
-        public NetworkServer()
+        public NetworkServer(JobManager backupJobManager)
         {
-            _serverNetworkHandler = new ServerNetworkHandler(this);
+            _backupJobManager = (BackupJobManager) backupJobManager;
+            _serverNetworkHandler = new ServerNetworkHandler(this, _backupJobManager);
         }
         
         // private static void Main()

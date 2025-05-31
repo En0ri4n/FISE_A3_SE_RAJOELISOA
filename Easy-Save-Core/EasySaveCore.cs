@@ -28,7 +28,7 @@ namespace CLEA.EasySaveCore.Core
         {
             _instance = this;
             // Initialize the server
-            NetworkServer = new NetworkServer();
+            NetworkServer = new NetworkServer(jobManager);
             NetworkServer.Start();
             Configuration = configuration;
             JobManager = jobManager;

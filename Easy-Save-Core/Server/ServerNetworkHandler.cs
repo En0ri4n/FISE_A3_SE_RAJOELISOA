@@ -11,12 +11,14 @@ namespace EasySaveCore.Server
 {
     public class ServerNetworkHandler
     {
-        private readonly object _lockObject = new object();
         private readonly NetworkServer _networkServer;
+        private readonly BackupJobManager _backupJobManager;
+        private readonly object _lockObject = new object();
 
-        public ServerNetworkHandler(NetworkServer networkServer)
+        public ServerNetworkHandler(NetworkServer networkServer, BackupJobManager backupJobManager)
         {
             _networkServer = networkServer;
+            _backupJobManager = backupJobManager;
         }
 
         public void HandleNetworkMessage(Socket sender, NetworkMessage message)
@@ -60,8 +62,7 @@ namespace EasySaveCore.Server
         /// <param name="backupJob"></param>
         private void HandleBackupJobAdd(Socket sender, ClientBackupJob backupJob)
         {
-            // Lock to ensure thread safety when adding a job
-            CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager.AddJob(TransformToBackupJob(backupJob), true);
+            _backupJobManager.AddJob(TransformToBackupJob(backupJob), true);
             _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
         }
 
