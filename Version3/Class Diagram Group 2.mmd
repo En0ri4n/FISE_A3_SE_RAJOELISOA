@@ -1,0 +1,565 @@
+ classDiagram
+    class Menu {
+        <<enumeration>>
+        Main
+        Job
+        JobResult
+        JobSetting
+        Language
+        LogType
+    }
+
+    class EasySaveCli {
+        - List~Menu~ menuHistory
+        + EasySaveCli() void
+        - AddToMenuHistory(Menu menuName) void
+        - Exit() void
+        - GoBack() void
+        # DisplayMainMenu() void
+        # DisplayJobMenu() void
+        # DisplayLanguageMenu() void
+        # DisplayLogTypeMenu() void
+        # DisplayJobResultMenu() void
+        # DisplayJobSettingsMenu() void
+    }
+
+    class ViewModelJobBuilderBase {
+        - string _initialName
+        + string InitialName
+        + event PropertyChangedEventHandler PropertyChanged
+        + Clear() void
+        + GetFrom(IJob job) void
+        + Build(bool clear) IJob
+        # OnPropertyChanged(string? propertyName) void
+        # SetField~T~(ref T field, T value, string? propertyName) bool
+        + string Name
+        + string Source
+        + string Target
+        + JobExecutionStrategy.StrategyType StrategyType
+        + bool IsEncrypted
+    }
+
+    class ViewModelBackupJobBuilder {
+        - string _name
+        + string Name
+        - string _source
+        + string Source
+        - string _target
+        + string Target
+        - StrategyType _strategyType
+        + StrategyType StrategyType
+        - bool _isEncrypted
+        + bool IsEncrypted
+        + StrategyType[] AvailableStrategies
+        + ICommand ShowFolderDialogCommand
+        + ViewModelBackupJobBuilder
+        + Clear() void
+        + GetFrom(IJob job) void
+        + Build(bool clear = true) IJob
+    }
+
+    class BackupJob {
+        + BackupJobManager Manager
+        + List~JobTask~ JobTasks
+        + bool IsPaused
+        + bool WasPaused
+        + bool IsStopped
+
+        - int _hasShownPopup$
+        - int _isPopupOpenAtomic$
+        - bool _alreadyWarnedForBlacklistedProcess$
+        - Semaphore _semaphore
+
+        + DateTime Timestamp
+        + string Source
+        + string Target
+        + JobExecutionStrategy.StrategyType StrategyType
+        + bool IsEncrypted
+        + long Size
+        + long TransferTime
+        + long EncryptionTime
+        + double Progress
+        + bool IsRunning
+        + string Name
+        + JobExecutionStrategy.ExecutionStatus Status
+
+        + event IJob.TaskCompletedDelegate? TaskCompletedHandler
+        + event IJob.JobCompletedDelegate? JobCompletedHandler
+        + event IJob.JobPausedDelegate? JobPausedDelegate
+        + event IJob.JobStoppedDelegate? JobStoppedHandler
+
+        + BackupJob(manager BackupJobManager) 
+        + BackupJob(manager BackupJobManager, name string, source string, target string, strategy JobExecutionStrategy.StrategyType, isEncrypted bool = false)
+
+        + RunJob(countdown CountdownEvent) void
+        + CompleteJob(status JobExecutionStrategy.ExecutionStatus) void
+        + OnTaskCompleted(task dynamic) void
+        + ClearTasksAndProgress() void
+        + ClearTaskCompletedHandler() void
+        + ClearJobCompletedHandler() void
+        + CanRunJob() bool
+        + JsonSerialize() JsonObject
+        + JsonDeserialize(data JsonObject) void
+        + XmlSerialize(parent XmlDocument) XmlElement
+        + XmlDeserialize(data XmlElement) void
+        + PauseJob() void
+        + StopJob() void
+        + ResumeJob() void
+        + ClearAndSetupJob() void
+    }
+
+
+
+   class BackupJobManager {
+        - bool _isRunning
+        - object _lockObject
+        - Semaphore SemaphoreObject$
+
+        + bool IsRunning 
+        + bool IsPaused 
+        + bool IsStopped 
+
+        + ObservableCollection~IJob~ Jobs
+        + event PropertyChangedEventHandler? PropertyChanged
+        + event OnJobInterrupted? JobInterruptedHandler
+        + event OnMultipleJobCompleted? MultipleJobCompletedHandler
+        + event OnJobsStopped? JobsStoppedHandler
+        + event OnJobsPaused? JobsPausedHandler
+
+        + BackupJobManager() void
+        + AddJob(IJob job, bool save) bool
+        + AddJob(JsonObject? jobJson) bool
+        + RemoveJob(IJob? job) bool
+        + UpdateJob(string name, JsonObject? jobJson) void
+        + UpdateJob(string name, IJob? job) bool
+        + DoAllJobs() void
+        + PauseJobs(List~IJob~ selectedJobs, bool forcePause = false) void
+        + StopJobs(List~IJob~ selectedJobs)  void
+        + StopJob(string jobName) void
+        + UpdateProperties() void
+
+        - DoJob(IJobjob) void
+        - DoMultipleJob(ObservableCollection~IJob~ jobs) void
+        - OnPropertyChanged(string? propertyName) void
+    }
+
+
+    class JobManager {
+        <<abstract>>
+        # List~IJob~ Jobs
+        # int Size
+        + AddJob(IJob job, bool save) bool
+        + AddJob(JsonObject? jobJson) bool
+        + RemoveJob(IJob job) bool
+        + UpdateJob(string name, JsonObject? jobJson) void
+        + UpdateJob(string name, IJob job) bool
+        + RemoveJob(string name) bool
+        + RemoveAllJobs() bool
+        + GetJob(string name) IJob
+        + GetJobs() ObservableCollection~IJob~
+        + DoAllJobs() void
+        + DoMultipleJob(List~string~ jobs) void
+        + PauseJobs(List~IJob~ selectedJobs, bool forcePause) void
+        + StopJobs(List~IJob~ selectedJobs) void
+        + StopJob(string jobName) void
+        + UpdateProperties() void
+        # DoMultipleJob(ObservableCollection~IJob~ jobs) void
+        # HasEnoughDiskSpace(string path, long minimumBytesRequired) bool
+    }
+
+    class BackupJobTask {
+        + DateTime Timestamp
+        + string Source
+        + string Target 
+        + long Size
+        + long TransferTime
+
+        + BackupJobTask(backupJob: BackupJob, source: string, target: string) void
+        + ExecuteTask(strategyType: StrategyType) void
+        + JsonSerialize() JsonObject
+        + JsonDeserialize(data: JsonObject) void
+        + XmlSerialize(document: XmlDocument) XmlElement
+        + XmlDeserialize(data: XmlElement) void
+
+        - FilesAreEqual(first: FileInfo, second: FileInfo)$ bool
+    }
+
+
+    class L10N {
+        - L10N Instance 
+        - LangIdentifier _currentLang
+        - Dictionary~string, string~ _translations
+        - L10N() void
+        + EventHandler? LanguageCHanged
+        + SetLanguage(LangIdentifier lang) void
+        + GetLanguage() : LangIdentifier
+        - LoadTranslations() void
+        + GetTranslation(key : string, parameters? : string[]) : string
+        + Get()$ : L10N
+    }
+
+    class LangIdentifier {
+        + string LangId
+        + string Name
+        + string IsoCode
+        + LangIdentifier(string, string, string)
+    }
+
+    class Languages {
+        <<static>>
+        + LangIdentifier EnUs
+        + LangIdentifier FrFr
+        + LangIdentifier IdId
+        + LangIdentifier MgMg
+        + LangIdentifier ZhCn
+
+        + List~LangIdentifier~ SupportedLangs
+    }
+
+    class Format {
+        <<enumeration>>
+        + Json
+        + Xml
+    }
+
+    class Logger {
+        _ string _dailyLogPath
+        + string DailyLogPath
+        _ string _statusLogPath
+        + string StatusLogPath
+        _ Format _dailyLogFormat
+        + Format DailyLogFormat
+        - static Logger Instance
+        - Logger()
+        + Log(LogLevel level, string message)$ void
+        + LogInternal(LogLevel level,FIJO string message) void
+        + Get()$ Logger
+        + SaveDailyLog(IJob job, List<JobTask> tasks) void
+        - LogToFile(StatusLogEntry logEntry) void
+        - GetStatusLogFilePath() string
+        - GetDailyLogFilePath() string
+        - JsonSerialize(IJob job, List<JobTask> tasks) JsonObject
+        - XmlSerialize(IJob job, List<JobTask> tasks) XmlElement
+    }
+
+    class StatusLogEntry {
+        + LogLevel Level
+        + string Message
+        + DateTime Timestamp
+    }
+
+    class JobExecutionStrategy {
+        <<abstract>>
+        - IJob _job
+        - StrategyType _type
+        - ExecutionStatus _status
+        + IJob Job
+        + StrategyType Type
+        + ExecutionStatus Status
+        # JobExecutionStrategy(IJob job, StrategyType strategyType) void
+        + ExecuteJob()* void
+    }
+
+    class StrategyType {
+        <<enumeration>>
+        + Full
+        + Differential
+    }
+
+    class ExecutionStatus {
+        <<enumeration>>
+        + NotStarted
+        + CanNotStart
+        + InProgress
+        + Completed
+        + Skipped
+        + Failed
+    }
+
+    class JobTask {
+        <<abstract>>
+        + string Name
+        + DateTime Timestamp
+        + string Source
+        + string Target
+        + long Size
+        + long TransferTime
+        + long EncryptionTime
+        + JobExecutionStrategy.ExecutionStatus Status
+        + JobTask(string name)
+        + JsonSerialize()* JsonObject
+        + JsonDeserialize(JsonObject data)* void
+        + XmlSerialize(XmlDocument parent)* XmlElement
+        + XmlDeserialize(XmlElement data)* void
+        + ExecuteTask(JobExecutionStrategy.StrategyType strategyType)* void
+    }
+
+    class ProcessHelper {
+        - ProcessHelper Instance$
+        + ProcessHelper Get()$
+        + IsExactProcessRunning(string processName)$ bool
+        + IsProcessRunning(string processName)$ bool
+        + IsAnyProcessRunning(string[] processNames)$ bool
+    }
+
+    class ExternalEncryptor {
+        + IsEncryptorPresent()$ bool
+        + ProcessFile(string fileInputPath, string fileOutputPath)$ void
+        + CheckIfFileMatchEncryptedFile(string fileInputPath, string fileOutputPath)$ bool
+        + EncodeKeyInBase64(string key)$ string
+        + DecodeKeyFromBase64(string base64Encoded)$ string
+        + ProcessEncryptionKey(string encryptedKey)$ string
+        + GetEncryptionKey()$ string
+    }
+
+    class EasySaveConfigurationBase {
+        <<abstract>>
+        + SaveConfiguration()* void
+        + LoadConfiguration()* void
+        + JsonSerialize()* JsonObject
+        + JsonDeserialize(JsonObject data)* void
+    }
+
+    class BackupJobConfiguration {
+        - const string ConfigPath = "config.json"
+        - static BackupJobConfiguration Instance
+        - ObservableCollection~string~ _extensionsToEncrypt
+        + ObservableCollection~string~ ExtensionsToEncrypt
+        - ObservableCollection~string~ _processesToBlacklist
+        + ObservableCollection~string~ ProcessesToBlacklist
+        - string _encryptionKey
+        + string EncryptionKey
+        + BackupJobConfiguration()
+        + Get() BackupJobConfiguration
+        - static Logger Logger
+        + JsonSerialize()  JsonObject
+        + JsonDeserialize(JsonObject data) void
+        + static SaveConfiguration() void
+        + static LoadConfiguration() void
+    }
+
+    class ExecutionFlowType {
+        <<enumeration>>
+        + Sequential
+        + Parallel
+    }
+
+    class Languages {
+        + static List~LangIdentifier~ SupportedLangs
+    }
+
+    class IJob {
+      <<interface>>
+        + string Name
+        + DateTime Timestamp
+        + string Source
+        + string Target
+        + StrategyType StrategyType
+        + bool IsEncrypted
+        + long Size
+        + long TransferTime
+        + long EncryptionTime
+        + double Progress
+        + bool IsPaused
+        + bool WasPaused
+        + bool IsStopped
+        + List~JobTask~ JobTasks
+        + ExecutionStatus Status
+        + bool IsRunning
+
+        + delegate JobCompletedDelegate(IJob job)
+        + event JobCompletedDelegate JobCompletedHandler
+
+        + delegate TaskCompletedDelegate(dynamic task)
+        + event TaskCompletedDelegate TaskCompletedHandler
+
+        + delegate JobPausedDelegate(IJob job)
+        + event JobPausedDelegate JobPausedHandler
+
+        + delegate JobStoppedDelegate(IJob job)
+        + event JobStoppedDelegate JobStoppedHandler
+
+        + ClearTaskCompletedHandler() void
+        + ClearJobCompletedHandler() void
+        + PauseJob() void
+        + StopJob() void
+        + ResumeJob() void
+        + CanRunJob() bool
+        + RunJob(CountdownEvent countdown) void
+        + ClearAndSetupJob() void
+        + CompleteJob(ExecutionStatus notEnoughDiskSpace) void
+    }
+
+    class IJsonSerializable {
+        <<interface>>
+        + JsonSerialize() JsonObject
+        + JsonDeserialize(JsonObject data) void
+    }
+
+    class IXmlSerializable {
+        <<interface>>
+        + XmlSerialize() XmlElement
+        + XmlDeserialize(XmlElement data) void
+    }
+
+    class RelayCommand {
+        - Action~object?~ _execute
+        - Func~object?, bool~? _canExecute
+        + RelayCommand(Action~object?~ execute, Func~object?, bool~? canExecute = null)
+        + CanExecute(object? parameter) bool
+        + Execute(object? parameter) void
+        + event EventHandler? CanExecuteChanged
+        + RaiseCanExecuteChanged() void
+    }
+
+    class EasySaveViewModelBase {
+        + JobManager JobManager
+        + ViewModelJobBuilderBase JobBuilderBase
+        + EasySaveConfigurationBase JobConfiguration
+        + InitializeViewModel(JobManager jobManager) void
+        + SetJobBuilder(ViewModelJobBuilderBase jobBuilderBase) void
+        # InitializeCommand()* void
+        # event PropertyChangedEventHandler? PropertyChanged*
+        + bool IsRunning
+    }
+
+    class EasySaveView {
+        - L10N L10N
+        + EasySaveCore Core
+        - TViewModel ViewModel
+        + EasySaveView(EasySaveCore core, EasySaveViewModelBase viewModel, ViewModelJobBuilderBase viewModelObjectBuilder)
+        + GetJobBuilder() : TViewModelObjectBuilder
+        # DisplayMainMenu()* void
+        # DisplayJobMenu()* void
+        # DisplayLanguageMenu()* void
+        # DisplayLogTypeMenu()* void
+        # DisplayJobResultMenu(int jobNumber)* void
+        # DisplaySettingsMenu()* void
+        # DisplayJobListMenu()* void
+        # DisplayRunMenu()* void
+        # DisplayRunMultipleMenu()* void
+        # DisplayRunAllMenu()* void
+        # DisplayCreateJobMenu()* void
+        # DisplayModifyJobMenu()* void
+        # DisplayDeleteJobMenu()* void
+        # DisplayDailyLogDirectoryMenu()* void
+        # DisplayStatusLogDirectoryMenu()* void
+    }
+
+    class BackupJobViewModel {
+        - string _newExtensionToEncrypt
+        - string _newProcessToBlacklist
+        - string _newExtensionToPrioritize
+        - string _tempEncryptionKey
+        - string _tempSimultaneousFileSizeThreshold
+
+        + bool IsRunning
+        + PropertyChangedEventHandler PropertyChanged 
+
+        + BackupJobViewModel Get()
+        + List<LangIdentifier> AvailableLanguages
+        + LangIdentifier CurrentApplicationLang
+        + List<Format> AvailableDailyLogFormats
+        + Format CurrentDailyLogFormat
+        + string DailyLogPath
+        + string StatusLogPath
+        + string StatusLogFilePath
+        + string DailyLogFilePath
+        + ObservableCollection<BackupJob> AvailableJobs
+        + BackupJob SelectedJob
+        + string TempEncryptionKey
+        + ObservableCollection<string> ExtensionsToEncrypt
+        + ObservableCollection<string> ProcessesToBlacklist
+        + string NewExtensionToEncrypt
+        + string NewProcessToBlacklist
+        + ICommand BuildJobCommand
+        + ICommand SelectedJobCommand
+        + ICommand LoadJobInBuilderCommand
+        + ICommand DeleteJobCommand
+        + ICommand RunJobCommand
+        + ICommand RunMultipleJobsCommand
+        + ICommand RunAllJobsCommand
+        + ICommand ChangeRunStrategyCommand
+        + ICommand ShowFolderDialogCommand
+        + ICommand ResetFolderLogPathCommand
+        + ICommand AddProcessToBlacklistCommand
+        + ICommand RemoveProcessToBlacklistCommand
+        + ICommand AddExtensionToEncryptCommand
+        + ICommand RemoveExtensionToEncryptCommand
+        + ICommand LoadEncryptionKeyCommand
+        + ICommand SaveEncryptionKeyCommand
+
+        + Action CloseAction
+
+        - InitializeCommand() void
+    }
+
+
+    class EasySaveCore {
+        + static Version Version
+        + const string Name
+        - static EasySaveCore _instance
+        - EasySaveCore(EasySaveViewModelBase easySaveViewModelBase, JobManager jobManager, EasySaveConfigurationBase configuration)
+        + static Init(EasySaveViewModelBase easySaveViewModelBase, JobManager jobManager, EasySaveConfigurationBase configuration) : EasySaveCore
+        + static Get() : EasySaveCore
+    }
+
+
+%% Relationships
+
+ViewModelBackupJobBuilder --|> ViewModelJobBuilderBase : Inherits
+ViewModelBackupJobBuilder o-- BackupJob : Aggregates
+ViewModelBackupJobBuilder o-- BackupJobManager : Aggregates
+
+BackupJobManager *-- IJob : Aggregates
+BackupJobManager --|> JobManager : Inherits
+BackupJobManager ..> ExecutionFlowType : Depends On
+BackupJobManager ..> ProcessHelper : Depends On
+
+IJob *-- BackupJobTask : Composes
+BackupJob --|> IJob : Implements
+
+Logger --> IJob : Logs
+Logger o-- StatusLogEntry : Aggregates
+Logger ..> Format : Depends On
+
+L10N --> IJob : Provides Translations
+L10N --> LangIdentifier : Uses
+
+Languages o-- LangIdentifier : Contains
+
+BackupJobTask --|> JobTask : Inherits 
+IJob --|> IJsonSerializable : Implements
+IJob --|> IXmlSerializable : Implements
+
+JobManager o-- IJob : Aggregates
+JobManager ..> ExecutionFlowType : Depends On
+
+JobExecutionStrategy --> StrategyType : Depends On
+JobExecutionStrategy --> ExecutionStatus : Depends On
+JobExecutionStrategy --> IJob : Depends On
+
+BackupJobConfiguration --> Logger : Uses
+BackupJobConfiguration --|> IJsonSerializable : Implements
+BackupJobConfiguration --> BackupJobViewModel : Uses
+BackupJobConfiguration --> L10N : Uses
+BackupJobConfiguration --> IJob : Uses
+BackupJobConfiguration --|> EasySaveConfigurationBase : Inherits
+
+BackupJobViewModel ..> ViewModelBackupJobBuilder : Depends On
+BackupJobViewModel ..> RelayCommand : Depends On
+BackupJobViewModel --|> EasySaveViewModelBase : Inherits
+
+EasySaveCore --> BackupJobConfiguration : Initializes
+EasySaveCore --> EasySaveConfigurationBase : Loads Configuration
+EasySaveCore --> Logger : Logs Start Message
+EasySaveCore ..> EasySaveViewModelBase : Depends On
+
+EasySaveCli --|> EasySaveView : Implements
+EasySaveCli --> EasySaveCore : Uses
+EasySaveCli --> BackupJobViewModel : Uses
+EasySaveCli ..> Format : Depends On
+EasySaveCli ..> Menu : Depends On
+
+ExternalEncryptor --> BackupJobConfiguration : Uses
+ExternalEncryptor --> Logger : Uses

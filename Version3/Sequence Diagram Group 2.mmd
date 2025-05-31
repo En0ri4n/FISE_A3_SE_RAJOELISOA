@@ -1,0 +1,220 @@
+sequenceDiagram
+  rect rgb(230, 250, 255)
+    Note over User, MainWindow: Application Initialization
+    User ->> MainWindow: MainWindow()
+    MainWindow -->> User: void
+    MainWindow ->> BackupJobManager: BackupJobManager()
+    BackupJobManager -->> MainWindow: void
+    MainWindow ->> BackupJobConfiguration: BackupJobConfiguration()
+    BackupJobConfiguration -->> MainWindow: void
+    MainWindow ->> BackupJobViewModel: BackupJobViewModel(jobConfiguration)
+    BackupJobViewModel -->> MainWindow: void
+    MainWindow ->> EasySaveCore: EasySaveCore.Init(ViewModel, jobManager, jobConfiguration)
+    EasySaveCore -->> MainWindow: void
+    MainWindow ->> ViewModelBackupJobBuilder: ViewModelBackupJobBuilder(jobManager)
+    ViewModelBackupJobBuilder -->> MainWindow: void
+    MainWindow ->> BackupJobViewModel: SetJobBuilder(builder)
+    BackupJobViewModel -->> MainWindow: void
+    MainWindow ->> MainWindow: InitializeComponent()
+    MainWindow -->> MainWindow: void
+    MainWindow ->> MainWindow: DataContext = ViewModel
+    MainWindow ->> MainWindow: Buttons.DataContext = ViewModel
+    MainWindow ->> MainWindow: jobsDatagrid.ItemsSource = ViewModel.AvailableJobs
+    MainWindow -->> MainWindow: void
+    MainWindow ->> BackupJobManager: Subscribe to JobInterruptedHandler event
+  end
+
+ rect rgb(240, 255, 240)
+    Note over User, EasySaveViewModel: Edit Backup Job (Modify existing job)
+    User ->> EasySaveView: DisplayJobMenu() (JobFormWindow constructor)
+    EasySaveView -->> User: void
+
+    EasySaveView ->> EasySaveViewModel: LoadJobInBuilderCommand.Execute("lala")
+    
+    EasySaveViewModel ->> BackupJobManager: GetJob(jobName)
+    BackupJobManager -->> EasySaveViewModel: BackupJob data
+    EasySaveViewModel ->> JobBuilderBase: GetFrom(BackupJob data) (pre-fill form)
+    EasySaveViewModel -->> EasySaveView: void
+
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilder (pre-filled)
+
+    EasySaveView ->> User: Display pre-filled Job Parameters (Name, Source, Target, IsEncrypted, StrategyType)
+    User -->> EasySaveView: updated parameters
+
+    EasySaveView ->> EasySaveViewModel: BuildJobCommand.Execute(isCreation = false)
+    EasySaveViewModel -->> EasySaveView: void
+
+    alt Missing mandatory data (Name, Source, Target)
+      EasySaveViewModel ->> User: Show Warning MessageBox("missing data")
+    else All data provided
+      EasySaveViewModel ->> BackupJobManager: UpdateJob(originalName, BackupJob)
+      BackupJobManager -->> EasySaveViewModel: bool success
+      alt Job with new name already exists (conflict)
+        EasySaveViewModel ->> User: Show Warning MessageBox("existing job")
+      else Job updated successfully
+        EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+        BackupJobConfiguration -->> EasySaveViewModel: void
+        EasySaveViewModel ->> EasySaveView: Job Updated Successfully
+      end
+    end
+
+    EasySaveViewModel ->> EasySaveView: CloseAction() (Close JobFormWindow)
+  end
+
+  rect rgb(255, 245, 230)
+    Note over User, EasySaveViewModel: Modify Backup Job
+    User ->> EasySaveView: DisplayJobMenu()
+    EasySaveView -->> User: void
+    EasySaveView ->> EasySaveViewModel: SetJobBuilder()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilderer
+    EasySaveView ->> User: Request New Job Parameters
+    User -->> EasySaveView: string, string, string
+    EasySaveView ->> EasySaveViewModel: BuildJobCommand.Execute()
+    EasySaveViewModel -->> EasySaveView: void
+    EasySaveViewModel ->> BackupJobManager: UpdateJob(string name, BackupJob)
+    BackupJobManager -->> EasySaveViewModel: void
+    EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+    BackupJobConfiguration -->> EasySaveViewModel: void
+    EasySaveViewModel ->> EasySaveView: Job Updated
+    EasySaveView -->> User: void
+  end
+
+rect rgb(255, 235, 235)
+    Note over User, EasySaveViewModel: Delete Backup Job
+
+    User ->> EasySaveView: DisplayJobMenu()
+    EasySaveView -->> User: void
+
+    EasySaveView ->> EasySaveViewModel: SetJobBuilder()
+    EasySaveViewModel -->> EasySaveView: void
+
+    EasySaveViewModel ->> EasySaveView: GetJobBuilder()
+    EasySaveView -->> EasySaveViewModel: ViewModelBackupJobBuilder
+
+    User ->> EasySaveView: Click Delete Button
+    EasySaveView ->> EasySaveView: Check jobsDatagrid.SelectedItem
+    alt No job selected
+      EasySaveView ->> User: Show Warning MessageBox("No job selected")
+
+    else Job(s) selected
+      EasySaveView ->> User: Show Confirmation MessageBox("Confirm deletion?")
+      User -->> EasySaveView: User confirms (Yes)
+      loop For each selected job
+        EasySaveViewModel ->> EasySaveViewModel: DeleteJobCommand.Execute(jobName)
+        EasySaveViewModel -->> EasySaveView: void
+
+        EasySaveViewModel ->> BackupJobManager: RemoveJob(BackupJob)
+        BackupJobManager -->> EasySaveViewModel: bool success
+
+        alt Removal success
+          EasySaveViewModel ->> BackupJobConfiguration: SaveConfiguration()
+          BackupJobConfiguration -->> EasySaveViewModel: void
+          EasySaveViewModel ->> EasySaveView: Show Job Deleted confirmation (optional)
+        else Removal failed
+          EasySaveViewModel ->> EasySaveView: Show Error Message (optional)
+        end
+      end
+    end
+
+    EasySaveView -->> User: void
+  end
+
+  rect rgb(250, 230, 255)
+    Note over User, Job: Run Backup Jobs (RunJob_Click)
+    
+    User ->> MainWindow: Click Run Button
+    MainWindow ->> MainWindow: GetSelectedJobs()
+    MainWindow ->> EasySaveViewModel: RunMultipleJobsCommand.Execute([jobNames])
+    
+    EasySaveViewModel ->> EasySaveViewModel: Validate list
+    alt No job selected
+      EasySaveViewModel ->> User: Show warning "No job selected"
+    else Jobs exist
+      EasySaveViewModel ->> JobManager: GetJob(name) for each
+      EasySaveViewModel ->> ExternalEncryptor: IsEncryptorPresent()
+      alt Encryptor missing or no extensions
+        EasySaveViewModel ->> Logger: Log warning
+        EasySaveViewModel ->> User: Show warning MessageBox
+      end
+      EasySaveViewModel ->> JobManager: DoMultipleJob([jobs])
+      
+      JobManager ->> JobManager: Set IsRunning = true
+      JobManager ->> CountdownEvent: Init with jobs.Count
+
+      loop For each job
+        alt IsStopped
+          JobManager ->> Job: CompleteJob(Stopped)
+          JobManager ->> JobInterruptedHandler: Invoke(ManualStop)
+        else Process blacklisted?
+          JobManager ->> ProcessHelper: IsAnyProcessRunning()
+          alt True
+            JobManager ->> Job: CompleteJob(InterruptedByProcess)
+            JobManager ->> JobInterruptedHandler: Invoke(ProcessRunning)
+            JobManager ->> JobManager: Set IsRunning = false
+          end
+        else Not enough disk space?
+          JobManager ->> JobManager: HasEnoughDiskSpace()
+          alt False
+            JobManager ->> Job: CompleteJob(NotEnoughDiskSpace)
+            JobManager ->> JobInterruptedHandler: Invoke(NotEnoughDiskSpace)
+            JobManager ->> JobManager: Set IsRunning = false
+          end
+        else
+          JobManager ->> Job: ClearAndSetupJob()
+          JobManager ->> Job: RunJob(countdown) in Task
+        end
+      end
+
+      JobManager ->> JobManager: Wait for countdown to finish
+      JobManager ->> JobManager: Set IsRunning = false
+      JobManager ->> JobManager: UpdateProperties()
+      JobManager ->> MultipleJobCompletedHandler: Invoke(jobs)
+    end
+  end
+
+    rect rgb(245, 245, 245)
+        Note over User, EasySaveViewModel: Language Change Request
+
+        User ->> OptionsPopup: Select new language in dropdown
+        OptionsPopup ->> EasySaveViewModel: Set CurrentApplicationLang (LangIdentifier)
+
+        EasySaveViewModel ->> L10N: Get().SetLanguage(value)
+        L10N -->> EasySaveViewModel: void
+
+        EasySaveViewModel ->> Configuration: SaveConfiguration()
+        Configuration -->> EasySaveViewModel: void
+
+        EasySaveViewModel ->> EasySaveViewModel: OnPropertyChanged("CurrentApplicationLang")
+        EasySaveViewModel -->> OptionsPopup: UI updated with new language (via binding)
+
+        OptionsPopup ->> User: Display UI with updated language
+    end
+
+    rect rgb(225, 205, 245)
+        User ->> MainWindow: Tente de fermer l'application
+
+        MainWindow ->> ViewModel: Vérifie CanJobBeRun
+
+        alt ViewModel.CanJobBeRun == true
+            MainWindow -->> OS: Ferme sans confirmation
+        else ViewModel.CanJobBeRun == false
+            MainWindow ->> L10N: GetTranslation("message_box.close_confirm.text")
+            L10N -->> MainWindow: Texte traduit
+
+            MainWindow ->> L10N: GetTranslation("message_box.close_confirm.title")
+            L10N -->> MainWindow: Titre traduit
+
+            MainWindow ->> MessageBox: Affiche boîte de dialogue Yes/No
+            MessageBox -->> MainWindow: Résultat
+
+            alt Résultat == Yes
+                MainWindow -->> OS: Ferme l'application
+            else Résultat == No
+                MainWindow ->> MainWindow: e.Cancel = true
+                MainWindow -->> OS: Annule la fermeture
+            end
+        end
+    end
