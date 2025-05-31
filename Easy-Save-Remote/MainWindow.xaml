@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
-    Height="450" Width="800">
+    Height="300" Width="600">
     <Window.Resources>
 
         <!-- FROM Options_PopUp.xaml -->

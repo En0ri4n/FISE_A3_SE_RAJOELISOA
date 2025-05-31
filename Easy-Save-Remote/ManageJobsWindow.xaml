@@ -6,7 +6,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
       Background="{DynamicResource MaterialDesignPaper}"
-      Closing="OnCustomClosing"
+      
       Title="Easy Save" Icon="/EasySave.ico">
 
     <Window.Resources>
@@ -180,141 +180,141 @@
     </Window.Resources>
 
     <Grid Margin="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Header -->
-        <Grid Grid.Row="0" Margin="0 0 0 24">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <!--<Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
-                    <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/>
-                </Button>-->
-                
-            </StackPanel>
-            
-            <Label Grid.Column="1" Content="Manage Jobs" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click">
-                    <TextBlock Text="Status Log" />
-                </Button>
-                <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click">
-                    <TextBlock Text="Daily Log" />
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <!-- Controls -->
-        <Grid Grid.Row="1" Margin="0 0 0 12" VerticalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <CheckBox Content="Select/Deselect All"
-                      VerticalAlignment="Center" 
-                      FontSize="16" 
-                      Margin="0,0,20,0"
-                      Foreground="Black"
-                      Background="DodgerBlue"
-                      Click="SelectAll_Click"
-                      Name="SelectAll_Checkbox"/>
-
-            <StackPanel Name="Buttons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Style="{StaticResource ColoredIconButton}"
-                        Click="RunJob_Click"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="Run Job">
-                    <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/>
-                </Button>
-                <!-- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}">
-                    <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
-                </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
-                    <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
-                </Button> -->
-                <Button Style="{StaticResource ColoredIconButton}" 
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="DeleteWindow_Click" ToolTip="Remove Job">
-                    <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/>
-                </Button>
-                <Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                        Click="CreateWindow_Click" ToolTip="Add Job">
-                    <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="2" Name="jobsDatagrid"
-                  AutoGenerateColumns="False"
-                  SelectionMode="Extended"
-                  SelectionUnit="FullRow"
-                  MouseDoubleClick="ModifyWindow_Click"
-                  CanUserAddRows="False"
-                  CanUserSortColumns="True"
-                  CanUserDeleteRows="False"
-                  Margin="0"
-                  VerticalAlignment="Stretch"
-                  HorizontalAlignment="Stretch"
-                  HeadersVisibility="Column"
-                  ColumnHeaderHeight="36"
-                  GridLinesVisibility="Horizontal">
-            <DataGrid.Resources>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="FontWeight" Value="Bold"/>
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="Padding" Value="8,4"/>
-                </Style>
-            </DataGrid.Resources>
-
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="200" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="200" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Strategy" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="Encryption" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Status" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Progress" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" 
-                                           Text="{Binding Progress, Mode=OneWay, StringFormat={}{0:F1}%}"
-                                           HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center" 
-                                           Margin="0,0,5,0"
-                                           FontWeight="SemiBold"/>
-
-                                <ProgressBar Grid.Column="1" 
-                                             Value="{Binding Progress, Mode=OneWay}"
-                                             Style="{StaticResource ModernProgressBar}" 
-                                             VerticalAlignment="Center"
-                                             Height="16"/>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-            </DataGrid.Columns>
-
-        </DataGrid>
+        <!-- <Grid.RowDefinitions> -->
+        <!--     <RowDefinition Height="Auto"/> -->
+        <!--     <RowDefinition Height="Auto"/> -->
+        <!--     <RowDefinition Height="*"/> -->
+        <!-- </Grid.RowDefinitions> -->
+        <!-- -->
+        <!-- ~1~ Header @1@ -->
+        <!-- <Grid Grid.Row="0" Margin="0 0 0 24"> -->
+        <!--     <Grid.ColumnDefinitions> -->
+        <!--         <ColumnDefinition Width="Auto"/> -->
+        <!--         <ColumnDefinition Width="*"/> -->
+        <!--         <ColumnDefinition Width="Auto"/> -->
+        <!--     </Grid.ColumnDefinitions> -->
+        <!-- -->
+        <!--     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"> -->
+        <!--         <!-<Button Style="{StaticResource ColoredIconButton}" -->
+        <!--                 IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" -->
+        <!--                 Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}"> -->
+        <!--             <materialDesign:PackIcon Kind="Cog" Width="24" Height="24"/> -->
+        <!--         </Button> -->
+        <!--          -->
+        <!--     </StackPanel> -->
+        <!--      -->
+        <!--     <Label Grid.Column="1" Content="Manage Jobs" HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
+        <!-- -->
+        <!--     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"> -->
+        <!--         <Button Style="{StaticResource ActionButton}" Click="statusLogBTN_Click"> -->
+        <!--             <TextBlock Text="Status Log" /> -->
+        <!--         </Button> -->
+        <!--         <Button Style="{StaticResource ActionButton}" Click="dailyLogBTN_Click"> -->
+        <!--             <TextBlock Text="Daily Log" /> -->
+        <!--         </Button> -->
+        <!--     </StackPanel> -->
+        <!-- </Grid> -->
+        <!-- -->
+        <!-- ~1~ Controls @1@ -->
+        <!-- <Grid Grid.Row="1" Margin="0 0 0 12" VerticalAlignment="Center"> -->
+        <!--     <Grid.ColumnDefinitions> -->
+        <!--         <ColumnDefinition Width="Auto"/> -->
+        <!--         <ColumnDefinition Width="*"/> -->
+        <!--     </Grid.ColumnDefinitions> -->
+        <!-- -->
+        <!--     <CheckBox Content="Select/Deselect All" -->
+        <!--               VerticalAlignment="Center"  -->
+        <!--               FontSize="16"  -->
+        <!--               Margin="0,0,20,0" -->
+        <!--               Foreground="Black" -->
+        <!--               Background="DodgerBlue" -->
+        <!--               Click="SelectAll_Click" -->
+        <!--               Name="SelectAll_Checkbox"/> -->
+        <!-- -->
+        <!--     <StackPanel Name="Buttons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"> -->
+        <!--         <Button Style="{StaticResource ColoredIconButton}" -->
+        <!--                 Click="RunJob_Click" -->
+        <!--                 IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" -->
+        <!--                 ToolTip="Run Job"> -->
+        <!--             <materialDesign:PackIcon Kind="PlayCircle" Width="28" Height="28"/> -->
+        <!--         </Button> -->
+        <!--         <!- <Button Style="{StaticResource ColoredIconButton}" Click="PauseBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.pause}"> -->
+        <!--             <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/> -->
+        <!--         </Button> -->
+        <!--         <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}"> -->
+        <!--             <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/> -->
+        <!--         </Button> -->
+        <!--         <Button Style="{StaticResource ColoredIconButton}"  -->
+        <!--                 IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" -->
+        <!--                 Click="DeleteWindow_Click" ToolTip="Remove Job"> -->
+        <!--             <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28"/> -->
+        <!--         </Button> -->
+        <!--         <Button Style="{StaticResource ColoredIconButton}" -->
+        <!--                 IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" -->
+        <!--                 Click="CreateWindow_Click" ToolTip="Add Job"> -->
+        <!--             <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28"/> -->
+        <!--         </Button> -->
+        <!--     </StackPanel> -->
+        <!-- </Grid> -->
+        <!-- -->
+        <!-- ~1~ DataGrid @1@ -->
+        <!-- <DataGrid Grid.Row="2" Name="jobsDatagrid" -->
+        <!--           AutoGenerateColumns="False" -->
+        <!--           SelectionMode="Extended" -->
+        <!--           SelectionUnit="FullRow" -->
+        <!--           MouseDoubleClick="ModifyWindow_Click" -->
+        <!--           CanUserAddRows="False" -->
+        <!--           CanUserSortColumns="True" -->
+        <!--           CanUserDeleteRows="False" -->
+        <!--           Margin="0" -->
+        <!--           VerticalAlignment="Stretch" -->
+        <!--           HorizontalAlignment="Stretch" -->
+        <!--           HeadersVisibility="Column" -->
+        <!--           ColumnHeaderHeight="36" -->
+        <!--           GridLinesVisibility="Horizontal"> -->
+        <!--     <DataGrid.Resources> -->
+        <!--         <Style TargetType="DataGridColumnHeader"> -->
+        <!--             <Setter Property="FontWeight" Value="Bold"/> -->
+        <!--             <Setter Property="FontSize" Value="14"/> -->
+        <!--             <Setter Property="Padding" Value="8,4"/> -->
+        <!--         </Style> -->
+        <!--     </DataGrid.Resources> -->
+        <!-- -->
+        <!--     <DataGrid.Columns> -->
+        <!--         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150" IsReadOnly="True"/> -->
+        <!--         <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="200" IsReadOnly="True"/> -->
+        <!--         <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="200" IsReadOnly="True"/> -->
+        <!--         <DataGridTextColumn Header="Strategy" Binding="{Binding StrategyType}" Width="120" IsReadOnly="True"/> -->
+        <!--         <DataGridCheckBoxColumn Header="Encryption" Binding="{Binding IsEncrypted}" Width="100" IsReadOnly="True"/> -->
+        <!--         <DataGridTextColumn Header="Status" Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True"/> -->
+        <!--         <DataGridTemplateColumn Header="Progress" Width="*"> -->
+        <!--             <DataGridTemplateColumn.CellTemplate> -->
+        <!--                 <DataTemplate> -->
+        <!--                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" > -->
+        <!--                         <Grid.ColumnDefinitions> -->
+        <!--                             <ColumnDefinition Width="60"/> -->
+        <!--                             <ColumnDefinition Width="*"/> -->
+        <!--                         </Grid.ColumnDefinitions> -->
+        <!-- -->
+        <!--                         <TextBlock Grid.Column="0"  -->
+        <!--                                    Text="{Binding Progress, Mode=OneWay, StringFormat={}{0:F1}%}" -->
+        <!--                                    HorizontalAlignment="Center"  -->
+        <!--                                    VerticalAlignment="Center"  -->
+        <!--                                    Margin="0,0,5,0" -->
+        <!--                                    FontWeight="SemiBold"/> -->
+        <!-- -->
+        <!--                         <ProgressBar Grid.Column="1"  -->
+        <!--                                      Value="{Binding Progress, Mode=OneWay}" -->
+        <!--                                      Style="{StaticResource ModernProgressBar}"  -->
+        <!--                                      VerticalAlignment="Center" -->
+        <!--                                      Height="16"/> -->
+        <!--                     </Grid> -->
+        <!--                 </DataTemplate> -->
+        <!--             </DataGridTemplateColumn.CellTemplate> -->
+        <!--         </DataGridTemplateColumn> -->
+        <!-- -->
+        <!--     </DataGrid.Columns> -->
+        <!-- -->
+        <!-- </DataGrid> -->
     </Grid>
 </Window>

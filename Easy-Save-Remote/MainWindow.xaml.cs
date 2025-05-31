@@ -22,15 +22,12 @@ namespace EasySaveRemote
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            NetworkClient networkClient = new NetworkClient();
             ManageJobsWindow window = new ManageJobsWindow();   
-            Socket clientSocket = networkClient.Connect(URL, port);
-
-            Thread receiveThread = new Thread(() => networkClient.ListenToServer());
-            receiveThread.Start();
+            RemoteClient.Get().NetworkClient.Connect(URL, port);
+            
+            window.Show();
 
             Close();
-            networkClient.Disconnect();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
