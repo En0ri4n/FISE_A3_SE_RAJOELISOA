@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Threading;
 
 namespace CLEA.EasySaveCore.Models
 {
@@ -16,7 +17,10 @@ namespace CLEA.EasySaveCore.Models
         
         public delegate void OnJobInterrupted(JobInterruptionReasons reason, IJob job, string processName = "");
         public delegate void OnMultipleJobCompleted(ObservableCollection<IJob> jobs);
-        
+
+        int threadsHandlingPriority;
+        ManualResetEventSlim canStartNonPriority;
+
         protected JobManager(int size)
         {
             Size = size;

@@ -17,7 +17,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
     public sealed class BackupJobManager : JobManager
     {
         private bool _isRunning;
-
         public BackupJobManager() : base(-1)
         {
             Jobs.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Jobs));
@@ -39,6 +38,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         private readonly object _lockObject = new object();
         private static readonly Semaphore _semaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        //TODO these 2 needs to be defined outside of a JobTask but accessible in RunJob
+        int threadsHandlingPriority;
+        ManualResetEventSlim canStartNonPriority;
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -109,6 +111,9 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         // Unused
         protected override void DoJob(IJob job)
         {
+            //PRIORITY HERE
+            threadsHandlingPriority = 0;
+            canStartNonPriority = new ManualResetEventSlim(false);
             if (!job.CanRunJob())
                 throw new Exception($"Job {job.Name} cannot be run");
 
@@ -124,6 +129,11 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         protected override void DoMultipleJob(ObservableCollection<IJob> jobs)
         {
             //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
+
+            //PRIORITY HERE
+            threadsHandlingPriority = 0;
+            canStartNonPriority = new ManualResetEventSlim(false);
+
             IsRunning = true;
             int jobsUnfinished = jobs.Count();
             foreach (BackupJob job in jobs)

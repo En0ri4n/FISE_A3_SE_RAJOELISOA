@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -145,19 +146,55 @@ namespace EasySaveCore.Models
                 string dirToCreate = directory.Replace(Source, Target);
                 Directory.CreateDirectory(dirToCreate);
             }
-            
+
+            List<JobTask> PriorityJobTasks = new List<JobTask>();
+            List<JobTask> NonPriorityJobTasks = new List<JobTask>();
+            foreach (JobTask jobTask in JobTasks) //check for priority queue.
+            {
+                List<String> priority_extensions = new List<String>(); //TODO REMOVE when seraching in the config
+                //TODO : what if a file has no extension ???
+                if (priority_extensions.Contains(jobTask.Name.Substring(jobTask.Name.LastIndexOf(".")))) // cut to the extension only TODO CHECK. 
+                {
+                    PriorityJobTasks.Add(jobTask);
+                }
+                else
+                {
+                    NonPriorityJobTasks.Add(jobTask);
+                }
+            }
+            Interlocked.Increment(ref threadsHandlingPriority);
+            runTasks(PriorityJobTasks);
+            int remainingPriority = Interlocked.Decrement(ref threadsHandlingPriority);
+            if (remainingPriority == 0)
+            {
+                Console.WriteLine("All A items processed. Releasing B items.");
+                canStartNonPriority.Set(); // Allow B to start
+            }
+            canStartLowPriority.Wait();
+            runTasks(NonPriorityJobTasks);
+            TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
+            EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
+
+            CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                ? JobExecutionStrategy.ExecutionStatus.Completed
+                : JobExecutionStrategy.ExecutionStatus.Failed);
+        }
+
+        public void runTasks(List<JobTask> JobTasks)
+        {
             foreach (JobTask jobTask in JobTasks)
             {
                 // Wait until the job is resumed
-                while (IsPaused) {
+                while (IsPaused)
+                {
                     Thread.Sleep(100); // Sleep to avoid busy waiting
                 }
-                
+
                 if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
                     continue;
-                
+
                 // Compare if jobTask size in kB is greater than or equal to the threshold defined in the configuration
-                if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
+                if (jobTask.Size * 1024 >= ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
                 {
                     _semaphoreSizeThreshold.WaitOne();
                     jobTask.ExecuteTask(StrategyType);
@@ -168,12 +205,6 @@ namespace EasySaveCore.Models
                     jobTask.ExecuteTask(StrategyType);
                 }
             }
-            TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
-            EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
-
-            CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
-                ? JobExecutionStrategy.ExecutionStatus.Completed
-                : JobExecutionStrategy.ExecutionStatus.Failed);
         }
 
         public void PauseJob()
