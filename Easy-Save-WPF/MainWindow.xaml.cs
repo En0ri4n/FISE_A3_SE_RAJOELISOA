@@ -157,7 +157,7 @@ namespace Easy_Save_WPF
         {
             ExecuteWithReselection(jobNames =>
             {
-                ViewModel.PauseJobsCommand.Execute(jobNames);
+                ViewModel.PauseJobsCommand.Execute(null);
             });
         }
 
@@ -173,21 +173,23 @@ namespace Easy_Save_WPF
         {
             ExecuteWithReselection(jobNames =>
             {
+                ViewModel.UpdateProperties(null);
                 ViewModel.RunMultipleJobsCommand.Execute(jobNames);
+                ViewModel.UpdateProperties(null);
             });
         }
 
 
-        private void ExecuteWithReselection(Action<List<string>> command)
+        private void ExecuteWithReselection(Action<List<string>> command, bool useJobManager = false)
         {
-            var selectedJobs = GetSelectedJobs();
-            var selectedNames = selectedJobs.Select(j => j.Name).ToList();
+            IJob[] selectedJobs = GetSelectedJobs();
+            List<string> selectedNames = selectedJobs.Select(j => j.Name).ToList();
 
             jobsDatagrid.SelectedItems.Clear();
 
             command(selectedNames);
 
-            var allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
+            List<IJob> allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
             foreach (var job in allJobs.Where(j => selectedNames.Contains(j.Name)))
             {
                 jobsDatagrid.SelectedItems.Add(job);
