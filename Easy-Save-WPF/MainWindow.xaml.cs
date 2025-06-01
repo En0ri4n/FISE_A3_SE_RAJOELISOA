@@ -190,7 +190,7 @@ namespace Easy_Save_WPF
             command(selectedNames);
 
             List<IJob> allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
-            foreach (var job in allJobs.Where(j => selectedNames.Contains(j.Name)))
+            foreach (IJob job in allJobs.Where(j => selectedNames.Contains(j.Name)))
             {
                 jobsDatagrid.SelectedItems.Add(job);
             }
