@@ -390,6 +390,10 @@ namespace EasySaveCore.Models
                 }
             }
 
+            IsStopped = false;
+            IsRunning = false;
+            IsPaused = false;
+            WasPaused = false;
             TransferTime = -1L;
             EncryptionTime = -1L;
             Size = JobTasks.Select(x => x.Size).Sum();
