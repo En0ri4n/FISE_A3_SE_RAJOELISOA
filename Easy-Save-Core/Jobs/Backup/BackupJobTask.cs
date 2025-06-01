@@ -41,10 +41,8 @@ namespace EasySaveCore.Models
                     {
                         TransferTime = 0L;
                         EncryptionTime = 0L;
-                        Status = JobExecutionStrategy.ExecutionStatus.Skipped;
-                        _backupJob.OnTaskCompleted(this);
-                        Logger.Log(LogLevel.Information,
-                            $"[{Name}] Backup job task from {Source} to {Target}.encrypted completed in {TransferTime}ms ({Status})");
+                        CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Skipped);
+                        Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target}.encrypted completed in {TransferTime}ms ({Status})");
                         return;
                     }
             }
@@ -55,10 +53,8 @@ namespace EasySaveCore.Models
                     {
                         TransferTime = 0L;
                         EncryptionTime = 0L;
-                        Status = JobExecutionStrategy.ExecutionStatus.Skipped;
-                        _backupJob.OnTaskCompleted(this);
-                        Logger.Log(LogLevel.Information,
-                            $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
+                        CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Skipped);
+                        Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
                         return;
                     }
             }
@@ -91,10 +87,18 @@ namespace EasySaveCore.Models
 
             watch.Stop();
             TransferTime = watch.ElapsedMilliseconds;
-            Status = JobExecutionStrategy.ExecutionStatus.Completed;
+            CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Completed);
+            Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
+        }
+        
+        private void CompleteJobTask(JobExecutionStrategy.ExecutionStatus status)
+        {
+            if (status == JobExecutionStrategy.ExecutionStatus.Skipped)
+                Progress = 1.0D;
+            
+            Status = status;
             _backupJob.OnTaskCompleted(this);
-            Logger.Log(LogLevel.Information,
-                $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
+            _backupJob.UpdateProgress();
         }
 
         // Unused method, kept for reference
@@ -143,15 +147,20 @@ namespace EasySaveCore.Models
             while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 //TODO Check if job has been stopped or paused
-                while (_backupJob.IsPaused) {
+                while (_backupJob.IsPaused)
+                {
+                    _backupJob.ReleaseSemaphore();
+                    
+                    if(_backupJob.IsStopped)
+                        return;
+                    
                     Thread.Sleep(100);
                 }
 
-                if (_backupJob.IsStopped) {
+                if (_backupJob.IsStopped)
                     return;
-                }
 
-                Progress = (double) sourceStream.Position / Size;
+                Progress = (double) sourceStream.Position / (double) Size;
                 _backupJob.UpdateProgress();
                 targetStream.Write(buffer, 0, bytesRead);
                 Thread.Sleep(5);

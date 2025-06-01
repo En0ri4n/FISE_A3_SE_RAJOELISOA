@@ -15,7 +15,7 @@ using EasySaveCore.Models;
 
 namespace CLEA.EasySaveCore.Jobs.Backup
 {
-    public sealed class BackupJobManager : JobManager
+    public class BackupJobManager : JobManager
     {
         public BackupJobManager() : base(-1)
         {
@@ -27,6 +27,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         public override event OnJobsStopped? JobsStoppedHandler;
         public override event OnJobsPaused? JobsPausedHandler;
+        public override event OnJobsStarted? JobsStartedHandler;
+        
         private readonly object _lockObject = new object();
         private static readonly Semaphore SemaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
 
@@ -135,6 +137,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 }
 
                 job.ClearAndSetupJob();
+                
+                JobsStartedHandler?.Invoke(jobs);
 
                 Task.Run(() =>
                 {

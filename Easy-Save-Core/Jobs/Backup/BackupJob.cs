@@ -16,7 +16,7 @@ using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
-    public sealed class BackupJob : IJob, INotifyPropertyChanged
+    public class BackupJob : IJob, INotifyPropertyChanged
     {
         public BackupJobManager Manager { get; }
         public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
@@ -31,6 +31,7 @@ namespace EasySaveCore.Models
         public event IJob.JobCompletedDelegate? JobFinishedHandler;
         public event IJob.JobPausedDelegate? JobPausedHandler;
         public event IJob.JobStoppedDelegate? JobStoppedHandler;
+        public event IJob.JobStartedDelegate? JobStartedHandler;
 
 
         public BackupJob(BackupJobManager manager) : this( manager, string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
@@ -79,12 +80,11 @@ namespace EasySaveCore.Models
                 if (JobTasks.Count == 0)
                     return 0.0D;
 
-                long totalTasksSize = JobTasks.Sum(jt => jt.Size);
-                long completedTasks = JobTasks
-                    .FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
-                    .Sum(task => task.Size);
+                double totalTasksSize = JobTasks.Count;
+                double completedTasks = JobTasks
+                    .Sum(task => task.Progress);
                 // TODO: Use progress for each task instead of size
-                return (double)completedTasks / totalTasksSize * 100D;
+                return completedTasks / totalTasksSize * 100D;
             }
         }
 
@@ -138,7 +138,8 @@ namespace EasySaveCore.Models
                     CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
                     return;
                 }
-
+                
+                JobStartedHandler?.Invoke(this);
                 Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
                 if (!WasPaused)
@@ -220,13 +221,14 @@ namespace EasySaveCore.Models
                     }
                     else
                     {
-                        if (IsStopped)
-                        {
-                            CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                            return;
-                        }
                         jobTask.ExecuteTask(StrategyType);
                     }
+                }
+                
+                if (IsStopped)
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                    return;
                 }
 
                 TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
@@ -241,11 +243,16 @@ namespace EasySaveCore.Models
                 countdown.Signal();
             }
         }
-
-
+        
+        public void ReleaseSemaphore()
+        {
+            _semaphoreSizeThreshold.Release();
+            _semaphoreSizeThreshold.WaitOne();
+        }
+        
         public void PauseJob()
         {
-            if (!IsRunning)
+            if (!IsRunning && !IsStopped)
                 return;
             
             WasPaused = false;
@@ -260,6 +267,7 @@ namespace EasySaveCore.Models
             if (!IsRunning)
                 return;
 
+            IsPaused = false;
             IsRunning = false;
             IsStopped = true;
             Status = JobExecutionStrategy.ExecutionStatus.Stopped;
@@ -269,7 +277,7 @@ namespace EasySaveCore.Models
 
         public void ResumeJob()
         {
-            if (!IsRunning)
+            if (!IsRunning && !IsStopped)
                 return;
 
             WasPaused = true;
@@ -390,6 +398,8 @@ namespace EasySaveCore.Models
                     JobTasks.Add(jobTask);
                 }
             }
+            
+            JobTasks.Sort((x, y) => x.Size.CompareTo(y.Size)); // Sort tasks by size to optimize transfer
 
             IsStopped = false;
             IsRunning = false;

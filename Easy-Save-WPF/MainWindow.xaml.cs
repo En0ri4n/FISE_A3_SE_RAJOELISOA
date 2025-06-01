@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Translations;
@@ -71,9 +72,8 @@ namespace Easy_Save_WPF
 
         private void OnCustomClosing(object sender, CancelEventArgs e)
         {
-            // TODO: Check if the job can be run
-            // if (ViewModel.CanJobBeRun)
-            //     return;
+            if (!ViewModel.CanJobBeRun)
+                return;
 
             MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"),
                 L10N.Get().GetTranslation("message_box.close_confirm.title"),
@@ -101,6 +101,7 @@ namespace Easy_Save_WPF
                 jobsDatagrid.UnselectAll();
                 SelectAll_Checkbox.IsChecked = false;
             }
+            OnCellsSelected(sender, null);
         }
 
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
@@ -114,11 +115,12 @@ namespace Easy_Save_WPF
 
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Check if the job can be run
-            // if (!ViewModel.CanJobBeRun)
-                // return;
-
             string selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            
+            ViewModel.UpdateCanJobsRunCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
+            
+            if (!ViewModel.CanJobBeRun)
+                return;
 
             if (selectedJobName == null)
                 return;
@@ -161,6 +163,7 @@ namespace Easy_Save_WPF
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.RunMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+            ViewModel.UpdateCanJobsRunCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
         }
         
         private IJob[] GetSelectedJobs()
@@ -205,25 +208,10 @@ namespace Easy_Save_WPF
             myProcess.StartInfo.UseShellExecute = true;
             myProcess.Start();
         }
-
-        //public void DeactivateButtons()
-        //{
-        //    CreateJobBTN.IsEnabled = false;
-        //    ModifyJobBTN.IsEnabled = false;
-        //    DeleteJobBTN.IsEnabled = false;
-        //    RunJobBTN.IsEnabled = false;
-        //    StopJobBTN.IsEnabled = false;
-        //    PauseJobBTN.IsEnabled = false;
-        //}
-
-        //public void ReactivateButtons()
-        //{
-        //    CreateJobBTN.IsEnabled = false;
-        //    ModifyJobBTN.IsEnabled = false;
-        //    DeleteJobBTN.IsEnabled = false;
-        //    RunJobBTN.IsEnabled = false;
-        //    StopJobBTN.IsEnabled = false;
-        //    PauseJobBTN.IsEnabled = false;
-        //}
+        
+        private void OnCellsSelected(object sender, SelectedCellsChangedEventArgs e)
+        {
+            ViewModel.UpdateCanJobsRunCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
+        }
     }
 }

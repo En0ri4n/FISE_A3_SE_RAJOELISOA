@@ -15,6 +15,8 @@ namespace CLEA.EasySaveCore.Models
         public event JobPausedDelegate JobPausedHandler;
         public delegate void JobStoppedDelegate(IJob job);
         public event JobStoppedDelegate JobStoppedHandler;
+        public delegate void JobStartedDelegate(IJob job);
+        public event JobStartedDelegate JobStartedHandler;
 
         string Name { get; }
         DateTime Timestamp { get; set; }

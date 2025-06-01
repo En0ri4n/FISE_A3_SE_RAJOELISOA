@@ -15,11 +15,13 @@ namespace CLEA.EasySaveCore.Models
         public abstract event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         public abstract event OnJobsStopped? JobsStoppedHandler;
         public abstract event OnJobsPaused? JobsPausedHandler;
+        public abstract event OnJobsStarted? JobsStartedHandler;
 
         public delegate void OnJobInterrupted(JobInterruptionReasons reason, IJob job, string processName = "");
         public delegate void OnMultipleJobCompleted(ObservableCollection<IJob> jobs);
-        public delegate void OnJobsStopped();
-        public delegate void OnJobsPaused();
+        public delegate void OnJobsStopped(ObservableCollection<IJob> jobs);
+        public delegate void OnJobsPaused(ObservableCollection<IJob> jobs);
+        public delegate void OnJobsStarted(ObservableCollection<IJob> jobs);
 
         protected JobManager(int size)
         {
