@@ -157,7 +157,7 @@ namespace Easy_Save_WPF
         {
             ExecuteWithReselection(jobNames =>
             {
-                ViewModel.PauseJobsCommand.Execute(jobNames);
+                ViewModel.PauseJobsCommand.Execute(null);
             });
         }
 
@@ -171,24 +171,39 @@ namespace Easy_Save_WPF
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
+            IJob[] selectedJobs = GetSelectedJobs();
+
+            foreach (IJob jobIteration in selectedJobs)
+            {
+                if (selectedJobs.Any(selectedJob => selectedJob.Target == jobIteration.Target && selectedJob != jobIteration))
+                {
+                    MessageBox.Show("Same target is detected, this will result in errors. Please select jobs with different targets.",
+                        L10N.Get().GetTranslation("message_box.same_target.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             ExecuteWithReselection(jobNames =>
             {
+                ViewModel.UpdateProperties(null);
                 ViewModel.RunMultipleJobsCommand.Execute(jobNames);
+                ViewModel.UpdateProperties(null);
             });
         }
 
 
-        private void ExecuteWithReselection(Action<List<string>> command)
+        private void ExecuteWithReselection(Action<List<string>> command, bool useJobManager = false)
         {
-            var selectedJobs = GetSelectedJobs();
-            var selectedNames = selectedJobs.Select(j => j.Name).ToList();
+            IJob[] selectedJobs = GetSelectedJobs();
+            List<string> selectedNames = selectedJobs.Select(j => j.Name).ToList();
 
             jobsDatagrid.SelectedItems.Clear();
 
             command(selectedNames);
 
-            var allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
-            foreach (var job in allJobs.Where(j => selectedNames.Contains(j.Name)))
+            List<IJob> allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
+            foreach (IJob job in allJobs.Where(j => selectedNames.Contains(j.Name)))
             {
                 jobsDatagrid.SelectedItems.Add(job);
             }

@@ -30,7 +30,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobsStarted? JobsStartedHandler;
         
         private readonly object _lockObject = new object();
-        private static readonly Semaphore SemaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private readonly Semaphore _processorsSemaphore = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private CountdownEvent _priorityCountdown;
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -103,19 +104,25 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         //{
         //    if (!job.CanRunJob())
         //        throw new Exception($"Job {job.Name} cannot be run");
-
+        //
         //    job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-        //    job.RunJob();
+        //    job.RunJob(true);
+        //    job.RunJob(false);
         //    job.Status = job.JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
         //        ? JobExecutionStrategy.ExecutionStatus.Completed
         //        : JobExecutionStrategy.ExecutionStatus.Failed;
-
+        //
         //    Logger.Get().SaveDailyLog(job.JobTasks.Select(task => task).ToList());
         //}
 
         protected override void DoMultipleJob(ObservableCollection<IJob> jobs)
         {
+            //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
+
+            //PRIORITY HERE
+            _priorityCountdown = new CountdownEvent(jobs.Count);
             CountdownEvent countdown = new CountdownEvent(jobs.Count);
+            // TODO: Check if this is the right way to handle multiple jobs when ran one after another for priority
 
             foreach (IJob job in jobs)
             {
@@ -133,20 +140,26 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                     countdown.Signal();
+                    UpdateProperties();
                     return;
                 }
-
+                
                 job.ClearAndSetupJob();
                 
                 JobsStartedHandler?.Invoke(jobs);
-
+                
                 Task.Run(() =>
                 {
-                    SemaphoreObject.WaitOne();
+                    _processorsSemaphore.WaitOne();
 
+                    job.RunJob(countdown, true);
+                    
+                    _processorsSemaphore.Release();
+                    _priorityCountdown.Signal();
+                    _priorityCountdown.Wait(); //wait until all threads have finished working on priority
+                    _processorsSemaphore.WaitOne();
                     job.RunJob(countdown);
-                    SemaphoreObject.Release();
-
+                    _processorsSemaphore.Release();
                     lock (_lockObject)
                     {
                         Logger.Get().SaveDailyLog(jobs.SelectMany(j => j.JobTasks).ToList());
