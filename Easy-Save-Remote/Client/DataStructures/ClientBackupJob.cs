@@ -1,5 +1,4 @@
-﻿
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace EasySaveRemote.Client.DataStructures
 {
@@ -20,6 +19,7 @@ namespace EasySaveRemote.Client.DataStructures
 
         [JsonPropertyName("isEncrypted")] public bool IsEncrypted { get; set; }
 
+        [Newtonsoft.Json.JsonConstructor]
         public ClientBackupJob(string initialName, string name, string source, string target,
             ClientJobExecutionStrategyType strategyType, bool isEncrypted)
         {

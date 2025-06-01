@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json.Nodes;
 using EasySaveRemote.Client;
 using EasySaveRemote.Client.DataStructures;
 using EasySaveRemote.Client.ViewModel;
@@ -16,45 +18,23 @@ namespace EasySaveRemote
         public NetworkClient NetworkClient { get; private set; }
         public ClientViewModel ViewModel { get; }
         
-        private readonly ObservableCollection<ClientBackupJob> _backupJobs;
-        public ObservableCollection<ClientBackupJob> BackupJobs => _backupJobs;
+        public ClientBackupJobManager BackupJobManager { get; }
         
         private RemoteClient()
         {
+            _instance = this;
+            BackupJobManager = new ClientBackupJobManager();
             NetworkClient = new NetworkClient();
             ViewModel = new ClientViewModel();
-            _backupJobs = new ObservableCollection<ClientBackupJob>();
             
             ViewModel.InitializeCommands();
-        }
-        
-        public void AddBackupJob(ClientBackupJob job)
-        {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job), "Backup job cannot be null.");
             
-            _backupJobs.Add(job);
-        }
-        public void RemoveBackupJob(ClientBackupJob job)
-        {
-            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
-
-            _backupJobs.Remove(job);
-        }
-
-        public void ListBackupJob(ClientBackupJob job)
-        {
-            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
-            ManageJobsWindow window = new ManageJobsWindow();
-            //TODO
-            window.jobsDatagrid.DataContext = _backupJobs;
-        }
-
-        public void UpdateBackupJob(ClientBackupJob job)
-        {
-            //TODO
-            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
-            _backupJobs[_backupJobs.IndexOf(job)] = job;
+            NetworkClient.OnConnected += (client) =>
+            {
+                // Fetch the backup job list from the server when connected
+                NetworkMessage message = NetworkMessage.Create(MessageType.FetchBackupJobList, new JsonObject());
+                client.SendMessage(message);
+            };
         }
 
         public static void Initialize()
@@ -62,7 +42,7 @@ namespace EasySaveRemote
             if (_instance != null)
                 return;
             
-            _instance = new RemoteClient();
+            new RemoteClient();
         }
 
         public static RemoteClient Get()

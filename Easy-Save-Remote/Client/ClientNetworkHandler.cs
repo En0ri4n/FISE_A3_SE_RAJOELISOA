@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using EasySaveRemote.Client.DataStructures;
 using Newtonsoft.Json;
 
@@ -13,10 +16,12 @@ namespace EasySaveRemote.Client
         
         private readonly object _lockObject = new object();
         private readonly NetworkClient _networkClient;
+        private readonly ClientBackupJobManager _jobManager;
 
-        public ClientNetworkHandler(NetworkClient networkClient)
+        public ClientNetworkHandler(NetworkClient networkClient, ClientBackupJobManager jobManager)
         {
             _networkClient = networkClient;
+            _jobManager = jobManager;
         }
         
         /// <summary>
@@ -30,14 +35,8 @@ namespace EasySaveRemote.Client
             {
                 switch (message.Type)
                 {
-                    case MessageType.BackupJobList:
-                        ClientBackupJob? backupJobList = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJobList == null)
-                        {
-                            Console.WriteLine("Failed to deserialize backup job from message data.");
-                            return;
-                        }
-                        HandleBackupJobList(backupJobList);
+                    case MessageType.FetchBackupJobList:
+                        HandleBackupJobList(message);
                         break;
                     case MessageType.BackupJobUpdate:
                         ClientBackupJob? backupJobUpdate = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
@@ -76,22 +75,32 @@ namespace EasySaveRemote.Client
 
         private void HandleBackupJobAdd(ClientBackupJob backupJob)
         {
-            RemoteClient.Get().AddBackupJob(backupJob);
+            _jobManager.AddBackupJob(backupJob);
         }
 
         private void HandleBackupJobRemove(ClientBackupJob backupJob)
         {
-            RemoteClient.Get().RemoveBackupJob(backupJob);
+            _jobManager.RemoveBackupJob(backupJob);
         }
 
-        private void HandleBackupJobList(ClientBackupJob backupJobList)
+        private void HandleBackupJobList(NetworkMessage networkMessage)
         {
-            RemoteClient.Get().ListBackupJob(backupJobList);
+            if (!networkMessage.Data.TryGetPropertyValue("backupJobs", out JsonNode? backupJobsJson) || backupJobsJson == null)
+                return;
+            
+            List<ClientBackupJob> backupJobs = new List<ClientBackupJob>();
+            JsonArray backupJobsArray = backupJobsJson.AsArray();
+            foreach (JsonNode? jsonNode in backupJobsArray)
+            {
+                backupJobs.Add(JsonConvert.DeserializeObject<ClientBackupJob>(jsonNode.ToJsonString())!);
+            }
+
+            _jobManager.SetBackupJobs(backupJobs);
         }
 
         private void HandleBackupJobUpdate(ClientBackupJob backupJob)
         {
-            RemoteClient.Get().UpdateBackupJob(backupJob);
+            _jobManager.UpdateBackupJob(backupJob);
         }
     }
 }

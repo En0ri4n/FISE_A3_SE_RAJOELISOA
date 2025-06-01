@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json.Nodes;
 using System.Windows;
+using EasySaveRemote.Client.DataStructures;
 
 namespace EasySaveRemote
 {
@@ -12,10 +14,26 @@ namespace EasySaveRemote
     //TODO select all rows : https://www.youtube.com/watch?app=desktop&v=bxTkTOZV0eQ
     public partial class ManageJobsWindow : Window
     {
+        private readonly object _lockObject = new object();
         public ManageJobsWindow()
         {
             InitializeComponent();
-            // DataContext = RemoteClient.Get().ViewModel;
+            DataContext = RemoteClient.Get().ViewModel;
+            
+            RemoteClient.Get().NetworkClient.OnDisconnected += (client) =>
+            {
+                MessageBox.Show("Connection to the server has been lost. Please check your connection and try again.",
+                                "Connection Lost",
+                                MessageBoxButton.OK, 
+                                MessageBoxImage.Warning);
+
+                Dispatcher.Invoke(() =>
+                {
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    Close();
+                });
+            };
             // Buttons.DataContext = RemoteClient.Get().ViewModel;
             // jobsDatagrid.ItemsSource = RemoteClient.Get().ViewModel.AvailableBackupJobs;
             // BackupJobViewModel.Get().JobManager.JobInterruptedHandler += (reason, job, processName) =>
@@ -34,136 +52,148 @@ namespace EasySaveRemote
             //     }
             // };
         }
-        //
-        // private void OnCustomClosing(object sender, CancelEventArgs e)
-        // {
-        //     if (BackupJobViewModel.Get().CanJobBeRun)
-        //         return;
-        //     
-        //     MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"), 
-        //                                  L10N.Get().GetTranslation("message_box.close_confirm.title"),
-        //                                  MessageBoxButton.YesNo, 
-        //                                  MessageBoxImage.Warning);
-        //     if (result != MessageBoxResult.Yes)
-        //     {
-        //         e.Cancel = true;
-        //     }
-        // }
-        //
-        // public void OptionsBTN_Click(object sender, RoutedEventArgs e)
-        // {
-        //     OptionsPopup options = new OptionsPopup();
-        //     options.Owner = GetWindow(App.Current.MainWindow);
-        //     options.ShowDialog();
-        // }
-        // public void SelectAll_Click(object sender, RoutedEventArgs e)
-        // {
-        //     if (jobsDatagrid.SelectedItems.Count < jobsDatagrid.Items.Count)
-        //     {
-        //         jobsDatagrid.SelectAll();
-        //         SelectAll_Checkbox.IsChecked = true;
-        //     }
-        //     else
-        //     {
-        //         jobsDatagrid.UnselectAll();
-        //         SelectAll_Checkbox.IsChecked = false;
-        //     }
-        // }
-        //
-        // public void CreateWindow_Click(object sender, RoutedEventArgs e)
-        // {
-        //     BackupJobViewModel.Get().JobBuilder.Clear();
-        //
-        //     JobFormWindow jobFormWindow = new JobFormWindow("create_job", true);
-        //     jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
-        //     jobFormWindow.ShowDialog();
-        // }
-        // public void ModifyWindow_Click(object sender, RoutedEventArgs e)
-        // {
-        //     if (!ViewModel.CanJobBeRun)
-        //         return;
-        //
-        //     var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-        //
-        //     if (selectedJobName == null)
-        //         return;
-        //
-        //     ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
-        //
-        //     var modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
-        //     modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
-        //     modifyJobFormWindow.ShowDialog();
-        //
-        //     NetworkClient networkClient = new NetworkClient();
-        //     networkClient.SendData(networkClient.ClientJsonSerialize(_jobForm.nameInput.Text, _jobForm.sourceInput.Text, _jobForm.targetInput.Text, "modify"));
-        // }
-        // public void DeleteWindow_Click(object sender, RoutedEventArgs e)
-        // {
-        //     NetworkClient networkClient = new NetworkClient();
-        //
-        //     if (jobsDatagrid.SelectedItem == null)
-        //     {
-        //         MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_no_selected.text"),
-        //             L10N.Get().GetTranslation("message_box.delete_no_selected.title"), MessageBoxButton.OK,
-        //             MessageBoxImage.Warning);
-        //
-        //         return;
-        //     }
-        //
-        //     var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
-        //         L10N.Get().GetTranslation("message_box.delete_confirm.title"), MessageBoxButton.YesNo,
-        //         MessageBoxImage.Question);
-        //     if (result != MessageBoxResult.Yes) return;
-        //
-        //     var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-        //     networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "delete"));
-        //     
-        // }
-        // public void StopBTN_Click(object sender, RoutedEventArgs e)
-        // {
-        //     // TODO: Implement the logic to stop the selected job(s)
-        // }
-        // public void PauseBTN_Click(object sender, RoutedEventArgs e)
-        // {
-        //     //TODO: Implement the logic to pause the selected job(s)
-        // }
-        // public void RunJob_Click(object sender, RoutedEventArgs e)
-        // {
-        //     NetworkClient networkClient = new NetworkClient();
-        //
-        //     var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-        //     networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "run"));
-        // }
-        // public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
-        // {
-        //     var path = BackupJobViewModel.Get().DailyLogFilePath;
-        //
-        //     if (!File.Exists(path))
-        //     {
-        //         MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_daily_log.text"), L10N.Get().GetTranslation($"message_box.no_daily_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
-        //         return;
-        //     }
-        //
-        //     using Process myProcess = new Process();
-        //     myProcess.StartInfo.Verb = "open";
-        //     myProcess.StartInfo.FileName = path;
-        //     myProcess.StartInfo.UseShellExecute = true;
-        //     myProcess.Start();
-        // }
-        // public void statusLogBTN_Click(object sender, RoutedEventArgs e)
-        // {
-        //     var path = BackupJobViewModel.Get().StatusLogFilePath;
-        //
-        //     if (!File.Exists(path)) {
-        //         MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_status_log.text"), L10N.Get().GetTranslation($"message_box.no_status_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
-        //         return;
-        //     }
-        //
-        //     using Process myProcess = new Process();
-        //     myProcess.StartInfo.FileName = path;
-        //     myProcess.StartInfo.Verb = "open";
-        //     myProcess.StartInfo.UseShellExecute = true;
-        //     myProcess.Start();
-        // }
+        
+        private void OnCustomClosing(object sender, CancelEventArgs e)
+        {
+            // if (BackupJobViewModel.Get().CanJobBeRun)
+            //     return;
+            //
+            // MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"), 
+            //                              L10N.Get().GetTranslation("message_box.close_confirm.title"),
+            //                              MessageBoxButton.YesNo, 
+            //                              MessageBoxImage.Warning);
+            // if (result != MessageBoxResult.Yes)
+            // {
+            //     e.Cancel = true;
+            // }
+        }
+        
+        public void OptionsBTN_Click(object sender, RoutedEventArgs e)
+        {
+            OptionsPopup options = new OptionsPopup();
+            options.Owner = GetWindow(App.Current.MainWindow);
+            options.ShowDialog();
+        }
+        public void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (jobsDatagrid.SelectedItems.Count < jobsDatagrid.Items.Count)
+            {
+                jobsDatagrid.SelectAll();
+                SelectAll_Checkbox.IsChecked = true;
+            }
+            else
+            {
+                jobsDatagrid.UnselectAll();
+                SelectAll_Checkbox.IsChecked = false;
+            }
+        }
+        
+        public void CreateWindow_Click(object sender, RoutedEventArgs e)
+        {
+            // BackupJobViewModel.Get().JobBuilder.Clear();
+            //
+            // JobFormWindow jobFormWindow = new JobFormWindow("create_job", true);
+            // jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
+            // jobFormWindow.ShowDialog();
+        }
+        public void ModifyWindow_Click(object sender, RoutedEventArgs e)
+        {
+            // if (!ViewModel.CanJobBeRun)
+            //     return;
+            //
+            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            //
+            // if (selectedJobName == null)
+            //     return;
+            //
+            // ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
+            //
+            // var modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
+            // modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
+            // modifyJobFormWindow.ShowDialog();
+            //
+            // NetworkClient networkClient = new NetworkClient();
+            // networkClient.SendData(networkClient.ClientJsonSerialize(_jobForm.nameInput.Text, _jobForm.sourceInput.Text, _jobForm.targetInput.Text, "modify"));
+        }
+        public void DeleteWindow_Click(object sender, RoutedEventArgs e)
+        {
+            // NetworkClient networkClient = new NetworkClient();
+            //
+            // if (jobsDatagrid.SelectedItem == null)
+            // {
+            //     MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_no_selected.text"),
+            //         L10N.Get().GetTranslation("message_box.delete_no_selected.title"), MessageBoxButton.OK,
+            //         MessageBoxImage.Warning);
+            //
+            //     return;
+            // }
+            //
+            // var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
+            //     L10N.Get().GetTranslation("message_box.delete_confirm.title"), MessageBoxButton.YesNo,
+            //     MessageBoxImage.Question);
+            // if (result != MessageBoxResult.Yes) return;
+            //
+            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            // networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "delete"));
+            
+        }
+        public void StopBTN_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement the logic to stop the selected job(s)
+        }
+        public void PauseBTN_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: Implement the logic to pause the selected job(s)
+        }
+        public void RunJob_Click(object sender, RoutedEventArgs e)
+        {
+            // NetworkClient networkClient = new NetworkClient();
+            //
+            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            // networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "run"));
+        }
+        public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
+        {
+            // var path = BackupJobViewModel.Get().DailyLogFilePath;
+            //
+            // if (!File.Exists(path))
+            // {
+            //     MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_daily_log.text"), L10N.Get().GetTranslation($"message_box.no_daily_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            //     return;
+            // }
+            //
+            // using Process myProcess = new Process();
+            // myProcess.StartInfo.Verb = "open";
+            // myProcess.StartInfo.FileName = path;
+            // myProcess.StartInfo.UseShellExecute = true;
+            // myProcess.Start();
+        }
+        public void statusLogBTN_Click(object sender, RoutedEventArgs e)
+        {
+            // var path = BackupJobViewModel.Get().StatusLogFilePath;
+            //
+            // if (!File.Exists(path)) {
+            //     MessageBox.Show(L10N.Get().GetTranslation($"message_box.no_status_log.text"), L10N.Get().GetTranslation($"message_box.no_status_log.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            //     return;
+            // }
+            //
+            // using Process myProcess = new Process();
+            // myProcess.StartInfo.FileName = path;
+            // myProcess.StartInfo.Verb = "open";
+            // myProcess.StartInfo.UseShellExecute = true;
+            // myProcess.Start();
+        }
+
+        private void Reload(object sender, RoutedEventArgs e)
+        {
+            // This method is used to reload the job list from the server.
+            // It sends a request to the server to fetch the latest backup job list.
+            // NetworkClient networkClient = new NetworkClient();
+            // networkClient.SendData(NetworkMessage.Create(MessageType.FetchBackupJobList, new JsonObject()));
+            
+            // Optionally, you can also refresh the DataGrid to reflect any changes.
+            // jobsDatagrid.Items.Refresh();
+            RemoteClient.Get().NetworkClient.SendMessage(NetworkMessage.Create(MessageType.FetchBackupJobList, new JsonObject()));
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json.Nodes;
 using System.Windows.Input;
 using EasySaveRemote.Client.Commands;
 using EasySaveRemote.Client.DataStructures;
@@ -9,7 +10,7 @@ namespace EasySaveRemote.Client.ViewModel
     public class ClientViewModel
     {
         public ClientBackupJobBuilder BackupJobBuilder { get; } = new ClientBackupJobBuilder();
-        public ObservableCollection<ClientBackupJob> AvailableBackupJobs => RemoteClient.Get().BackupJobs;
+        public ObservableCollection<ClientBackupJob> AvailableBackupJobs => RemoteClient.Get().BackupJobManager.BackupJobs;
         public ICommand BuildJobCommand { get; set; }
         
         public void InitializeCommands()
@@ -21,8 +22,15 @@ namespace EasySaveRemote.Client.ViewModel
                 
                 ClientBackupJob clientBackupJob = RemoteClient.Get().ViewModel.BackupJobBuilder.Build();
                 RemoteClient.Get().NetworkClient.SendMessage(NetworkMessage.Create(isJobCreation ? MessageType.BackupJobAdd : MessageType.BackupJobUpdate, 
-                    JsonConvert.SerializeObject(clientBackupJob)));
+                    CreateJsonObject("backupJob", JsonConvert.SerializeObject(clientBackupJob))));
             }, _ => true);
+        }
+
+        public JsonObject CreateJsonObject(string key, string value)
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.Add(key, value);
+            return jsonObject;
         }
     }
 }

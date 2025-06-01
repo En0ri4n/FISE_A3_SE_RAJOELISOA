@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Net.Sockets;
 using System.Text.Json.Nodes;
 using CLEA.EasySaveCore.Jobs.Backup;
+using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Models;
 using EasySaveCore.Server.DataStructures;
@@ -29,39 +31,36 @@ namespace EasySaveCore.Server
             {
                 switch (message.Type)
                 {
-                    case MessageType.BackupJobList:
-                        HandleBackupJobList(sender);
+                    case MessageType.FetchBackupJobList:
+                        HandleFetchBackupJobList(sender);
                         break;
                     case MessageType.BackupJobUpdate:
-                        ClientBackupJob? backupJob =
-                            JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJob == null)
+                        ClientBackupJob? updatedClientBackupJob = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (updatedClientBackupJob == null)
                         {
                             Logger.Log(LogLevel.Error, "Failed to deserialize backup job from message data.");
                             return;
                         }
-                        HandleBackupJobUpdate(sender, backupJob);
+                        HandleBackupJobUpdate(sender, updatedClientBackupJob);
                         break;
                     case MessageType.BackupJobAdd:
-                        ClientBackupJob? backupJob =
-                            JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJob == null)
+                        ClientBackupJob? addedClientBackupJob = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (addedClientBackupJob == null)
                         {
                             Logger.Log(LogLevel.Error, "Failed to deserialize backup job from message data.");
                             return;
                         }
 
-                        HandleBackupJobAdd(sender, backupJob);
+                        HandleBackupJobAdd(sender, addedClientBackupJob);
                         break;
                     case MessageType.BackupJobRemove:
-                        ClientBackupJob? backupJob =
-                            JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJob == null)
+                        ClientBackupJob? removeClientBackupJob = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
+                        if (removeClientBackupJob == null)
                         {
                             Logger.Log(LogLevel.Error, "Failed to deserialize backup job from message data.");
                             return;
                         }
-                        HandleBackupJobRemove(sender, backupJob);
+                        HandleBackupJobRemove(sender, removeClientBackupJob);
                         break;
                     default:
                         throw new ArgumentException("Unknown message type");
@@ -78,31 +77,48 @@ namespace EasySaveCore.Server
         private void HandleBackupJobAdd(Socket sender, ClientBackupJob backupJob)
         {
             _backupJobManager.AddJob(TransformToBackupJob(backupJob), true);
-            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, CreateJsonObject("backupJob", JsonConvert.SerializeObject(backupJob))));
         }
         private void HandleBackupJobRemove(Socket sender, ClientBackupJob backupJob)
         {
             _backupJobManager.RemoveJob(TransformToBackupJob(backupJob));
-            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobRemove, CreateJsonObject("backupJob", JsonConvert.SerializeObject(backupJob))));
         }
-        private void HandleBackupJobUpdate(Socket sender, ClientBackupJob backupJob, string name)
+        private void HandleBackupJobUpdate(Socket sender, ClientBackupJob backupJob)
         {
-            _backupJobManager.UpdateJob(name, TransformToBackupJob(backupJob));
-            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobAdd, JsonConvert.SerializeObject(backupJob)));
+            _backupJobManager.UpdateJob(backupJob.InitialName, TransformToBackupJob(backupJob));
+            _networkServer.BroadcastMessage(sender, NetworkMessage.Create(MessageType.BackupJobUpdate, CreateJsonObject("backupJob", JsonConvert.SerializeObject(backupJob))));
         }
-        private void HandleBackupJobList(Socket sender)
+        private void HandleFetchBackupJobList(Socket sender)
         {
-            //TODO
-            _backupJobManager.GetJobs();
+            // Send the list of backup jobs to the client
+            ObservableCollection<IJob> backupJobs = _backupJobManager.GetJobs();
+            JsonArray clientBackupJobs = new JsonArray();
+            foreach (IJob job in backupJobs)
+                clientBackupJobs.Add(TransformToClientBackupJob((BackupJob)job));
+
+            NetworkMessage responseMessage = NetworkMessage.Create(MessageType.FetchBackupJobList, CreateJsonObject("backupJobs", clientBackupJobs));
+            _networkServer.SendMessage(sender, responseMessage);
         }
 
         private BackupJob TransformToBackupJob(ClientBackupJob clientBackupJob)
         {
-            BackupJob backupJob = new BackupJob((BackupJobManager)CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager,
+            return new BackupJob((BackupJobManager)CLEA.EasySaveCore.Core.EasySaveCore.Get().JobManager,
                 clientBackupJob.Name, clientBackupJob.Source, clientBackupJob.Target,
                 clientBackupJob.StrategyType, clientBackupJob.IsEncrypted);
+        }
 
-            return backupJob;
+        private ClientBackupJob TransformToClientBackupJob(BackupJob backupJob)
+        {
+            return new ClientBackupJob(backupJob.Name, backupJob.Source, backupJob.Target,
+                backupJob.StrategyType, backupJob.IsEncrypted);
+        }
+
+        private JsonObject CreateJsonObject(string name, JsonNode value)
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.Add(name, value);
+            return jsonObject;
         }
     }
 }

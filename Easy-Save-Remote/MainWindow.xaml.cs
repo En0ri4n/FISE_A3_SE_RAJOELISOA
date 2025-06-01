@@ -45,7 +45,7 @@ namespace EasySaveRemote
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            Application.Current.Shutdown();
         }
     }
 }

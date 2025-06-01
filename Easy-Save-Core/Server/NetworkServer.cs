@@ -8,7 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Server.DataStructures;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace EasySaveCore.Server
@@ -45,6 +47,8 @@ namespace EasySaveCore.Server
         /// </summary>
         public void Start()
         {
+            Logger.Log(LogLevel.Information, "Network server starting...");
+            
             _serverSocket = Connect();
             IsRunning = true;
 
@@ -77,7 +81,7 @@ namespace EasySaveCore.Server
             Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             serverSocket.Bind(endPoint);
             serverSocket.Listen(10);
-            //Console.WriteLine("Server started. Waiting for clients...");
+            Logger.Log(LogLevel.Information, "Server started. Waiting for clients...");
             return serverSocket;
         }
 
@@ -100,10 +104,10 @@ namespace EasySaveCore.Server
                     // We assume the message is a JSON string
                     string message = Encoding.UTF8.GetString(buffer, 0, received);
                     // We receive the message from client and deserialize it
-                    NetworkMessage? deserializedMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
+                    NetworkMessage? deserializedMessage = NetworkMessage.Deserialize(message);
                     if (deserializedMessage == null)
                     {
-                        //Console.WriteLine("Received invalid message from client.");
+                        Logger.Log(LogLevel.Information, "Received invalid message from client.");
                         continue;
                     }
                     
@@ -124,6 +128,31 @@ namespace EasySaveCore.Server
 
                 client.Close();
                 //Console.WriteLine($"Client {client.RemoteEndPoint} disconnected.");
+            }
+        }
+        
+        /// <summary>
+        /// Sends a message to a specific client.<br/>
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        public void SendMessage(Socket client, NetworkMessage message)
+        {
+            lock (_lockObj)
+            {
+                try
+                {
+                    // Serialize the message to JSON
+                    string serializedMessage = message.Serialize();
+                    byte[] data = Encoding.UTF8.GetBytes(serializedMessage);
+                    client.Send(data);
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine($"Failed to send message to {client.RemoteEndPoint}. Removing client.");
+                    _clients.Remove(client);
+                    client.Close();
+                }
             }
         }
 

@@ -14,7 +14,11 @@ namespace EasySaveRemote.Client
     /// </summary>
     public class NetworkClient
     {
-        //TODO classe clients config avec attributs de config.json
+        public event OnConnectedHandler? OnConnected;
+        public delegate void OnConnectedHandler(NetworkClient client);
+        
+        public event OnDisconnectedHandler? OnDisconnected;
+        public delegate void OnDisconnectedHandler(NetworkClient client);
 
         private readonly ClientNetworkHandler _clientNetworkHandler;
         private Socket _clientSocket = null!;
@@ -23,7 +27,7 @@ namespace EasySaveRemote.Client
 
         public NetworkClient()
         {
-            _clientNetworkHandler = new ClientNetworkHandler(this);
+            _clientNetworkHandler = new ClientNetworkHandler(this, RemoteClient.Get().BackupJobManager);
         }
 
         /// <summary>
@@ -38,10 +42,11 @@ namespace EasySaveRemote.Client
             {
                 IPAddress address = IPAddress.Parse(url);
                 IPEndPoint serverEndPoint = new IPEndPoint(address, port);
-                Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.Connect(serverEndPoint);
+                _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _clientSocket.Connect(serverEndPoint);
                 IsRunning = true;
                 _clientThread = Task.Run(ListenToServer);
+                OnConnected?.Invoke(this);
             }
             catch (Exception e)
             {
@@ -53,7 +58,7 @@ namespace EasySaveRemote.Client
 
         private void ListenToServer()
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096]; // 4 KB buffer for receiving messages
             while (true)
             {
                 try
@@ -62,7 +67,7 @@ namespace EasySaveRemote.Client
                     if (received == 0) break;
 
                     string message = Encoding.UTF8.GetString(buffer, 0, received);
-                    NetworkMessage? networkMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
+                    NetworkMessage? networkMessage = NetworkMessage.Deserialize(message);
                     if (networkMessage == null)
                     {
                         //Console.WriteLine("Received invalid message from server.");
@@ -71,10 +76,11 @@ namespace EasySaveRemote.Client
                     // We handle the message using the client network handler
                     _clientNetworkHandler.HandleNetworkMessage(networkMessage);
                 }
-                catch
+                catch(Exception e)
                 {
-                    //Console.WriteLine("Disconnected from server.");
-                    break;
+                    Console.WriteLine($"Error receiving message: {e.Message}");
+                    OnDisconnected?.Invoke(this);
+                    throw;
                 }
             }
         }
@@ -86,7 +92,7 @@ namespace EasySaveRemote.Client
         /// <param name="message"></param>
         public void SendMessage(NetworkMessage message)
         {
-            _clientSocket.Send(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message)));
+            _clientSocket.Send(Encoding.UTF8.GetBytes(message.Serialize()));
         }
 
         public void Disconnect()
@@ -95,6 +101,7 @@ namespace EasySaveRemote.Client
                 return;
             
             _clientSocket.Close();
+            OnDisconnected?.Invoke(this);
         }
     }
 }

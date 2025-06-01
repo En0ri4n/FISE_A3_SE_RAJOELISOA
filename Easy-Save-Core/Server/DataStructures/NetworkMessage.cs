@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Nodes;
+﻿using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace EasySaveCore.Server.DataStructures
@@ -9,9 +11,9 @@ namespace EasySaveCore.Server.DataStructures
         public MessageType Type { get; set; }
         
         [JsonPropertyName("data")]
-        public JsonNode Data { get; set; }
+        public JsonObject Data { get; set; }
         
-        private NetworkMessage(MessageType type, JsonNode data)
+        private NetworkMessage(MessageType type, JsonObject data)
         {
             Type = type;
             Data = data;
@@ -19,15 +21,47 @@ namespace EasySaveCore.Server.DataStructures
 
         public NetworkMessage(MessageType type) : this(type, new JsonObject()) { }
         
-        public static NetworkMessage Create(MessageType type, JsonNode data)
+        public static NetworkMessage Create(MessageType type, JsonObject data)
         {
             return new NetworkMessage(type, data);
+        }
+        
+        public string Serialize()
+        {
+            JsonObject jsonObject = new JsonObject
+            {
+                ["type"] = Type.ToString(),
+                ["data"] = Data
+            };
+
+            return jsonObject.ToJsonString();
+        }
+
+        public static NetworkMessage? Deserialize(string message)
+        {
+            // Deserialize the JSON string into a NetworkMessage object manually
+            try
+            {
+                JsonObject? jsonNode = JsonNode.Parse(message)?.AsObject();
+                if (jsonNode == null || !jsonNode.ContainsKey("type") || !jsonNode.ContainsKey("data"))
+                {
+                    return null;
+                }
+                
+                MessageType type = Enum.Parse<MessageType>(jsonNode["type"]?.ToString()!);
+                JsonObject data = jsonNode["data"]?.AsObject() ?? new JsonObject();
+                return new NetworkMessage(type, data);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
     
     public enum MessageType
     {
-        BackupJobList,
+        FetchBackupJobList,
         BackupJobUpdate,
         BackupJobAdd,
         BackupJobRemove,
