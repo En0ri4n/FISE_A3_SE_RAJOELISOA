@@ -271,7 +271,6 @@
                     <materialDesign:PackIcon Kind="TrashCan" Width="28" Height="28" />
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         Click="CreateWindow_Click" ToolTip="{local:Loc main_menu.tool_tip.add_job}">
                     <materialDesign:PackIcon Kind="PlusCircle" Width="28" Height="28" />
                 </Button>
@@ -342,6 +341,10 @@
                                                 <DataTrigger Binding="{Binding Status}" Value="Failed">
                                                     <Setter Property="Kind" Value="AlertCircle" />
                                                     <Setter Property="Foreground" Value="DarkRed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="InterruptedByProcess">
+                                                    <Setter Property="Kind" Value="MinusCircle" />
+                                                    <Setter Property="Foreground" Value="BlueViolet" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

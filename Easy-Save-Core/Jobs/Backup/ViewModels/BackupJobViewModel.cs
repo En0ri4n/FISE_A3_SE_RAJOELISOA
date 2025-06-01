@@ -607,7 +607,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         {
             jobs ??= JobManager.GetJobs().ToList();
             
-            CanJobBeRun = jobs.Count != 0 && jobs.All(job => !job.IsRunning);
+            CanJobBeRun = JobManager.GetJobs().ToList().Count != 0 && JobManager.GetJobs().ToList().All(job => !job.IsRunning);
             CanJobsBePausedAreStopped = jobs.Any(job => job.IsRunning);
             CanConfigurationBeViewed = JobManager.GetJobs().All(job => !job.IsRunning);
             OnPropertyChanged(nameof(CanJobBeRun));
