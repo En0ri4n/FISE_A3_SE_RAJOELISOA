@@ -343,6 +343,10 @@
                                                     <Setter Property="Kind" Value="AlertCircle" />
                                                     <Setter Property="Foreground" Value="DarkRed" />
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="InterruptedByProcess">
+                                                    <Setter Property="Kind" Value="MinusCircle" />
+                                                    <Setter Property="Foreground" Value="BlueViolet" />
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </materialDesign:PackIcon.Style>

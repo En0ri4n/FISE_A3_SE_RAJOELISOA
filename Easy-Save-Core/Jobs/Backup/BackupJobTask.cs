@@ -72,6 +72,7 @@ namespace EasySaveCore.Models
                     ExternalEncryptor.ProcessFile(Source, $"{Target}.encrypted");
                     encryptionWatch.Stop();
                     EncryptionTime = encryptionWatch.ElapsedMilliseconds;
+                    Progress = 1.0D;
                 }
                 else
                 {

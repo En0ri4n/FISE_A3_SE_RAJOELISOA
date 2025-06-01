@@ -140,6 +140,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                     countdown.Signal();
+                    UpdateProperties();
                     return;
                 }
                 
