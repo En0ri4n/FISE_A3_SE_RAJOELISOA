@@ -83,4 +83,8 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </EmbeddedResource>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Easy-Save-Shared-Remote\Easy-Save-Shared-Remote.csproj" />
+	</ItemGroup>
 </Project>

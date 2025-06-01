@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
-using EasySaveRemote;
+using EasySaveShared;
 
-namespace EasySaveRemote
+namespace EasySaveShared
 {
     /// <summary>
     /// Logique d'interaction pour CreateJob_Window.xaml
@@ -19,7 +19,7 @@ namespace EasySaveRemote
             DataContext = RemoteClient.Get().ViewModel.BackupJobBuilder;
             FooterCreateJob.DataContext = RemoteClient.Get().ViewModel;
 
-            // BackupJobViewModel.Get().CloseAction = Close;
+            RemoteClient.Get().ViewModel.CloseAction = Close;
 
             Title = menuType switch
             {

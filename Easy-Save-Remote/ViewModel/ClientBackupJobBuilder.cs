@@ -4,19 +4,19 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Input;
-using EasySaveRemote.Client.Commands;
-using EasySaveRemote.Client.DataStructures;
+using EasySaveShared.Client.Commands;
+using EasySaveShared.DataStructures;
 using FolderBrowserDialog = FolderBrowserEx.FolderBrowserDialog;
 
-namespace EasySaveRemote.Client.ViewModel
+namespace EasySaveShared.Client.ViewModel
 {
-    public sealed class ClientBackupJobBuilder : INotifyPropertyChanged
+    public class ClientBackupJobBuilder : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         private string _name = string.Empty;
         private string _source = string.Empty;
         private string _target = string.Empty;
-        private ClientJobExecutionStrategyType _strategyType = ClientJobExecutionStrategyType.Full;
+        private SharedExecutionStrategyType _strategyType = SharedExecutionStrategyType.Full;
         private bool _isEncrypted = false;
 
         private string _initialName = string.Empty;
@@ -49,7 +49,7 @@ namespace EasySaveRemote.Client.ViewModel
             set { _target = value; OnPropertyChanged(); }
         }
 
-        public ClientJobExecutionStrategyType StrategyType
+        public SharedExecutionStrategyType StrategyType
         {
             get => _strategyType;
             set { _strategyType = value; OnPropertyChanged(); }
@@ -61,9 +61,9 @@ namespace EasySaveRemote.Client.ViewModel
             set { _isEncrypted = value; OnPropertyChanged(); }
         }
 
-        public ClientJobExecutionStrategyType[] AvailableStrategies =>
-            Enum.GetValues(typeof(ClientJobExecutionStrategyType)) as ClientJobExecutionStrategyType[]
-            ?? Array.Empty<ClientJobExecutionStrategyType>();
+        public SharedExecutionStrategyType[] AvailableStrategies =>
+            Enum.GetValues(typeof(SharedExecutionStrategyType)) as SharedExecutionStrategyType[]
+            ?? Array.Empty<SharedExecutionStrategyType>();
 
         public ICommand ShowFolderDialogCommand { get; set; }
 
@@ -110,11 +110,11 @@ namespace EasySaveRemote.Client.ViewModel
             Name = string.Empty;
             Source = string.Empty;
             Target = string.Empty;
-            StrategyType = ClientJobExecutionStrategyType.Full;
+            StrategyType = SharedExecutionStrategyType.Full;
             IsEncrypted = false;
         }
 
-        public void GetFrom(ClientBackupJob job)
+        public void GetFrom(SharedBackupJob job)
         {
             InitialName = job.InitialName;
             Name = job.Name;
@@ -124,9 +124,9 @@ namespace EasySaveRemote.Client.ViewModel
             IsEncrypted = job.IsEncrypted;
         }
 
-        public ClientBackupJob Build(bool clear = true)
+        public SharedBackupJob Build(bool clear = true)
         {
-            ClientBackupJob job = new ClientBackupJob(InitialName, Name, Source, Target, StrategyType, IsEncrypted);
+            SharedBackupJob job = new SharedBackupJob(InitialName, Name, Source, Target, StrategyType, IsEncrypted, 0.0D, SharedExecutionStatus.NotStarted);
             if (clear)
                 Clear();
             return job;

@@ -3,10 +3,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using EasySaveRemote.Client.DataStructures;
+using EasySaveShared.DataStructures;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace EasySaveRemote.Client
+namespace EasySaveShared.Client
 {
     /// <summary>
     /// Represents a client that connects to a remote server to send and receive network messages.
@@ -67,7 +68,8 @@ namespace EasySaveRemote.Client
                     if (received == 0) break;
 
                     string message = Encoding.UTF8.GetString(buffer, 0, received);
-                    NetworkMessage? networkMessage = NetworkMessage.Deserialize(message);
+                    // Console.WriteLine(message);
+                    NetworkMessage? networkMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
                     if (networkMessage == null)
                     {
                         //Console.WriteLine("Received invalid message from server.");
@@ -92,7 +94,14 @@ namespace EasySaveRemote.Client
         /// <param name="message"></param>
         public void SendMessage(NetworkMessage message)
         {
-            _clientSocket.Send(Encoding.UTF8.GetBytes(message.Serialize()));
+            try
+            {
+                _clientSocket.Send(Encoding.UTF8.GetBytes(JToken.FromObject(message).ToString(Formatting.None)));
+            }
+            catch (Exception e)
+            {
+                OnDisconnected?.Invoke(this);
+            }
         }
 
         public void Disconnect()

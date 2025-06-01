@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using EasySaveRemote.Client.DataStructures;
+using EasySaveShared.DataStructures;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace EasySaveRemote.Client
+namespace EasySaveShared.Client
 {
     /// <summary>
     /// Handles network messages received by the client from the server.<br/>
@@ -35,37 +35,11 @@ namespace EasySaveRemote.Client
             {
                 switch (message.Type)
                 {
-                    case MessageType.FetchBackupJobList:
+                    case MessageType.FetchJobs:
                         HandleBackupJobList(message);
                         break;
-                    case MessageType.BackupJobUpdate:
-                        ClientBackupJob? backupJobUpdate = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJobUpdate == null)
-                        {
-                            Console.WriteLine("Failed to deserialize backup job from message data.");
-                            return;
-                        }
-                        HandleBackupJobUpdate(backupJobUpdate);
-                        break;
-                    case MessageType.BackupJobAdd:
-                        // Deserialize the data into a ClientBackupJob object
-                        ClientBackupJob? backupJobAdd = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJobAdd == null)
-                        {
-                            Console.WriteLine("Failed to deserialize backup job from message data.");
-                            return;
-                        }
-                        // Call the method to handle the addition of the backup job
-                        HandleBackupJobAdd(backupJobAdd);
-                        break;
-                    case MessageType.BackupJobRemove:
-                        ClientBackupJob? backupJobRemove = JsonConvert.DeserializeObject<ClientBackupJob>(message.Data.ToJsonString());
-                        if (backupJobRemove == null)
-                        {
-                            Console.WriteLine("Failed to deserialize backup job from message data.");
-                            return;
-                        }
-                        HandleBackupJobRemove(backupJobRemove);
+                    case MessageType.JobDataUpdate2Client:
+                        HandleJobDataUpdate(message);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(message.Type), message.Type, null);
@@ -73,34 +47,31 @@ namespace EasySaveRemote.Client
             }
         }
 
-        private void HandleBackupJobAdd(ClientBackupJob backupJob)
+        private void HandleJobDataUpdate(NetworkMessage message)
         {
-            _jobManager.AddBackupJob(backupJob);
-        }
+            if (!message.Data.TryGetValue("backupJob", out JToken? jobJson))
+                return;
 
-        private void HandleBackupJobRemove(ClientBackupJob backupJob)
-        {
-            _jobManager.RemoveBackupJob(backupJob);
+            SharedBackupJob? backupJob = jobJson.ToObject<SharedBackupJob>();
+            if (backupJob == null)
+                return;
+
+            _jobManager.GetJob(backupJob.Name)?.UpdateData(backupJob);
         }
 
         private void HandleBackupJobList(NetworkMessage networkMessage)
         {
-            if (!networkMessage.Data.TryGetPropertyValue("backupJobs", out JsonNode? backupJobsJson) || backupJobsJson == null)
+            if (!networkMessage.Data.TryGetValue("backupJobs", out JToken? backupJobsJson))
                 return;
             
-            List<ClientBackupJob> backupJobs = new List<ClientBackupJob>();
-            JsonArray backupJobsArray = backupJobsJson.AsArray();
-            foreach (JsonNode? jsonNode in backupJobsArray)
+            List<SharedBackupJob> backupJobs = new List<SharedBackupJob>();
+            JArray backupJobsArray = (JArray) backupJobsJson;
+            foreach (JToken jsonNode in backupJobsArray)
             {
-                backupJobs.Add(JsonConvert.DeserializeObject<ClientBackupJob>(jsonNode.ToJsonString())!);
+                backupJobs.Add(jsonNode.ToObject<SharedBackupJob>()!);
             }
 
             _jobManager.SetBackupJobs(backupJobs);
-        }
-
-        private void HandleBackupJobUpdate(ClientBackupJob backupJob)
-        {
-            _jobManager.UpdateBackupJob(backupJob);
         }
     }
 }

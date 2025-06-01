@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Text.Json.Nodes;
+using System.Linq;
 using System.Windows;
-using EasySaveRemote.Client.DataStructures;
+using EasySaveShared.DataStructures;
+using Newtonsoft.Json.Linq;
 
-namespace EasySaveRemote
+namespace EasySaveShared
 {
     /// <summary>
     /// Logique d'interaction pour ManageJobs_Page.xaml
@@ -90,67 +89,87 @@ namespace EasySaveRemote
         
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
         {
-            // BackupJobViewModel.Get().JobBuilder.Clear();
-            //
-            // JobFormWindow jobFormWindow = new JobFormWindow("create_job", true);
+            RemoteClient.Get().ViewModel.BackupJobBuilder.Clear();
+            
+            JobFormWindow jobFormWindow = new JobFormWindow(JobFormWindowType.Create, true);
             // jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
-            // jobFormWindow.ShowDialog();
+            jobFormWindow.ShowDialog();
         }
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            // if (!ViewModel.CanJobBeRun)
-            //     return;
-            //
-            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-            //
-            // if (selectedJobName == null)
-            //     return;
-            //
-            // ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
-            //
-            // var modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
+            string selectedJobName = ((SharedBackupJob)jobsDatagrid.SelectedItem)?.Name;
+            
+            if (selectedJobName == null)
+                return;
+            
+            RemoteClient.Get().ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
+            
+            JobFormWindow modifyJobFormWindow = new JobFormWindow(JobFormWindowType.Edit, false);
             // modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
-            // modifyJobFormWindow.ShowDialog();
-            //
-            // NetworkClient networkClient = new NetworkClient();
-            // networkClient.SendData(networkClient.ClientJsonSerialize(_jobForm.nameInput.Text, _jobForm.sourceInput.Text, _jobForm.targetInput.Text, "modify"));
+            modifyJobFormWindow.ShowDialog();
         }
         public void DeleteWindow_Click(object sender, RoutedEventArgs e)
         {
-            // NetworkClient networkClient = new NetworkClient();
-            //
-            // if (jobsDatagrid.SelectedItem == null)
-            // {
-            //     MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_no_selected.text"),
-            //         L10N.Get().GetTranslation("message_box.delete_no_selected.title"), MessageBoxButton.OK,
-            //         MessageBoxImage.Warning);
-            //
-            //     return;
-            // }
-            //
-            // var result = MessageBox.Show(L10N.Get().GetTranslation("message_box.delete_confirm.text"),
-            //     L10N.Get().GetTranslation("message_box.delete_confirm.title"), MessageBoxButton.YesNo,
-            //     MessageBoxImage.Question);
-            // if (result != MessageBoxResult.Yes) return;
-            //
-            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-            // networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "delete"));
+            if (jobsDatagrid.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a job to delete.",
+                "No Job Selected", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             
+                return;
+            }
+            
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete the selected job?",
+                "Confirm Deletion", MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) return;
+            
+            RemoteClient.Get().ViewModel.DeleteMultipleJobsCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
         }
         public void StopBTN_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement the logic to stop the selected job(s)
+            if (jobsDatagrid.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a job to stop.",
+                    "No Job Selected", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            
+                return;
+            }
+            
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to stop the selected job(s)?",
+                "Confirm Stop", MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            
+            if (result != MessageBoxResult.Yes) return;
+            
+            RemoteClient.Get().ViewModel.StopMultipleJobsCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
         }
         public void PauseBTN_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: Implement the logic to pause the selected job(s)
+            if (jobsDatagrid.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a job to pause.",
+                    "No Job Selected", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            
+                return;
+            }
+            
+            RemoteClient.Get().ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
         }
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            // NetworkClient networkClient = new NetworkClient();
-            //
-            // var selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
-            // networkClient.SendData(networkClient.ClientJsonSerialize(selectedJobName, "", "", "run"));
+            if (jobsDatagrid.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a job to run.",
+                    "No Job Selected", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            
+                return;
+            }
+            
+            RemoteClient.Get().ViewModel.RunMultipleJobsCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
         }
         public void dailyLogBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -193,7 +212,12 @@ namespace EasySaveRemote
             
             // Optionally, you can also refresh the DataGrid to reflect any changes.
             // jobsDatagrid.Items.Refresh();
-            RemoteClient.Get().NetworkClient.SendMessage(NetworkMessage.Create(MessageType.FetchBackupJobList, new JsonObject()));
+            RemoteClient.Get().NetworkClient.SendMessage(NetworkMessage.Create(MessageType.FetchJobs, new JObject()));
+        }
+        
+        private SharedBackupJob[] GetSelectedJobs()
+        {
+            return jobsDatagrid.SelectedItems.Cast<SharedBackupJob>().ToArray();
         }
     }
 }

@@ -28,7 +28,11 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobsStopped? JobsStoppedHandler;
         public override event OnJobsPaused? JobsPausedHandler;
         public override event OnJobsStarted? JobsStartedHandler;
-        
+        public override event OnJobAdded? JobAddedHandler;
+        public override event OnJobRemoved? JobRemovedHandler;
+        public override event OnJobUpdated? JobUpdatedHandler;
+        public override event OnDataUpdated? DataUpdatedHandler;
+
         private readonly object _lockObject = new object();
         private static readonly Semaphore SemaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
 
@@ -41,6 +45,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             Jobs.Add(job);
             if (save)
                 Core.EasySaveCore.Get().Configuration.SaveConfiguration();
+            JobAddedHandler?.Invoke(job);
             return true;
         }
 
@@ -62,6 +67,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
             Jobs.Remove(job);
             Core.EasySaveCore.Get().Configuration.SaveConfiguration();
+            JobRemovedHandler?.Invoke(job);
             return true;
         }
 
@@ -75,6 +81,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 job.JsonDeserialize(jobJson);
 
             Core.EasySaveCore.Get().Configuration.SaveConfiguration();
+            JobUpdatedHandler?.Invoke(job);
         }
 
         public override bool UpdateJob(string name, IJob? job)
@@ -93,7 +100,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             Jobs[Jobs.IndexOf(existingJob)] = job;
 
             Core.EasySaveCore.Get().Configuration.SaveConfiguration();
-
+            JobUpdatedHandler?.Invoke(job);
             return true;
         }
 
@@ -221,6 +228,11 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
                 UpdateProperties();
             }
+        }
+        
+        public void OnDataUpdated(IJob job)
+        {
+            DataUpdatedHandler?.Invoke(job);
         }
 
         public override void UpdateProperties()

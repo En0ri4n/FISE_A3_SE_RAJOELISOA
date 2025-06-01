@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Input;
 
-namespace EasySaveRemote.Client.Commands
+namespace EasySaveShared.Client.Commands
 {
     public class RelayCommand : ICommand
     {

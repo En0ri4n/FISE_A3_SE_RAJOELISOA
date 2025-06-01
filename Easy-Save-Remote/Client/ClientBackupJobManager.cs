@@ -2,51 +2,39 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Threading;
-using EasySaveRemote.Client.DataStructures;
+using EasySaveShared.DataStructures;
 
-namespace EasySaveRemote.Client
+namespace EasySaveShared.Client
 {
     public class ClientBackupJobManager
     {
-        private readonly ObservableCollection<ClientBackupJob> _backupJobs;
-        public ObservableCollection<ClientBackupJob> BackupJobs => _backupJobs;
+        private readonly ObservableCollection<SharedBackupJob> _backupJobs;
+        public ObservableCollection<SharedBackupJob> BackupJobs => _backupJobs;
         
         public ClientBackupJobManager()
         {
-            _backupJobs = new ObservableCollection<ClientBackupJob>();
-        }
-        
-        public void AddBackupJob(ClientBackupJob job)
-        {
-            if (job == null)
-                throw new ArgumentNullException(nameof(job), "Backup job cannot be null.");
-            
-            _backupJobs.Add(job);
-        }
-        public void RemoveBackupJob(ClientBackupJob job)
-        {
-            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
-
-            _backupJobs.Remove(job);
+            _backupJobs = new ObservableCollection<SharedBackupJob>();
         }
 
-        public void SetBackupJobs(List<ClientBackupJob> jobs)
+        public void SetBackupJobs(List<SharedBackupJob> jobs)
         {
             if (jobs == null) throw new ArgumentNullException(nameof(jobs), $"Backup job cannot be null");
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _backupJobs.Clear();
-                foreach (ClientBackupJob job in jobs)
+                foreach (SharedBackupJob job in jobs)
                     _backupJobs.Add(job);
             });
         }
-
-        public void UpdateBackupJob(ClientBackupJob job)
+        
+        public SharedBackupJob? GetJob(string? name)
         {
-            //TODO
-            if (job == null) throw new ArgumentNullException(nameof(job), $"Backup job cannot be null");
-            _backupJobs[_backupJobs.IndexOf(job)] = job;
+            foreach(SharedBackupJob job in _backupJobs)
+            {
+                if (job.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    return job;
+            }
+            return null;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace EasySaveRemote
+namespace EasySaveShared
 {
     /// <summary>
     /// Logique d'interaction pour ConnectWindow.xaml

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text.Json.Nodes;
-using EasySaveRemote.Client;
-using EasySaveRemote.Client.DataStructures;
-using EasySaveRemote.Client.ViewModel;
+using EasySaveShared.Client;
+using EasySaveShared.Client.ViewModel;
+using EasySaveShared.DataStructures;
 
-namespace EasySaveRemote
+namespace EasySaveShared
 {
     /// <summary>
     /// Singleton class representing the remote client.<br/>
@@ -32,8 +29,7 @@ namespace EasySaveRemote
             NetworkClient.OnConnected += (client) =>
             {
                 // Fetch the backup job list from the server when connected
-                NetworkMessage message = NetworkMessage.Create(MessageType.FetchBackupJobList, new JsonObject());
-                client.SendMessage(message);
+                client.SendMessage(NetworkMessage.Create(MessageType.FetchJobs));
             };
         }
 

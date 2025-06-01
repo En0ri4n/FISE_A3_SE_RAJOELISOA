@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Utilities;
-using EasySaveCore.Server.DataStructures;
+using EasySaveShared.DataStructures;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace EasySaveCore.Server
 {
@@ -62,9 +63,6 @@ namespace EasySaveCore.Server
                         _clients.Add(clientSocket);
                     }
 
-                    // No, we don't need to broadcast the message immediately after accepting a client.
-                    // BroadcastMessage(clientSocket); //message = backup job object list
-
                     // Create a new thread to handle the client
                     Thread clientThread = new Thread(() => ListenToClient(clientSocket));
                     clientThread.Start();
@@ -92,19 +90,19 @@ namespace EasySaveCore.Server
         /// <param name="client"></param>
         private void ListenToClient(Socket client)
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
 
             try
             {
                 while (true)
                 {
                     int received = client.Receive(buffer);
-                    if (received == 0) break;
+                    if (received == 0) continue;
 
                     // We assume the message is a JSON string
                     string message = Encoding.UTF8.GetString(buffer, 0, received);
                     // We receive the message from client and deserialize it
-                    NetworkMessage? deserializedMessage = NetworkMessage.Deserialize(message);
+                    NetworkMessage? deserializedMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
                     if (deserializedMessage == null)
                     {
                         Logger.Log(LogLevel.Information, "Received invalid message from client.");
@@ -117,7 +115,7 @@ namespace EasySaveCore.Server
             }
             catch (SocketException)
             {
-                //Console.WriteLine("Client disconnected unexpectedly.");
+                Logger.Log(LogLevel.Information, $"Client {client.RemoteEndPoint} disconnected.");
             }
             finally
             {
@@ -127,7 +125,7 @@ namespace EasySaveCore.Server
                 }
 
                 client.Close();
-                //Console.WriteLine($"Client {client.RemoteEndPoint} disconnected.");
+                // Console.WriteLine($"Client {client.RemoteEndPoint} disconnected.");
             }
         }
         
@@ -143,7 +141,7 @@ namespace EasySaveCore.Server
                 try
                 {
                     // Serialize the message to JSON
-                    string serializedMessage = message.Serialize();
+                    string serializedMessage = JToken.FromObject(message).ToString(Formatting.None);
                     byte[] data = Encoding.UTF8.GetBytes(serializedMessage);
                     client.Send(data);
                 }
@@ -170,7 +168,7 @@ namespace EasySaveCore.Server
                     try
                     {
                         // Serialize the message to JSON
-                        byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+                        byte[] data = Encoding.UTF8.GetBytes(JToken.FromObject(message).ToString(Formatting.None));
                         client.Send(data);
                     }
                     catch
@@ -185,36 +183,27 @@ namespace EasySaveCore.Server
                 }
             }
         }
-
-        // TODO: Supprimer ça, c'est pas comme ça qu'on va faire la communication
         
-        // public void ServerJsonDeserialize(JsonObject data)
-        // {
-        //     // Version
-        //     data.TryGetPropertyValue("name", out var name);
-        //     data.TryGetPropertyValue("source", out var source);
-        //     data.TryGetPropertyValue("target", out var target);
-        //     data.TryGetPropertyValue("action", out var action);
-        //
-        //     if (action == null)
-        //     {
-        //         throw new JsonException("No actions were given");
-        //     }else if (action.ToString() == "create")
-        //     { //TODO
-        //         BackupJobViewModel.Get().BuildJobCommand.Execute();
-        //     }
-        //     else if (action.ToString() == "modify")
-        //     { //TODO : no data context how do i call it ???
-        //         ViewModel.DeleteJobCommand.Execute();
-        //     }
-        //     else if (action.ToString() == "delete")
-        //     {
-        //         ViewModel.DeleteJobCommand.Execute(name);
-        //     }
-        //     else if (action.ToString() == "delete")
-        //     {
-        //         ViewModel.RunJobCommand.Execute(name);
-        //     }
-        // }
+        public void BroadcastMessage(NetworkMessage message)
+        {
+            lock (_lockObj)
+            {
+                foreach (Socket client in _clients.ToList())
+                {
+                    try
+                    {
+                        // Serialize the message to JSON
+                        byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+                        client.Send(data);
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"Failed to send message to {client.RemoteEndPoint}. Removing client.");
+                        _clients.Remove(client);
+                        client.Close();
+                    }
+                }
+            }
+        }
     }
 }

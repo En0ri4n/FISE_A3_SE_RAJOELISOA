@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
@@ -382,6 +381,7 @@ namespace EasySaveCore.Models
             OnPropertyChanged(nameof(Size));
             OnPropertyChanged(nameof(TransferTime));
             OnPropertyChanged(nameof(EncryptionTime));
+            Manager.OnDataUpdated(this);
         }
 
         public void ClearAndSetupJob()

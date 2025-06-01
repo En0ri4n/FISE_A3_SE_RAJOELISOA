@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 
-namespace EasySaveRemote
+namespace EasySaveShared
 {
     public partial class OptionsPopup : Window
     {
