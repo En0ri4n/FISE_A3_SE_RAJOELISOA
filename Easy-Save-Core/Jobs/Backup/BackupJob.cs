@@ -225,80 +225,98 @@ namespace EasySaveCore.Models
 
         private void RunTasks(List<JobTask> jobTasks)
         {
+            long sizeThreshold = ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold;
+            Queue<JobTask> largeJobTasks = new Queue<JobTask>();
+            Queue<JobTask> smallJobTasks = new Queue<JobTask>();
             foreach (JobTask jobTask in jobTasks)
             {
-                while (IsPaused)
-
+                if (jobTask.Size * 1024 >= sizeThreshold)
                 {
-                    Thread.Sleep(500);
-                }
-
-                if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
-                    continue;
-
-                while (ProcessHelper.IsAnyProcessRunning(
-                           ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
-                           .ProcessesToBlacklist.ToArray()))
-                {
-                    if (!_alreadyWarnedForBlacklistedProcess)
-                    {
-                        if (Interlocked.CompareExchange(ref _isPopupOpenAtomic, 1, 0) == 0)
-                        {
-                            _alreadyWarnedForBlacklistedProcess = true;
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                MessageBox.Show(
-                                    "Blacklisted process detected, all backup jobs have been paused.",
-                                    "Jobs Paused",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information
-                                );
-                                Interlocked.Exchange(ref _isPopupOpenAtomic, 0);
-                            });
-                        }
-                    }
-
-                    Manager.PauseJobs(Manager.GetJobs().ToList(), true);
-                    Thread.Sleep(500);
-                }
-
-                _alreadyWarnedForBlacklistedProcess = false;
-
-
-                if (!Directory.Exists(Source))
-                {
-                    Manager.StopJob(Name);
-                    MessageBox.Show(
-                        "The source Directory has been removed in between the running of the job. Job has been terminated.",
-                        "Source Missing", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    continue;
-                }
-
-                if (jobTask.Size * 1024 >=
-                    ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
-                    .SimultaneousFileSizeThreshold)
-                {
-                    SemaphoreSizeThreshold.WaitOne();
-
-                    if (IsStopped)
-                    {
-                        SemaphoreSizeThreshold.Release();
-                        CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                        return;
-                    }
-
-                    jobTask.ExecuteTask(StrategyType);
-                    SemaphoreSizeThreshold.Release();
+                    largeJobTasks.Enqueue(jobTask);
                 }
                 else
                 {
-                    jobTask.ExecuteTask(StrategyType);
+                    smallJobTasks.Enqueue(jobTask);
                 }
+            }
+            JobTask chosenTask = null;
+            bool isALargeTask = false;
+            while (largeJobTasks.Count > 0 || smallJobTasks.Count > 0)
+            {
+                bool isTaskChosen = false;
                 
-                if (IsStopped)
+                while (IsPaused)
                 {
-                    return;
+                    Thread.Sleep(500);
                 }
+
+                if (SemaphoreSizeThreshold.WaitOne(0) && largeJobTasks.Count > 0)
+                {
+                    //run a large task
+                    isTaskChosen = true;
+                    chosenTask = largeJobTasks.Dequeue();
+                    isALargeTask = true;
+                }
+                else if (smallJobTasks.Count > 0)
+                {
+                    //run a small task
+                    chosenTask = smallJobTasks.Dequeue();
+                    isALargeTask = false;
+                    isTaskChosen = true;
+                }
+                if (isTaskChosen)
+                {
+                    if (WasPaused && chosenTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
+                        continue;
+                    while (ProcessHelper.IsAnyProcessRunning(
+                          ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
+                          .ProcessesToBlacklist.ToArray()))
+                    {
+                        if (!_alreadyWarnedForBlacklistedProcess)
+                        {
+                            if (Interlocked.CompareExchange(ref _isPopupOpenAtomic, 1, 0) == 0)
+                            {
+                                _alreadyWarnedForBlacklistedProcess = true;
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(
+                                        "Blacklisted process detected, all backup jobs have been paused.",
+                                        "Jobs Paused",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Information
+                                    );
+                                    Interlocked.Exchange(ref _isPopupOpenAtomic, 0);
+                                });
+                            }
+                        }
+
+                        Manager.PauseJobs(Manager.GetJobs().ToList(), true);
+                        Thread.Sleep(500);
+                    }
+
+                    _alreadyWarnedForBlacklistedProcess = false;
+
+
+                    if (!Directory.Exists(Source))
+                    {
+                        Manager.StopJob(Name);
+                        MessageBox.Show(
+                            "The source Directory has been removed in between the running of the job. Job has been terminated.",
+                            "Source Missing", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        continue;
+                    }
+
+                    chosenTask.ExecuteTask(StrategyType);
+                    if (isALargeTask)
+                    {
+                        SemaphoreSizeThreshold.Release();
+                    }
+                    if (IsStopped)
+                    {
+                        return;
+                    }
+                }
+                Thread.Sleep(5);
             }
         }
 
