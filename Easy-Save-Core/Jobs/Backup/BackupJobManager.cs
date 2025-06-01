@@ -41,7 +41,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         private static readonly Semaphore _semaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
         //TODO these 2 needs to be defined outside of a JobTask but accessible in RunJob
         int threadsHandlingPriority;
-        ManualResetEventSlim canStartNonPriority;
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -114,12 +113,11 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         {
             //PRIORITY HERE
             threadsHandlingPriority = 0;
-            canStartNonPriority = new ManualResetEventSlim(false);
             if (!job.CanRunJob())
                 throw new Exception($"Job {job.Name} cannot be run");
 
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-            job.RunJob(threadsHandlingPriority, canStartNonPriority, ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList()); //FIXME CEDRIC added a tolist for my ease of use
+            job.RunJob(threadsHandlingPriority);
             job.Status = job.JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed;
@@ -133,7 +131,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
             //PRIORITY HERE
             threadsHandlingPriority = 0;
-            canStartNonPriority = new ManualResetEventSlim(false);
 
             IsRunning = true;
             int jobsUnfinished = jobs.Count();
@@ -161,7 +158,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                         return;
                     }
 
-                    job.RunJob(threadsHandlingPriority, canStartNonPriority, ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList()); //FIXME CEDRIC added a tolist for my ease of use
+                    job.RunJob(threadsHandlingPriority);
                     _semaphoreObject.Release();
                     jobsUnfinished--;
                     lock (_lockObject)
