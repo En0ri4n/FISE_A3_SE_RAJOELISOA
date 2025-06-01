@@ -158,6 +158,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                         return;
                     }
                     job.RunJob(true);
+                    //FIXME : for some reason, all jobs get to the status "in progress" when all priority files are processed
+                    //however, pause is still active and functionning as intended
                     _processorsSemaphore.Release();
                     _priorityCountdown.Signal();
                     _priorityCountdown.Wait(); //wait until all threads have finished working on priority

@@ -149,15 +149,15 @@ namespace EasySaveCore.Models
                 string dirToCreate = directory.Replace(Source, Target);
                 Directory.CreateDirectory(dirToCreate);
             }
-            List<String> priority_extensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList();
+            List<String> PriorityExtensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList();
             List<JobTask> JobTasksToRun = new List<JobTask>();
             foreach (JobTask jobTask in JobTasks) //check if file has one of the prioritized extensions
             {
-                if (priority_extensions.Contains(jobTask.Source.Substring(Math.Abs(jobTask.Source.LastIndexOf("."))))) //file extension in ExtensionsToPrioritize
+                if (PriorityExtensions.Contains(jobTask.Source.Substring(Math.Abs(jobTask.Source.LastIndexOf("."))))) //file extension in ExtensionsToPrioritize
                 {
                     if (isPriority) { JobTasksToRun.Add(jobTask); }
                 }
-                else //file extension not in ExtensionsToPrioritize or no file extension (Math.abs() is here if the file has no extension, the result wont fit priority_extensions has it wont be in .ext format)
+                else //file extension not in ExtensionsToPrioritize or no file extension (Math.abs() is here if the file has no extension, the result wont fit PriorityExtensions has it wont be in .ext format)
                 {
                     if (!isPriority) { JobTasksToRun.Add(jobTask); }
                 }
@@ -166,6 +166,10 @@ namespace EasySaveCore.Models
             TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
             EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
+            if (isPriority)
+            {
+                return;
+            }
             CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed);
