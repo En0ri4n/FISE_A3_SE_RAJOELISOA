@@ -230,7 +230,7 @@ namespace EasySaveCore.Models
             Queue<JobTask> smallJobTasks = new Queue<JobTask>();
             foreach (JobTask jobTask in jobTasks)
             {
-                if (jobTask.Size * 1024 >= sizeThreshold)
+                if (jobTask.Size >= sizeThreshold * 1024)
                 {
                     largeJobTasks.Enqueue(jobTask);
                 }
@@ -250,7 +250,7 @@ namespace EasySaveCore.Models
                     Thread.Sleep(500);
                 }
 
-                if (SemaphoreSizeThreshold.WaitOne(0) && largeJobTasks.Count > 0)
+                if (largeJobTasks.Count > 0 && SemaphoreSizeThreshold.WaitOne(0))
                 {
                     //run a large task
                     isTaskChosen = true;
@@ -264,6 +264,7 @@ namespace EasySaveCore.Models
                     isALargeTask = false;
                     isTaskChosen = true;
                 }
+
                 if (isTaskChosen)
                 {
                     if (WasPaused && chosenTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)

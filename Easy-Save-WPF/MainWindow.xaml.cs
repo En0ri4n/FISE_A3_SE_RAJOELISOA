@@ -171,6 +171,19 @@ namespace Easy_Save_WPF
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
+            IJob[] selectedJobs = GetSelectedJobs();
+
+            foreach (IJob jobIteration in selectedJobs)
+            {
+                if (selectedJobs.Any(selectedJob => selectedJob.Target == jobIteration.Target && selectedJob != jobIteration))
+                {
+                    MessageBox.Show("Same target is detected, this will result in errors. Please select jobs with different targets.",
+                        L10N.Get().GetTranslation("message_box.same_target.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             ExecuteWithReselection(jobNames =>
             {
                 ViewModel.UpdateProperties(null);
