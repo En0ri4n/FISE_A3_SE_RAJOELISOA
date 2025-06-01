@@ -20,7 +20,9 @@ namespace CLEA.EasySaveCore.Models
         public long TransferTime { get; set; }
 
         public long EncryptionTime { get; set; }
-
+        
+        public double Progress { get; protected set; } = 0.0;
+        
         protected JobTask(string name)
         {
             Name = name;

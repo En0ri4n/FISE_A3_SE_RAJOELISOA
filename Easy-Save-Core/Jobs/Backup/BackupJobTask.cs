@@ -41,10 +41,8 @@ namespace EasySaveCore.Models
                     {
                         TransferTime = 0L;
                         EncryptionTime = 0L;
-                        Status = JobExecutionStrategy.ExecutionStatus.Skipped;
-                        _backupJob.OnTaskCompleted(this);
-                        Logger.Log(LogLevel.Information,
-                            $"[{Name}] Backup job task from {Source} to {Target}.encrypted completed in {TransferTime}ms ({Status})");
+                        CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Skipped);
+                        Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target}.encrypted completed in {TransferTime}ms ({Status})");
                         return;
                     }
             }
@@ -55,10 +53,8 @@ namespace EasySaveCore.Models
                     {
                         TransferTime = 0L;
                         EncryptionTime = 0L;
-                        Status = JobExecutionStrategy.ExecutionStatus.Skipped;
-                        _backupJob.OnTaskCompleted(this);
-                        Logger.Log(LogLevel.Information,
-                            $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
+                        CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Skipped);
+                        Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
                         return;
                     }
             }
@@ -91,45 +87,54 @@ namespace EasySaveCore.Models
 
             watch.Stop();
             TransferTime = watch.ElapsedMilliseconds;
-            Status = JobExecutionStrategy.ExecutionStatus.Completed;
-            _backupJob.OnTaskCompleted(this);
-            Logger.Log(LogLevel.Information,
-                $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
+            CompleteJobTask(JobExecutionStrategy.ExecutionStatus.Completed);
+            Logger.Log(LogLevel.Information, $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
         }
-
-        public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
+        
+        private void CompleteJobTask(JobExecutionStrategy.ExecutionStatus status)
         {
-            const int bufferSize = 128 * 1024; // limite l'usage disque
-            byte[] buffer = new byte[bufferSize];
-
-            using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
-            using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
-            using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
-
-            long bytesRead;
-            long bytesTransferredThisSecond = 0;
-            Stopwatch secondTimer = Stopwatch.StartNew();
-
-            while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                bufferedTarget.Write(buffer, 0, (int)bytesRead);
-                bufferedSource.Flush();
-                bufferedTarget.Flush();
-                bytesTransferredThisSecond += bytesRead;
-
-                Thread.Sleep(2);
-
-                if (bytesTransferredThisSecond >= maxBytesPerSecond)
-                {
-                    long elapsed = secondTimer.ElapsedMilliseconds;
-                    if (elapsed < 1000) Thread.Sleep((int)(1000 - elapsed));
-
-                    bytesTransferredThisSecond = 0;
-                    secondTimer.Restart();
-                }
-            }
+            if (status == JobExecutionStrategy.ExecutionStatus.Skipped)
+                Progress = 1.0D;
+            
+            Status = status;
+            _backupJob.OnTaskCompleted(this);
+            _backupJob.UpdateProgress();
         }
+
+        // Unused method, kept for reference
+        // public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
+        // {
+        //     const int bufferSize = 128 * 1024; // limite l'usage disque
+        //     byte[] buffer = new byte[bufferSize];
+        //
+        //     using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        //     using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+        //     using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
+        //     using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
+        //
+        //     long bytesRead;
+        //     long bytesTransferredThisSecond = 0;
+        //     Stopwatch secondTimer = Stopwatch.StartNew();
+        //
+        //     while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
+        //     {
+        //         bufferedTarget.Write(buffer, 0, (int)bytesRead);
+        //         bufferedSource.Flush();
+        //         bufferedTarget.Flush();
+        //         bytesTransferredThisSecond += bytesRead;
+        //
+        //         Thread.Sleep(2);
+        //
+        //         if (bytesTransferredThisSecond >= maxBytesPerSecond)
+        //         {
+        //             long elapsed = secondTimer.ElapsedMilliseconds;
+        //             if (elapsed < 1000) Thread.Sleep((int)(1000 - elapsed));
+        //
+        //             bytesTransferredThisSecond = 0;
+        //             secondTimer.Restart();
+        //         }
+        //     }
+        // }
 
         private void CopyFileWithThrottle(string source, string target)
         {
@@ -141,6 +146,21 @@ namespace EasySaveCore.Models
             int bytesRead;
             while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
             {
+                while (_backupJob.IsPaused)
+                {
+                    _backupJob.ReleaseSemaphore(); //TODO Make smaller files available when one thread has a big file
+                    
+                    if(_backupJob.IsStopped)
+                        return;
+                    
+                    Thread.Sleep(100);
+                }
+
+                if (_backupJob.IsStopped)
+                    return;
+
+                Progress = (double) sourceStream.Position / (double) Size;
+                _backupJob.UpdateProgress();
                 targetStream.Write(buffer, 0, bytesRead);
                 Thread.Sleep(5);
             }
