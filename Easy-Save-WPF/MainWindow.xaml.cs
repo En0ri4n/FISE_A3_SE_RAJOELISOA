@@ -1,8 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
 using CLEA.EasySaveCore.Translations;
@@ -53,6 +56,12 @@ namespace Easy_Save_WPF
                             L10N.Get().GetTranslation("message_box.interrupt_process.title"), MessageBoxButton.OK,
                             MessageBoxImage.Error);
                         break;
+                    case JobInterruptionReasons.ManualStop:
+                        MessageBox.Show(
+                            L10N.Get().GetTranslation("message_box.interrupt_process.text").Replace("{JOB}", job.Name),
+                            L10N.Get().GetTranslation("message_box.interrupt_process.title"), MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        break;
                     default:
                         MessageBox.Show(
                             L10N.Get().GetTranslation("message_box.interrupt_unknown.text").Replace("{JOB}", job.Name),
@@ -65,7 +74,7 @@ namespace Easy_Save_WPF
 
         private void OnCustomClosing(object sender, CancelEventArgs e)
         {
-            if (ViewModel.CanJobBeRun)
+            if (!ViewModel.CanJobBeRun)
                 return;
 
             MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"),
@@ -94,6 +103,7 @@ namespace Easy_Save_WPF
                 jobsDatagrid.UnselectAll();
                 SelectAll_Checkbox.IsChecked = false;
             }
+            OnCellsSelected(sender, null);
         }
 
         public void CreateWindow_Click(object sender, RoutedEventArgs e)
@@ -107,10 +117,12 @@ namespace Easy_Save_WPF
 
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
+            string selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
+            
+            ViewModel.UpdateCanJobsRunCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
+            
             if (!ViewModel.CanJobBeRun)
                 return;
-
-            string selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
 
             if (selectedJobName == null)
                 return;
@@ -141,21 +153,50 @@ namespace Easy_Save_WPF
             foreach (IJob selectedJob in GetSelectedJobs()) ViewModel.DeleteJobCommand.Execute(selectedJob.Name);
         }
 
-        public void StopBTN_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Implement the logic to stop the selected job(s)
-        }
-
         public void OnPauseJobsButtonClicked(object sender, RoutedEventArgs e)
         {
-            ViewModel.PauseMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+            ExecuteWithReselection(jobNames =>
+            {
+                ViewModel.PauseJobsCommand.Execute(jobNames);
+            });
+        }
+
+        public void OnStopJobsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ExecuteWithReselection(jobNames =>
+            {
+                ViewModel.StopJobsCommand.Execute(jobNames);
+            });
         }
 
         public void RunJob_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.RunMultipleJobsCommand.Execute(GetSelectedJobs().Select(bj => bj.Name).ToList());
+            ExecuteWithReselection(jobNames =>
+            {
+                ViewModel.RunMultipleJobsCommand.Execute(jobNames);
+            });
         }
-        
+
+
+        private void ExecuteWithReselection(Action<List<string>> command)
+        {
+            var selectedJobs = GetSelectedJobs();
+            var selectedNames = selectedJobs.Select(j => j.Name).ToList();
+
+            jobsDatagrid.SelectedItems.Clear();
+
+            command(selectedNames);
+
+            var allJobs = jobsDatagrid.ItemsSource.Cast<IJob>().ToList();
+            foreach (var job in allJobs.Where(j => selectedNames.Contains(j.Name)))
+            {
+                jobsDatagrid.SelectedItems.Add(job);
+            }
+
+            ViewModel.UpdateCanJobsRunCommand.Execute(selectedNames);
+        }
+
+
         private IJob[] GetSelectedJobs()
         {
             return jobsDatagrid.SelectedItems.Cast<IJob>().ToArray();
@@ -198,25 +239,10 @@ namespace Easy_Save_WPF
             myProcess.StartInfo.UseShellExecute = true;
             myProcess.Start();
         }
-
-        //public void DeactivateButtons()
-        //{
-        //    CreateJobBTN.IsEnabled = false;
-        //    ModifyJobBTN.IsEnabled = false;
-        //    DeleteJobBTN.IsEnabled = false;
-        //    RunJobBTN.IsEnabled = false;
-        //    StopJobBTN.IsEnabled = false;
-        //    PauseJobBTN.IsEnabled = false;
-        //}
-
-        //public void ReactivateButtons()
-        //{
-        //    CreateJobBTN.IsEnabled = false;
-        //    ModifyJobBTN.IsEnabled = false;
-        //    DeleteJobBTN.IsEnabled = false;
-        //    RunJobBTN.IsEnabled = false;
-        //    StopJobBTN.IsEnabled = false;
-        //    PauseJobBTN.IsEnabled = false;
-        //}
+        
+        private void OnCellsSelected(object sender, SelectedCellsChangedEventArgs e)
+        {
+            ViewModel.UpdateCanJobsRunCommand.Execute(GetSelectedJobs().Select(j => j.Name).ToList());
+        }
     }
 }

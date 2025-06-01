@@ -200,7 +200,7 @@
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ColoredIconButton}"
-                        IsEnabled="{Binding CanJobBeRun, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="{Binding CanConfigurationBeViewed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         Click="OptionsBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.options}">
                     <materialDesign:PackIcon Kind="Cog" Width="24" Height="24" />
                 </Button>
@@ -244,11 +244,25 @@
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}"
                         Click="OnPauseJobsButtonClicked"
-                        IsEnabled="True"
+                        IsEnabled="{Binding CanJobsBePausedAreStopped, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         ToolTip="{local:Loc main_menu.tool_tip.pause}">
-                    <materialDesign:PackIcon Kind="PauseCircle" Width="28" Height="28"/>
+                    <materialDesign:PackIcon Width="28" Height="28">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="Kind" Value="PauseCircle" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AreJobsPaused}" Value="true">
+                                        <Setter Property="Kind" Value="PlayCircle" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
                 </Button>
-                <Button Style="{StaticResource ColoredIconButton}" Click="StopBTN_Click" ToolTip="{local:Loc main_menu.tool_tip.stop}">
+                <Button Style="{StaticResource ColoredIconButton}"  
+                        Click="OnStopJobsButtonClicked"
+                        IsEnabled="{Binding CanJobsBePausedAreStopped, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="{local:Loc main_menu.tool_tip.stop}">
                     <materialDesign:PackIcon Kind="StopCircle" Width="28" Height="28"/>
                 </Button>
                 <Button Style="{StaticResource ColoredIconButton}"
@@ -270,6 +284,7 @@
                   SelectionMode="Extended"
                   SelectionUnit="FullRow"
                   MouseDoubleClick="ModifyWindow_Click"
+                  SelectedCellsChanged="OnCellsSelected"
                   CanUserAddRows="False"
                   CanUserSortColumns="True"
                   CanUserDeleteRows="False"
@@ -298,8 +313,44 @@
                                     IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="{local:Loc common.encryption}" Binding="{Binding IsEncrypted}"
                                         Width="100" IsReadOnly="True" />
-                <DataGridTextColumn Header="{local:Loc common.status}"
-                                    Binding="{Binding Status, StringFormat='status.{0}'}" Width="120" IsReadOnly="True" />
+                <DataGridTemplateColumn Header="{local:Loc common.status}" Width="120" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <materialDesign:PackIcon Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <Setter Property="Foreground" Value="Gray" /> <!-- Couleur par défaut -->
+                                            <Setter Property="Kind" Value="HelpCircle" /> <!-- Icône par défaut -->
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Paused">
+                                                    <Setter Property="Kind" Value="PauseCircle" />
+                                                    <Setter Property="Foreground" Value="Orange" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="InProgress">
+                                                    <Setter Property="Kind" Value="PlayCircle" />
+                                                    <Setter Property="Foreground" Value="Green" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                    <Setter Property="Kind" Value="CheckCircle" />
+                                                    <Setter Property="Foreground" Value="Blue" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Stopped">
+                                                    <Setter Property="Kind" Value="StopCircle" />
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                    <Setter Property="Kind" Value="AlertCircle" />
+                                                    <Setter Property="Foreground" Value="DarkRed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="{local:Loc common.progress}" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

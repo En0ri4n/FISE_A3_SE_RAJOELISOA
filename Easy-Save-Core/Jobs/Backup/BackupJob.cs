@@ -6,24 +6,33 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Jobs.Backup.Configurations;
 
 namespace EasySaveCore.Models
 {
-    public sealed class BackupJob : IJob, INotifyPropertyChanged
+    public class BackupJob : IJob, INotifyPropertyChanged
     {
         public BackupJobManager Manager { get; }
         public List<JobTask> JobTasks { get; set; } = new List<JobTask>();
 
         public bool IsPaused { get; set; }
         public bool WasPaused { get; set; }
+        public bool IsStopped { get; set; }
+
+        private static int _hasShownPopup = 0;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
-        public event IJob.JobCompletedDelegate? JobCompletedHandler;
+        public event IJob.JobCompletedDelegate? JobFinishedHandler;
         public event IJob.JobPausedDelegate? JobPausedHandler;
+        public event IJob.JobStoppedDelegate? JobStoppedHandler;
+        public event IJob.JobStartedDelegate? JobStartedHandler;
+
 
         public BackupJob(BackupJobManager manager) : this( manager, string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
         {
@@ -44,6 +53,9 @@ namespace EasySaveCore.Models
             TaskCompletedHandler += task => UpdateProgress();
             ClearAndSetupJob();
         }
+
+        private static int _isPopupOpenAtomic = 0;
+        private static bool _alreadyWarnedForBlacklistedProcess = false;
 
         public DateTime Timestamp { get; set; }
 
@@ -68,11 +80,11 @@ namespace EasySaveCore.Models
                 if (JobTasks.Count == 0)
                     return 0.0D;
 
-                long totalTasksSize = JobTasks.Sum(jt => jt.Size);
-                long completedTasks = JobTasks
-                    .FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
-                    .Sum(task => task.Size);
-                return (double)completedTasks / totalTasksSize * 100D;
+                double totalTasksSize = JobTasks.Count;
+                double completedTasks = JobTasks
+                    .Sum(task => task.Progress);
+                // TODO: Use progress for each task instead of size
+                return completedTasks / totalTasksSize * 100D;
             }
         }
 
@@ -91,7 +103,7 @@ namespace EasySaveCore.Models
 
         public void ClearJobCompletedHandler()
         {
-            JobCompletedHandler = null;
+            JobFinishedHandler = null;
         }
 
         public bool CanRunJob()
@@ -99,104 +111,179 @@ namespace EasySaveCore.Models
             return !IsRunning;
         }
 
-        public void RunJob()
+        public void RunJob(CountdownEvent countdown)
         {
-            if (!CanRunJob() && !IsPaused)
+            try
             {
-                CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
-                return;
-            }
+                if (!CanRunJob() && !IsPaused)
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
+                    return;
+                }
 
-            if (!Directory.Exists(Source))
-            {
-                CompleteJob(JobExecutionStrategy.ExecutionStatus.SourceNotFound);
-                return;
-            }
+                if (!Directory.Exists(Source))
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.SourceNotFound);
+                    return;
+                }
 
-            if (string.IsNullOrEmpty(Source) || string.IsNullOrEmpty(Target))
-            {
-                CompleteJob(JobExecutionStrategy.ExecutionStatus.DirectoriesNotSpecified);
-                return;
-            }
+                if (string.IsNullOrEmpty(Source) || string.IsNullOrEmpty(Target))
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.DirectoriesNotSpecified);
+                    return;
+                }
 
-            if (Source.Equals(Target))
-            {
-                CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
-                return;
-            }
-
-            Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-
-            if (!WasPaused)
-            {
-                IsRunning = true;
-                Timestamp = DateTime.Now;
-            }
-
-            UpdateProgress();
-
-            if (!Directory.Exists(Target))
-                Directory.CreateDirectory(Target);
-
-            string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
-
-            foreach (string directory in sourceDirectoriesArray)
-            {
-                string dirToCreate = directory.Replace(Source, Target);
-                Directory.CreateDirectory(dirToCreate);
-            }
-            
-            foreach (JobTask jobTask in JobTasks)
-            {
-                // Wait until the job is resumed
-                while (IsPaused) {
-                    Thread.Sleep(100); // Sleep to avoid busy waiting
+                if (Source.Equals(Target))
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
+                    return;
                 }
                 
-                if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
-                    continue;
-                
-                // Compare if jobTask size in kB is greater than or equal to the threshold defined in the configuration
-                if (jobTask.Size * 1024 >= ((BackupJobConfiguration) CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) //TODO : Is it possible to only call the lock in the if statement to avoid duplicating code | Test to be sure
-                {
-                    _semaphoreSizeThreshold.WaitOne();
-                    jobTask.ExecuteTask(StrategyType);
-                    _semaphoreSizeThreshold.Release();
-                }
-                else
-                {
-                    jobTask.ExecuteTask(StrategyType);
-                }
-            }
-            TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
-            EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
+                JobStartedHandler?.Invoke(this);
+                Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
-            CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
-                ? JobExecutionStrategy.ExecutionStatus.Completed
-                : JobExecutionStrategy.ExecutionStatus.Failed);
+                if (!WasPaused)
+                {
+                    IsRunning = true;
+                    Timestamp = DateTime.Now;
+                }
+
+                UpdateProgress();
+
+                if (!Directory.Exists(Target))
+                    Directory.CreateDirectory(Target);
+
+                string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
+
+                foreach (string directory in sourceDirectoriesArray)
+                {
+                    string dirToCreate = directory.Replace(Source, Target);
+                    Directory.CreateDirectory(dirToCreate);
+                }
+
+                foreach (JobTask jobTask in JobTasks)
+                {
+                    while (IsPaused)
+                    {
+                        Thread.Sleep(500);
+                    }
+
+                    if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
+                        continue;
+
+                    while (ProcessHelper.IsAnyProcessRunning(
+                        ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
+                    {
+                        if (!_alreadyWarnedForBlacklistedProcess)
+                        {
+                            if (Interlocked.CompareExchange(ref _isPopupOpenAtomic, 1, 0) == 0)
+                            {
+                                _alreadyWarnedForBlacklistedProcess = true;
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(
+                                        "Blacklisted process detected, all backup jobs have been paused.",
+                                        "Jobs Paused",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Information
+                                    );
+                                    Interlocked.Exchange(ref _isPopupOpenAtomic, 0);
+                                });
+                            }
+                        }
+
+                        Manager.PauseJobs(Manager.GetJobs().ToList(), true);
+                        Thread.Sleep(500);
+                    }
+
+                    _alreadyWarnedForBlacklistedProcess = false;
+
+
+                    if (!Directory.Exists(Source))
+                    {
+                        Manager.StopJob(Name);
+                        MessageBox.Show("The source Directory has been removed in between the running of the job. Job has been terminated.", "Source Missing", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        continue;
+                    }
+
+                    if (jobTask.Size * 1024 >= ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold)
+                    {
+                        _semaphoreSizeThreshold.WaitOne();
+
+                        if (IsStopped)
+                        {
+                            _semaphoreSizeThreshold.Release();
+                            CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                            return;
+                        }
+                        jobTask.ExecuteTask(StrategyType);
+                        _semaphoreSizeThreshold.Release();
+                    }
+                    else
+                    {
+                        jobTask.ExecuteTask(StrategyType);
+                    }
+                }
+                
+                if (IsStopped)
+                {
+                    CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                    return;
+                }
+
+                TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
+                EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
+
+                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                    ? JobExecutionStrategy.ExecutionStatus.Completed
+                    : JobExecutionStrategy.ExecutionStatus.Failed);
+            }
+            finally
+            {
+                countdown.Signal();
+            }
         }
-
+        
+        public void ReleaseSemaphore()
+        {
+            _semaphoreSizeThreshold.Release();
+            _semaphoreSizeThreshold.WaitOne();
+        }
+        
         public void PauseJob()
         {
-            if (!IsRunning || IsPaused)
+            if (!IsRunning && !IsStopped)
                 return;
             
+            WasPaused = false;
             IsPaused = true;
             Status = JobExecutionStrategy.ExecutionStatus.Paused;
             UpdateProgress();
             JobPausedHandler?.Invoke(this);
         }
 
-        public Action ResumeJob()
+        public void StopJob()
         {
-            if (!IsRunning || !IsPaused)
-                return () => {};
+            if (!IsRunning)
+                return;
 
             IsPaused = false;
+            IsRunning = false;
+            IsStopped = true;
+            Status = JobExecutionStrategy.ExecutionStatus.Stopped;
+            UpdateProgress();
+            JobStoppedHandler?.Invoke(this);
+        }
+
+        public void ResumeJob()
+        {
+            if (!IsRunning && !IsStopped)
+                return;
+
             WasPaused = true;
+            IsPaused = false;
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
             UpdateProgress();
-            return RunJob;
         }
 
         public JsonObject JsonSerialize()
@@ -287,7 +374,7 @@ namespace EasySaveCore.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void UpdateProgress()
+        public void UpdateProgress()
         {
             OnPropertyChanged(nameof(IsRunning));
             OnPropertyChanged(nameof(Status));
@@ -311,7 +398,13 @@ namespace EasySaveCore.Models
                     JobTasks.Add(jobTask);
                 }
             }
+            
+            JobTasks.Sort((x, y) => x.Size.CompareTo(y.Size)); // Sort tasks by size to optimize transfer
 
+            IsStopped = false;
+            IsRunning = false;
+            IsPaused = false;
+            WasPaused = false;
             TransferTime = -1L;
             EncryptionTime = -1L;
             Size = JobTasks.Select(x => x.Size).Sum();
@@ -328,10 +421,9 @@ namespace EasySaveCore.Models
         {
             Status = status;
             IsRunning = false;
-            IsPaused = false;
             WasPaused = false;
             UpdateProgress();
-            JobCompletedHandler?.Invoke(this);
+            JobFinishedHandler?.Invoke(this, status);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
