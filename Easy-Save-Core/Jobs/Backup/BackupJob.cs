@@ -103,7 +103,7 @@ namespace EasySaveCore.Models
             return !IsRunning;
         }
 
-        public void RunJob(long threadsHandlingPriority = 0) //FIXME THIS DOESNT WORKS BETWEEN DIFFERENT THREADS
+        public void RunJob(bool isPriority = true)
         {
             if (!CanRunJob() && !IsPaused)
             {
@@ -150,33 +150,19 @@ namespace EasySaveCore.Models
                 Directory.CreateDirectory(dirToCreate);
             }
             List<String> priority_extensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList();
-            List<JobTask> PriorityJobTasks = new List<JobTask>();
-            List<JobTask> NonPriorityJobTasks = new List<JobTask>();
-            foreach (JobTask jobTask in JobTasks) //check for priority queue.
+            List<JobTask> JobTasksToRun = new List<JobTask>();
+            foreach (JobTask jobTask in JobTasks) //check if file has one of the prioritized extensions
             {
-                int index_extension = jobTask.Source.LastIndexOf(".");
-                if (index_extension == -1) //files with no extension
+                if (priority_extensions.Contains(jobTask.Source.Substring(Math.Abs(jobTask.Source.LastIndexOf("."))))) //file extension in ExtensionsToPrioritize
                 {
-                    NonPriorityJobTasks.Add(jobTask);
+                    if (isPriority) { JobTasksToRun.Add(jobTask); }
                 }
-                else if (priority_extensions.Contains(jobTask.Source.Substring(index_extension))) //file extension in ExtensionsToPrioritize
+                else //file extension not in ExtensionsToPrioritize or no file extension (Math.abs() is here if the file has no extension, the result wont fit priority_extensions has it wont be in .ext format)
                 {
-                    PriorityJobTasks.Add(jobTask);
-                }
-                else //file extension not in ExtensionsToPrioritize
-                {
-                    NonPriorityJobTasks.Add(jobTask);
+                    if (!isPriority) { JobTasksToRun.Add(jobTask); }
                 }
             }
-            Interlocked.Increment(ref threadsHandlingPriority);
-            runTasks(PriorityJobTasks);
-            Interlocked.Decrement(ref threadsHandlingPriority);
-            while (Interlocked.Read(ref threadsHandlingPriority) > 0) 
-            { 
-                Thread.Sleep(100); 
-            }
-            
-            runTasks(NonPriorityJobTasks);
+            runTasks(JobTasksToRun);
             TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
             EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
@@ -222,23 +208,17 @@ namespace EasySaveCore.Models
             UpdateProgress();
             JobPausedHandler?.Invoke(this);
         }
-        //URGENT TODO
-        /*public Action ResumeJob()
+        public Action<bool> ResumeJob()
         {
+            bool i; //TODO RENAME : 'Useless' variable made for the delegate
             if (!IsRunning || !IsPaused)
-                return () => {};
+                return (i) => {};
 
             IsPaused = false;
             WasPaused = true;
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
             UpdateProgress();
             return RunJob;
-        }*/
-
-        //THIS IS TEMPORARY BUT AWFUL/ Changes to the runJob function
-        public Action ResumeJob()
-        {
-            return PauseJob;
         }
 
         public JsonObject JsonSerialize()

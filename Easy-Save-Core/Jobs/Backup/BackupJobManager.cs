@@ -38,7 +38,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobInterrupted? JobInterruptedHandler;
         public override event OnMultipleJobCompleted? MultipleJobCompletedHandler;
         private readonly object _lockObject = new object();
-        private static readonly Semaphore _semaphoreObject = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private static readonly Semaphore _processorsSemaphore = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private static CountdownEvent _priorityCountdown;
         //TODO these 2 needs to be defined outside of a JobTask but accessible in RunJob
         int threadsHandlingPriority;
 
@@ -111,13 +112,12 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         // Unused
         protected override void DoJob(IJob job)
         {
-            //PRIORITY HERE
-            threadsHandlingPriority = 0;
             if (!job.CanRunJob())
                 throw new Exception($"Job {job.Name} cannot be run");
 
             job.Status = JobExecutionStrategy.ExecutionStatus.InProgress;
-            job.RunJob(threadsHandlingPriority);
+            job.RunJob(true);
+            job.RunJob(false);
             job.Status = job.JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed;
@@ -130,7 +130,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             //TODO CHECK ERROR HANDLING (PROBABLY WRONG HERE)
 
             //PRIORITY HERE
-            threadsHandlingPriority = 0;
+            _priorityCountdown = new CountdownEvent(jobs.Count);
 
             IsRunning = true;
             int jobsUnfinished = jobs.Count();
@@ -146,20 +146,24 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 job.ClearAndSetupJob();
                 Task.Run(() =>
                 {
-                    _semaphoreObject.WaitOne();
+                    _processorsSemaphore.WaitOne();
 
                     string targetPath = job.Target;
                     if (!HasEnoughDiskSpace(targetPath, job.Size))
                     {
                         job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                         JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
-                        _semaphoreObject.Release();
+                        _processorsSemaphore.Release();
                         IsRunning = false;
                         return;
                     }
-
-                    job.RunJob(threadsHandlingPriority);
-                    _semaphoreObject.Release();
+                    job.RunJob(true);
+                    _processorsSemaphore.Release();
+                    _priorityCountdown.Signal();
+                    _priorityCountdown.Wait(); //wait until all threads have finished working on priority
+                    _processorsSemaphore.WaitOne();
+                    job.RunJob(false);
+                    _processorsSemaphore.Release();
                     jobsUnfinished--;
                     lock (_lockObject)
                     {

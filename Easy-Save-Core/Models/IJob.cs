@@ -37,10 +37,10 @@ namespace CLEA.EasySaveCore.Models
         public void ClearJobCompletedHandler();
         
         void PauseJob();
-        Action ResumeJob();
+        Action<bool> ResumeJob();
 
         bool CanRunJob();
-        void RunJob(long threadsHandlingPriority);
+        void RunJob(bool runPriority);
         void ClearAndSetupJob();
         void CompleteJob(JobExecutionStrategy.ExecutionStatus notEnoughDiskSpace);
     }
