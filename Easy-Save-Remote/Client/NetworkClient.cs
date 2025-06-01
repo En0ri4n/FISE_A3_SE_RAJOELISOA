@@ -69,7 +69,16 @@ namespace EasySaveShared.Client
 
                     string message = Encoding.UTF8.GetString(buffer, 0, received);
                     // Console.WriteLine(message);
-                    NetworkMessage? networkMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
+                    NetworkMessage? networkMessage;
+                    try
+                    {
+                        networkMessage = JsonConvert.DeserializeObject<NetworkMessage>(message);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    
                     if (networkMessage == null)
                     {
                         //Console.WriteLine("Received invalid message from server.");

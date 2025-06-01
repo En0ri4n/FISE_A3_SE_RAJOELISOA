@@ -157,7 +157,7 @@ namespace Easy_Save_WPF
         {
             ExecuteWithReselection(jobNames =>
             {
-                ViewModel.PauseJobsCommand.Execute(null);
+                ViewModel.PauseJobsCommand.Execute(jobNames);
             });
         }
 
@@ -186,9 +186,9 @@ namespace Easy_Save_WPF
 
             ExecuteWithReselection(jobNames =>
             {
-                ViewModel.UpdateProperties(null);
+                ViewModel.UpdateProperties();
                 ViewModel.RunMultipleJobsCommand.Execute(jobNames);
-                ViewModel.UpdateProperties(null);
+                ViewModel.UpdateProperties();
             });
         }
 
