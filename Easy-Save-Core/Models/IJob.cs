@@ -49,7 +49,7 @@ namespace CLEA.EasySaveCore.Models
         void StopJob();
 
         bool CanRunJob();
-        void RunJob(bool runPriority, CountdownEvent countdown);
+        void RunJob(CountdownEvent countdown, bool runPriority = false);
         void ClearAndSetupJob();
         void CompleteJob(JobExecutionStrategy.ExecutionStatus notEnoughDiskSpace);
     }

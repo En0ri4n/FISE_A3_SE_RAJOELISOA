@@ -30,8 +30,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         public override event OnJobsStarted? JobsStartedHandler;
         
         private readonly object _lockObject = new object();
-        private static readonly Semaphore _processorsSemaphore = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
-        private static CountdownEvent _priorityCountdown;
+        private readonly Semaphore _processorsSemaphore = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
+        private CountdownEvent _priorityCountdown;
 
         public override bool AddJob(IJob job, bool save)
         {
@@ -122,8 +122,8 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             //PRIORITY HERE
             _priorityCountdown = new CountdownEvent(jobs.Count);
             CountdownEvent countdown = new CountdownEvent(jobs.Count);
-            
-            int jobsUnfinished = jobs.Count();
+            // TODO: Check if this is the right way to handle multiple jobs when ran one after another for priority
+
             foreach (IJob job in jobs)
             {
                 if (ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
@@ -151,15 +151,14 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 {
                     _processorsSemaphore.WaitOne();
 
-                    job.RunJob(true, countdown);
+                    job.RunJob(countdown, true);
                     
                     _processorsSemaphore.Release();
                     _priorityCountdown.Signal();
                     _priorityCountdown.Wait(); //wait until all threads have finished working on priority
                     _processorsSemaphore.WaitOne();
-                    job.RunJob(false, countdown);
+                    job.RunJob(countdown);
                     _processorsSemaphore.Release();
-                    jobsUnfinished--;
                     lock (_lockObject)
                     {
                         Logger.Get().SaveDailyLog(jobs.SelectMany(j => j.JobTasks).ToList());

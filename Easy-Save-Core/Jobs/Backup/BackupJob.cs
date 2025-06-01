@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using CLEA.EasySaveCore.Jobs.Backup;
 using CLEA.EasySaveCore.Models;
+using CLEA.EasySaveCore.Utilities;
 using EasySaveCore.Jobs.Backup.Configurations;
-using EasySaveCore.Jobs.Backup.ViewModels;
 
 namespace EasySaveCore.Models
 {
@@ -37,11 +33,13 @@ namespace EasySaveCore.Models
         public event IJob.JobStartedDelegate? JobStartedHandler;
 
 
-        public BackupJob(BackupJobManager manager) : this( manager, string.Empty, string.Empty, string.Empty, JobExecutionStrategy.StrategyType.Full)
+        public BackupJob(BackupJobManager manager) : this(manager, string.Empty, string.Empty, string.Empty,
+            JobExecutionStrategy.StrategyType.Full)
         {
         }
 
-        public BackupJob(BackupJobManager manager, string name, string source, string target, JobExecutionStrategy.StrategyType strategy, bool isEncrypted = false)
+        public BackupJob(BackupJobManager manager, string name, string source, string target,
+            JobExecutionStrategy.StrategyType strategy, bool isEncrypted = false)
         {
             Manager = manager;
             Name = name;
@@ -95,9 +93,10 @@ namespace EasySaveCore.Models
 
         public string Name { get; private set; }
 
-        private readonly static Semaphore _semaphoreSizeThreshold = new Semaphore(1, 1);
+        private static readonly Semaphore SemaphoreSizeThreshold = new Semaphore(1, 1);
 
-        public JobExecutionStrategy.ExecutionStatus Status { get; set; } = JobExecutionStrategy.ExecutionStatus.NotStarted;
+        public JobExecutionStrategy.ExecutionStatus Status { get; set; } =
+            JobExecutionStrategy.ExecutionStatus.NotStarted;
 
         public void ClearTaskCompletedHandler()
         {
@@ -141,12 +140,12 @@ namespace EasySaveCore.Models
                     CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
                     return;
                 }
-                
+
                 while (IsPaused)
                 {
                     Thread.Sleep(100); // Sleep to avoid busy waiting
                 }
-                
+
                 JobStartedHandler?.Invoke(this);
                 Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
@@ -158,144 +157,162 @@ namespace EasySaveCore.Models
 
                 UpdateProgress();
 
-            if (!Directory.Exists(Target))
-                Directory.CreateDirectory(Target);
+                if (!Directory.Exists(Target))
+                    Directory.CreateDirectory(Target);
 
-            string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
+                string[] sourceDirectoriesArray = Directory.GetDirectories(Source, "*", SearchOption.AllDirectories);
 
                 foreach (string directory in sourceDirectoriesArray)
                 {
                     string dirToCreate = directory.Replace(Source, Target);
                     Directory.CreateDirectory(dirToCreate);
                 }
-List<String> PriorityExtensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ExtensionsToPrioritize.ToList();
-            List<JobTask> JobTasksToRun = new List<JobTask>();
-            foreach (JobTask jobTask in JobTasks) //check if file has one of the prioritized extensions
-            {
-                if (PriorityExtensions.Contains(jobTask.Source.Substring(Math.Abs(jobTask.Source.LastIndexOf("."))))) //file extension in ExtensionsToPrioritize
-                {
-                    if (isPriority) { JobTasksToRun.Add(jobTask); }
-                }
-                else //file extension not in ExtensionsToPrioritize or no file extension (Math.abs() is here if the file has no extension, the result wont fit PriorityExtensions has it wont be in .ext format)
-                {
-                    if (!isPriority) { JobTasksToRun.Add(jobTask); }
-                }
-            }
-            runTasks(JobTasksToRun);
-            TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
-            EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
-            if (!isPriority)
-            {
-                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
-                ? JobExecutionStrategy.ExecutionStatus.Completed
-                : JobExecutionStrategy.ExecutionStatus.Failed);
-            }
-            else if (!IsPaused)
-            {
-                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
-                ? JobExecutionStrategy.ExecutionStatus.InProgress
-                : JobExecutionStrategy.ExecutionStatus.Failed);
-            }
-        }
-
-        public void runTasks(List<JobTask> JobTasks)
-        {
-                foreach (JobTask jobTask in JobTasks)
+                List<String> priorityExtensions =
+                    ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
+                    .ExtensionsToPrioritize.ToList();
+                List<JobTask> jobTasksToRun = new List<JobTask>();
+                foreach (JobTask jobTask in JobTasks) //check if file has one of the prioritized extensions
                 {
-                
-                while (IsPaused)
-                
+                    if (priorityExtensions.Contains(
+                            jobTask.Source.Substring(
+                                Math.Abs(jobTask.Source.LastIndexOf(".", StringComparison.Ordinal))))) //file extension in ExtensionsToPrioritize
                     {
-                        Thread.Sleep(500);
-                }
-
-                if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
-                    continue;
-
-                while (ProcessHelper.IsAnyProcessRunning(
-                        ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
-                    {
-                        if (!_alreadyWarnedForBlacklistedProcess)
+                        if (isPriority)
                         {
-                            if (Interlocked.CompareExchange(ref _isPopupOpenAtomic, 1, 0) == 0)
-                            {
-                                _alreadyWarnedForBlacklistedProcess = true;
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    MessageBox.Show(
-                                        "Blacklisted process detected, all backup jobs have been paused.",
-                                        "Jobs Paused",
-                                        MessageBoxButton.OK,
-                                        MessageBoxImage.Information
-                                    );
-                                    Interlocked.Exchange(ref _isPopupOpenAtomic, 0);
-                                });
-                            }
+                            jobTasksToRun.Add(jobTask);
                         }
-
-                        Manager.PauseJobs(Manager.GetJobs().ToList(), true);
-                        Thread.Sleep(500);
                     }
-
-                    _alreadyWarnedForBlacklistedProcess = false;
-
-
-                    if (!Directory.Exists(Source))
+                    else //file extension not in ExtensionsToPrioritize or no file extension (Math.abs() is here if the file has no extension, the result wont fit PriorityExtensions has it wont be in .ext format)
                     {
-                        Manager.StopJob(Name);
-                        MessageBox.Show("The source Directory has been removed in between the running of the job. Job has been terminated.", "Source Missing", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        continue;
-                    }
-                if (jobTask.Size * 1024 >= ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration).SimultaneousFileSizeThreshold) 
-                    {
-                        _semaphoreSizeThreshold.WaitOne();
-
-                        if (IsStopped)
+                        if (!isPriority)
                         {
-                            _semaphoreSizeThreshold.Release();
-                            CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                            return;
+                            jobTasksToRun.Add(jobTask);
                         }
-                        jobTask.ExecuteTask(StrategyType);
-                        _semaphoreSizeThreshold.Release();
-                    }
-                    else
-                    {
-                        jobTask.ExecuteTask(StrategyType);
                     }
                 }
+
+                RunTasks(jobTasksToRun);
                 
                 if (IsStopped)
                 {
                     CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
                     return;
                 }
-
+                
                 TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
                 EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
-                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
-                    ? JobExecutionStrategy.ExecutionStatus.Completed
-                    : JobExecutionStrategy.ExecutionStatus.Failed);
+                if (!isPriority)
+                {
+                    CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                        ? JobExecutionStrategy.ExecutionStatus.Completed
+                        : JobExecutionStrategy.ExecutionStatus.Failed);
+                }
+                else if (!IsPaused)
+                {
+                    CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                        ? JobExecutionStrategy.ExecutionStatus.InProgress
+                        : JobExecutionStrategy.ExecutionStatus.Failed);
+                }
             }
             finally
             {
-                countdown.Signal();
+                if(!isPriority)
+                    countdown.Signal();
             }
         }
-        
+
+        private void RunTasks(List<JobTask> jobTasks)
+        {
+            foreach (JobTask jobTask in jobTasks)
+            {
+                while (IsPaused)
+
+                {
+                    Thread.Sleep(500);
+                }
+
+                if (WasPaused && jobTask.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
+                    continue;
+
+                while (ProcessHelper.IsAnyProcessRunning(
+                           ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
+                           .ProcessesToBlacklist.ToArray()))
+                {
+                    if (!_alreadyWarnedForBlacklistedProcess)
+                    {
+                        if (Interlocked.CompareExchange(ref _isPopupOpenAtomic, 1, 0) == 0)
+                        {
+                            _alreadyWarnedForBlacklistedProcess = true;
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                MessageBox.Show(
+                                    "Blacklisted process detected, all backup jobs have been paused.",
+                                    "Jobs Paused",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information
+                                );
+                                Interlocked.Exchange(ref _isPopupOpenAtomic, 0);
+                            });
+                        }
+                    }
+
+                    Manager.PauseJobs(Manager.GetJobs().ToList(), true);
+                    Thread.Sleep(500);
+                }
+
+                _alreadyWarnedForBlacklistedProcess = false;
+
+
+                if (!Directory.Exists(Source))
+                {
+                    Manager.StopJob(Name);
+                    MessageBox.Show(
+                        "The source Directory has been removed in between the running of the job. Job has been terminated.",
+                        "Source Missing", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    continue;
+                }
+
+                if (jobTask.Size * 1024 >=
+                    ((BackupJobConfiguration)CLEA.EasySaveCore.Core.EasySaveCore.Get().Configuration)
+                    .SimultaneousFileSizeThreshold)
+                {
+                    SemaphoreSizeThreshold.WaitOne();
+
+                    if (IsStopped)
+                    {
+                        SemaphoreSizeThreshold.Release();
+                        CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
+                        return;
+                    }
+
+                    jobTask.ExecuteTask(StrategyType);
+                    SemaphoreSizeThreshold.Release();
+                }
+                else
+                {
+                    jobTask.ExecuteTask(StrategyType);
+                }
+                
+                if (IsStopped)
+                {
+                    return;
+                }
+            }
+        }
+
         public void ReleaseSemaphore()
         {
-            _semaphoreSizeThreshold.Release();
-            _semaphoreSizeThreshold.WaitOne();
+            SemaphoreSizeThreshold.Release();
+            SemaphoreSizeThreshold.WaitOne();
         }
-        
+
         public void PauseJob()
         {
             if (!IsRunning && !IsStopped)
                 return;
-            
+
             WasPaused = false;
             IsPaused = true;
             Status = JobExecutionStrategy.ExecutionStatus.Paused;
@@ -367,7 +384,7 @@ List<String> PriorityExtensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Cor
                 IsEncrypted = bool.Parse(data["IsEncrypted"]!.ToString());
             else
                 throw new KeyNotFoundException("Invalid JSON data: Missing 'IsEncrypted' property.");
-            
+
             ClearAndSetupJob();
         }
 
@@ -439,7 +456,7 @@ List<String> PriorityExtensions = ((BackupJobConfiguration)CLEA.EasySaveCore.Cor
                     JobTasks.Add(jobTask);
                 }
             }
-            
+
             JobTasks.Sort((x, y) => x.Size.CompareTo(y.Size)); // Sort tasks by size to optimize transfer
 
             IsStopped = false;
