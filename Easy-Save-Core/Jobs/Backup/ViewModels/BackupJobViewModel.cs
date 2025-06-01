@@ -152,9 +152,9 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
             }
         }
 
-
-        public bool CanJobBeRun => !JobManager.IsRunning;
-        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !job.IsPaused);
+        public bool CanJobBeRun { get; private set; } = false;
+        public bool CanJobsBePausedAreStopped { get; private set; } = false;
+        public bool CanConfigurationBeViewed { get; set; } = true;
 
         public ICommand BuildJobCommand { get; private set; }
         public ICommand LoadJobInBuilderCommand { get; private set; }
@@ -174,7 +174,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
 
         public ICommand LoadEncryptionKeyCommand { get; set; }
         public ICommand SaveEncryptionKeyCommand { get; set; }
-        public ICommand PauseMultipleJobsCommand { get; set; }
+        public ICommand PauseJobsCommand { get; set; }
+        public ICommand StopJobsCommand { get; set; }
+        public ICommand UpdateCanJobsRunCommand { get; set; }
+
 
         public ICommand LoadSimultaneousFileSizeThresholdCommand { get; set; }
         public ICommand SaveSimultaneousFileSizeThresholdCommand { get; set; }
@@ -193,12 +196,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         {
             _tempEncryptionKey = Configuration.EncryptionKey;
             _tempSimultaneousFileSizeThreshold = Configuration.SimultaneousFileSizeThreshold.ToString();
-
-            JobManager.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(JobManager.IsRunning))
-                    OnPropertyChanged(nameof(CanJobBeRun));
-            };
+            
             JobManager.MultipleJobCompletedHandler += jobs =>
             {
                 if (jobs == null || jobs.Count == 0)
@@ -216,14 +214,96 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 });
+
+                UpdateProperties(null);
             };
             
-            PauseMultipleJobsCommand = new RelayCommand(jobNameList =>
+            JobManager.JobsStoppedHandler += jobs =>
             {
-                if(!(jobNameList is List<string> jobNames) || jobNames.Count == 0)
+                Dispatcher dispatcher = Application.Current.Dispatcher;
+                dispatcher.Invoke(() =>
+                {
+                    Window mainWindow = Application.Current.MainWindow;
+                    MessageBox.Show(
+                        mainWindow,
+                        L10N.Get().GetTranslation("message_box.jobs_stopped.text"),
+                        L10N.Get().GetTranslation("message_box.jobs_stopped.title"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                });
+
+                UpdateProperties(null);
+            };
+
+            JobManager.JobsPausedHandler += jobs =>
+            {
+                Dispatcher dispatcher = Application.Current.Dispatcher;
+                dispatcher.Invoke(() =>
+                {
+                    Window mainWindow = Application.Current.MainWindow;
+                    MessageBox.Show(
+                        mainWindow,
+                        L10N.Get().GetTranslation("message_box.jobs_paused.text"),
+                        L10N.Get().GetTranslation("message_box.jobs_paused.title"),
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                });
+
+                UpdateProperties(null);
+            };
+            
+            UpdateCanJobsRunCommand = new RelayCommand(jobNamesList =>
+            {
+                if (!(jobNamesList is List<string> jobNames))
                     return;
                 
-                JobManager.PauseMultipleJobs(jobNames);
+                List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+                UpdateProperties(jobs);
+            }, _ => true);
+
+            PauseJobsCommand = new RelayCommand(jobNameList =>
+            {
+                if (!(jobNameList is List<string> jobNames))
+                    return;
+
+                if (jobNames.Count == 0)
+                {
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.run_no_selected.text"),
+                        L10N.Get().GetTranslation("message_box.run_no_selected.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+
+                JobManager.PauseJobs(jobs);
+                UpdateProperties();
+            }, _ => true);
+
+            StopJobsCommand = new RelayCommand(jobNameList =>
+            {
+                if (!(jobNameList is List<string> jobNames))
+                    return;
+
+                if (jobNames.Count == 0)
+                {
+                    MessageBox.Show(L10N.Get().GetTranslation("message_box.run_no_selected.text"),
+                        L10N.Get().GetTranslation("message_box.run_no_selected.title"), MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
+
+                MessageBoxResult messageBoxResult = MessageBox.Show("Selected Job(s) is/are running, are you sure you want to stop them?",
+                    "Stop Jobs", MessageBoxButton.YesNo, MessageBoxImage.Warning,
+                    MessageBoxResult.No);
+
+                if (messageBoxResult != MessageBoxResult.Yes)
+                    return;
+
+                JobManager.StopJobs(jobs);
+                UpdateProperties();
             }, _ => true);
 
             BuildJobCommand = new RelayCommand(isCreation =>
@@ -275,10 +355,10 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 if (jobName is string name) JobManager.RemoveJob(name);
             }, _ => true);
 
-            RunJobCommand = new RelayCommand(jobName =>
-            {
-                if (jobName is string name) JobManager.DoJob(name);
-            }, _ => true);
+            //RunJobCommand = new RelayCommand(jobName =>
+            //{
+            //    if (jobName is string name) JobManager.DoJob(name);
+            //}, _ => true);
 
             RunMultipleJobsCommand = new RelayCommand(jobNameList =>
             {
@@ -292,7 +372,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxImage.Warning);
                     return;
                 }
-
+                
                 List<IJob> jobs = jobNames.Select(name => JobManager.GetJob(name)).ToList();
 
                 if (!ExternalEncryptor.IsEncryptorPresent() || (ExternalEncryptor.IsEncryptorPresent() && jobs.Any(job =>
@@ -317,7 +397,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
 
                 JobManager.DoMultipleJob(jobNames);
-            }, _ => !JobManager.IsRunning);
+                UpdateProperties(jobs);
+            }, _ => true);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
             {
@@ -520,6 +601,18 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         public ViewModelBackupJobBuilder GetJobBuilder()
         {
             return (ViewModelBackupJobBuilder)JobBuilderBase;
+        }
+
+        public void UpdateProperties(List<IJob>? jobs = null)
+        {
+            jobs ??= JobManager.GetJobs().ToList();
+            
+            CanJobBeRun = jobs.Count != 0 && jobs.All(job => !job.IsRunning);
+            CanJobsBePausedAreStopped = jobs.Any(job => job.IsRunning);
+            CanConfigurationBeViewed = JobManager.GetJobs().All(job => !job.IsRunning);
+            OnPropertyChanged(nameof(CanJobBeRun));
+            OnPropertyChanged(nameof(CanJobsBePausedAreStopped));
+            OnPropertyChanged(nameof(CanConfigurationBeViewed));
         }
 
         public void OnTaskCompletedFor(string[] jobNames, IJob.TaskCompletedDelegate callback)
