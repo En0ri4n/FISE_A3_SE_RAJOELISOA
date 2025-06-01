@@ -111,7 +111,7 @@ namespace Easy_Save_WPF
             ViewModel.JobBuilderBase.Clear();
 
             JobFormWindow jobFormWindow = new JobFormWindow(ViewModel, "create_job", true);
-            jobFormWindow.Owner = GetWindow(App.Current.MainWindow);
+            jobFormWindow.Owner = GetWindow(this);
             jobFormWindow.ShowDialog();
         }
 
@@ -130,7 +130,7 @@ namespace Easy_Save_WPF
             ViewModel.LoadJobInBuilderCommand.Execute(selectedJobName);
 
             JobFormWindow modifyJobFormWindow = new JobFormWindow(ViewModel, "edit_job", false);
-            modifyJobFormWindow.Owner = GetWindow(App.Current.MainWindow);
+            modifyJobFormWindow.Owner = GetWindow(this);
             modifyJobFormWindow.ShowDialog();
         }
 

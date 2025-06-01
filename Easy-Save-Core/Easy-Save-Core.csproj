@@ -17,5 +17,8 @@
     <ItemGroup>
         <EmbeddedResource Include="Assets\Lang\*.json"/>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Easy-Save-Shared-Remote\Easy-Save-Shared-Remote.csproj" />
+    </ItemGroup>
 
 </Project>

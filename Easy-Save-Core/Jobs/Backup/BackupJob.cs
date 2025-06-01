@@ -459,6 +459,7 @@ namespace EasySaveCore.Models
             OnPropertyChanged(nameof(Size));
             OnPropertyChanged(nameof(TransferTime));
             OnPropertyChanged(nameof(EncryptionTime));
+            Manager.OnDataUpdated(this);
         }
 
         public void ClearAndSetupJob()
