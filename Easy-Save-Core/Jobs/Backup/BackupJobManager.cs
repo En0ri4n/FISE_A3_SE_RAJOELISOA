@@ -40,8 +40,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         private readonly object _lockObject = new object();
         private static readonly Semaphore _processorsSemaphore = new Semaphore(Environment.ProcessorCount, Environment.ProcessorCount);
         private static CountdownEvent _priorityCountdown;
-        //TODO these 2 needs to be defined outside of a JobTask but accessible in RunJob
-        int threadsHandlingPriority;
 
         public override bool AddJob(IJob job, bool save)
         {
