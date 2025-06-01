@@ -5,6 +5,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -128,7 +129,10 @@ namespace EasySaveCore.Models
                 CompleteJob(JobExecutionStrategy.ExecutionStatus.SameSourceAndTarget);
                 return;
             }
-
+            while (IsPaused)
+            {
+                Thread.Sleep(100); // Sleep to avoid busy waiting
+            }
             Status = JobExecutionStrategy.ExecutionStatus.InProgress;
 
             if (!WasPaused)
@@ -166,13 +170,18 @@ namespace EasySaveCore.Models
             TransferTime = JobTasks.Select(x => x.TransferTime).Sum();
             EncryptionTime = JobTasks.Select(x => x.EncryptionTime).Sum();
 
-            if (isPriority)
+            if (!isPriority)
             {
-                return;
-            }
-            CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
                 ? JobExecutionStrategy.ExecutionStatus.Completed
                 : JobExecutionStrategy.ExecutionStatus.Failed);
+            }
+            else if (!IsPaused)
+            {
+                CompleteJob(JobTasks.All(x => x.Status != JobExecutionStrategy.ExecutionStatus.Failed)
+                ? JobExecutionStrategy.ExecutionStatus.InProgress
+                : JobExecutionStrategy.ExecutionStatus.Failed);
+            }
         }
 
         public void runTasks(List<JobTask> JobTasks)
