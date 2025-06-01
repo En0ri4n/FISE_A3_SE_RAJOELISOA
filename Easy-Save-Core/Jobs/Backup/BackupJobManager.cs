@@ -181,7 +181,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
                     job.RunJob(countdown);
                     SemaphoreObject.Release();
-                    countdown.Signal();
 
                     lock (_lockObject)
                     {

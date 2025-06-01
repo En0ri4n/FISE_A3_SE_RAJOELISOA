@@ -97,39 +97,40 @@ namespace EasySaveCore.Models
                 $"[{Name}] Backup job task from {Source} to {Target} completed in {TransferTime}ms ({Status})");
         }
 
-        public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
-        {
-            const int bufferSize = 128 * 1024; // limite l'usage disque
-            byte[] buffer = new byte[bufferSize];
-
-            using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
-            using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
-            using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
-
-            long bytesRead;
-            long bytesTransferredThisSecond = 0;
-            Stopwatch secondTimer = Stopwatch.StartNew();
-
-            while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                bufferedTarget.Write(buffer, 0, (int)bytesRead);
-                bufferedSource.Flush();
-                bufferedTarget.Flush();
-                bytesTransferredThisSecond += bytesRead;
-
-                Thread.Sleep(2);
-
-                if (bytesTransferredThisSecond >= maxBytesPerSecond)
-                {
-                    long elapsed = secondTimer.ElapsedMilliseconds;
-                    if (elapsed < 1000) Thread.Sleep((int)(1000 - elapsed));
-
-                    bytesTransferredThisSecond = 0;
-                    secondTimer.Restart();
-                }
-            }
-        }
+        // Unused method, kept for reference
+        // public static void CopyWithHardThrottle(string sourceFilePath, string targetFilePath, long maxBytesPerSecond)
+        // {
+        //     const int bufferSize = 128 * 1024; // limite l'usage disque
+        //     byte[] buffer = new byte[bufferSize];
+        //
+        //     using FileStream sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        //     using FileStream targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+        //     using BufferedStream bufferedSource = new BufferedStream(sourceStream, bufferSize);
+        //     using BufferedStream bufferedTarget = new BufferedStream(targetStream, bufferSize);
+        //
+        //     long bytesRead;
+        //     long bytesTransferredThisSecond = 0;
+        //     Stopwatch secondTimer = Stopwatch.StartNew();
+        //
+        //     while ((bytesRead = bufferedSource.Read(buffer, 0, buffer.Length)) > 0)
+        //     {
+        //         bufferedTarget.Write(buffer, 0, (int)bytesRead);
+        //         bufferedSource.Flush();
+        //         bufferedTarget.Flush();
+        //         bytesTransferredThisSecond += bytesRead;
+        //
+        //         Thread.Sleep(2);
+        //
+        //         if (bytesTransferredThisSecond >= maxBytesPerSecond)
+        //         {
+        //             long elapsed = secondTimer.ElapsedMilliseconds;
+        //             if (elapsed < 1000) Thread.Sleep((int)(1000 - elapsed));
+        //
+        //             bytesTransferredThisSecond = 0;
+        //             secondTimer.Restart();
+        //         }
+        //     }
+        // }
 
         private void CopyFileWithThrottle(string source, string target)
         {
