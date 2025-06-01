@@ -214,6 +214,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 });
+
+                UpdateProperties(null);
             };
             
             JobManager.JobsStoppedHandler += jobs =>
@@ -229,6 +231,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 });
+
+                UpdateProperties(null);
             };
 
             JobManager.JobsPausedHandler += jobs =>
@@ -244,6 +248,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 });
+
+                UpdateProperties(null);
             };
             
             UpdateCanJobsRunCommand = new RelayCommand(jobNamesList =>

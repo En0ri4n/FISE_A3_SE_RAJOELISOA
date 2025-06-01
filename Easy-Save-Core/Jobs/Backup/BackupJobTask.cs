@@ -146,10 +146,9 @@ namespace EasySaveCore.Models
             int bytesRead;
             while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
             {
-                //TODO Check if job has been stopped or paused
                 while (_backupJob.IsPaused)
                 {
-                    _backupJob.ReleaseSemaphore();
+                    _backupJob.ReleaseSemaphore(); //TODO Make smaller files available when one thread has a big file
                     
                     if(_backupJob.IsStopped)
                         return;
