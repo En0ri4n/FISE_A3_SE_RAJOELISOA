@@ -151,11 +151,8 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 OnPropertyChanged();
             }
         }
-
-
-        public bool CanJobBeRun => !JobManager.IsRunning;
-        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !JobManager.IsPaused);
-        public bool AreJobsPaused => JobManager.IsPaused;
+        
+        public bool CanJobsBePaused => JobManager.GetJobs().Any(job => job.IsRunning && !job.IsPaused);
 
         public ICommand BuildJobCommand { get; private set; }
         public ICommand LoadJobInBuilderCommand { get; private set; }
@@ -196,12 +193,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
         {
             _tempEncryptionKey = Configuration.EncryptionKey;
             _tempSimultaneousFileSizeThreshold = Configuration.SimultaneousFileSizeThreshold.ToString();
-
-            JobManager.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(JobManager.IsRunning))
-                    OnPropertyChanged(nameof(CanJobBeRun));
-            };
+            
             JobManager.MultipleJobCompletedHandler += jobs =>
             {
                 if (jobs == null || jobs.Count == 0)
@@ -385,7 +377,7 @@ namespace EasySaveCore.Jobs.Backup.ViewModels
                 }
 
                 JobManager.DoMultipleJob(jobNames);
-            }, _ => !JobManager.IsRunning);
+            }, _ => true);
 
             ChangeRunStrategyCommand = new RelayCommand(strategy =>
             {

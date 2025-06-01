@@ -17,26 +17,10 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 {
     public sealed class BackupJobManager : JobManager
     {
-        private bool _isRunning;
-
         public BackupJobManager() : base(-1)
         {
             Jobs.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Jobs));
-            JobInterruptedHandler += (reason, job, name) => IsRunning = false;
         }
-
-        public override bool IsRunning
-        {
-            get => _isRunning;
-            set
-            {
-                _isRunning = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public override bool IsPaused { get; set; }
-        public override bool IsStopped { get; set; }
 
         public override event PropertyChangedEventHandler? PropertyChanged;
         public override event OnJobInterrupted? JobInterruptedHandler;
@@ -48,7 +32,7 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         public override bool AddJob(IJob job, bool save)
         {
-            if (job == null || (Jobs.Count >= Size && Size != -1) || Jobs.Any(j => j.Name == job.Name))
+            if ((Jobs.Count >= Size && Size != -1) || Jobs.Any(j => j.Name == job.Name))
 
                 return false;
 
@@ -129,26 +113,15 @@ namespace CLEA.EasySaveCore.Jobs.Backup
 
         protected override void DoMultipleJob(ObservableCollection<IJob> jobs)
         {
-            IsRunning = true;
-
             CountdownEvent countdown = new CountdownEvent(jobs.Count);
 
             foreach (IJob job in jobs)
             {
-                if (IsStopped)
-                {
-                    job.CompleteJob(JobExecutionStrategy.ExecutionStatus.Stopped);
-                    JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job);
-                    countdown.Signal(); 
-                    continue;
-                }
-
                 if (ProcessHelper.IsAnyProcessRunning(((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.ToArray()))
                 {
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.InterruptedByProcess);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.ProcessRunning, job, ((BackupJobConfiguration)Core.EasySaveCore.Get().Configuration).ProcessesToBlacklist.FirstOrDefault(ProcessHelper.IsProcessRunning) ?? string.Empty);
                     countdown.Signal();
-                    IsRunning = false;
                     UpdateProperties();
                     return;
                 }
@@ -158,8 +131,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.CompleteJob(JobExecutionStrategy.ExecutionStatus.NotEnoughDiskSpace);
                     JobInterruptedHandler?.Invoke(JobInterruptionReasons.NotEnoughDiskSpace, job, "Not enough disk space on target drive.");
                     countdown.Signal();
-                    IsRunning = false;
-                    UpdateProperties();
                     return;
                 }
 
@@ -168,16 +139,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                 Task.Run(() =>
                 {
                     SemaphoreObject.WaitOne();
-
-                    if (IsStopped)
-                    {
-                        job.StopJob();
-                        JobInterruptedHandler?.Invoke(JobInterruptionReasons.ManualStop, job);
-                        SemaphoreObject.Release();
-                        countdown.Signal();
-                        UpdateProperties();
-                        return;
-                    }
 
                     job.RunJob(countdown);
                     SemaphoreObject.Release();
@@ -193,7 +154,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
             {
                 countdown.Wait();
                 countdown.Dispose();
-                IsRunning = false;
                 UpdateProperties();
                 MultipleJobCompletedHandler?.Invoke(jobs);
             });
@@ -232,7 +192,6 @@ namespace CLEA.EasySaveCore.Jobs.Backup
         }
         public override void StopJobs(List<IJob> selectedJobs)
         {
-            IsStopped = true;
             lock (_lockObject)
             {
                 foreach (IJob job in selectedJobs)
@@ -242,40 +201,26 @@ namespace CLEA.EasySaveCore.Jobs.Backup
                     job.StopJob();
                 }
 
-                if (!Jobs.Any(j => j.IsRunning))
-                {
-                    IsRunning = false;
-                    IsPaused = false;
-                    IsStopped = false;
-                }
-
                 UpdateProperties();
             }
         }
 
         public override void StopJob(string jobName)
         {
-            IsStopped = true;
             lock (_lockObject)
             {
-                IJob job = Jobs.FirstOrDefault(j => j.Name == jobName);
+                IJob? job = Jobs.FirstOrDefault(j => j.Name == jobName);
 
                 if (!(job is { IsRunning: true })) return; 
 
                 job.StopJob();
 
-                IsRunning = false;
-                IsPaused = false;
-                IsStopped = false;
                 UpdateProperties();
             }
         }
 
         public override void UpdateProperties()
         {
-            OnPropertyChanged(nameof(IsRunning));
-            OnPropertyChanged(nameof(IsPaused));
-            OnPropertyChanged(nameof(IsStopped));
             OnPropertyChanged(nameof(Jobs));
         }
 

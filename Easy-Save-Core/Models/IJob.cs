@@ -7,16 +7,14 @@ namespace CLEA.EasySaveCore.Models
 {
     public interface IJob : IJsonSerializable, IXmlSerializable
     {
-        public delegate void JobCompletedDelegate(IJob job);
-        public event JobCompletedDelegate JobCompletedHandler;
+        public delegate void JobCompletedDelegate(IJob job, JobExecutionStrategy.ExecutionStatus status);
+        public event JobCompletedDelegate JobFinishedHandler;
         public delegate void TaskCompletedDelegate(dynamic task);
         public event TaskCompletedDelegate TaskCompletedHandler;
         public delegate void JobPausedDelegate(IJob job);
         public event JobPausedDelegate JobPausedHandler;
         public delegate void JobStoppedDelegate(IJob job);
         public event JobStoppedDelegate JobStoppedHandler;
-
-
 
         string Name { get; }
         DateTime Timestamp { get; set; }

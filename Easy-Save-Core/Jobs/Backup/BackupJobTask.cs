@@ -151,6 +151,8 @@ namespace EasySaveCore.Models
                     return;
                 }
 
+                Progress = (double) sourceStream.Position / Size;
+                _backupJob.UpdateProgress();
                 targetStream.Write(buffer, 0, bytesRead);
                 Thread.Sleep(5);
             }

@@ -71,8 +71,9 @@ namespace Easy_Save_WPF
 
         private void OnCustomClosing(object sender, CancelEventArgs e)
         {
-            if (ViewModel.CanJobBeRun)
-                return;
+            // TODO: Check if the job can be run
+            // if (ViewModel.CanJobBeRun)
+            //     return;
 
             MessageBoxResult result = MessageBox.Show(L10N.Get().GetTranslation("message_box.close_confirm.text"),
                 L10N.Get().GetTranslation("message_box.close_confirm.title"),
@@ -113,8 +114,9 @@ namespace Easy_Save_WPF
 
         public void ModifyWindow_Click(object sender, RoutedEventArgs e)
         {
-            if (!ViewModel.CanJobBeRun)
-                return;
+            // TODO: Check if the job can be run
+            // if (!ViewModel.CanJobBeRun)
+                // return;
 
             string selectedJobName = ((IJob)jobsDatagrid.SelectedItem)?.Name;
 

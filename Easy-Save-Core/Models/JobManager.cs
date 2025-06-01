@@ -21,7 +21,6 @@ namespace CLEA.EasySaveCore.Models
         public delegate void OnJobsStopped();
         public delegate void OnJobsPaused();
 
-
         protected JobManager(int size)
         {
             Size = size;
@@ -30,10 +29,6 @@ namespace CLEA.EasySaveCore.Models
 
         protected ObservableCollection<IJob> Jobs { get; }
         protected int Size { get; }
-        
-        public abstract bool IsRunning { get; set; }
-        public abstract bool IsPaused { get; set; }
-        public abstract bool IsStopped { get; set; }
 
         public int JobCount => Jobs.Count;
 

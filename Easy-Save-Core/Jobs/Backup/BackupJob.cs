@@ -28,7 +28,7 @@ namespace EasySaveCore.Models
         private static int _hasShownPopup = 0;
 
         public event IJob.TaskCompletedDelegate? TaskCompletedHandler;
-        public event IJob.JobCompletedDelegate? JobCompletedHandler;
+        public event IJob.JobCompletedDelegate? JobFinishedHandler;
         public event IJob.JobPausedDelegate? JobPausedHandler;
         public event IJob.JobStoppedDelegate? JobStoppedHandler;
 
@@ -83,6 +83,7 @@ namespace EasySaveCore.Models
                 long completedTasks = JobTasks
                     .FindAll(task => task.Status != JobExecutionStrategy.ExecutionStatus.NotStarted)
                     .Sum(task => task.Size);
+                // TODO: Use progress for each task instead of size
                 return (double)completedTasks / totalTasksSize * 100D;
             }
         }
@@ -102,7 +103,7 @@ namespace EasySaveCore.Models
 
         public void ClearJobCompletedHandler()
         {
-            JobCompletedHandler = null;
+            JobFinishedHandler = null;
         }
 
         public bool CanRunJob()
@@ -114,7 +115,7 @@ namespace EasySaveCore.Models
         {
             try
             {
-                if (!CanRunJob() && !Manager.IsPaused)
+                if (!CanRunJob() && !IsPaused)
                 {
                     CompleteJob(JobExecutionStrategy.ExecutionStatus.JobAlreadyRunning);
                     return;
@@ -365,7 +366,7 @@ namespace EasySaveCore.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void UpdateProgress()
+        public void UpdateProgress()
         {
             OnPropertyChanged(nameof(IsRunning));
             OnPropertyChanged(nameof(Status));
@@ -412,8 +413,7 @@ namespace EasySaveCore.Models
             IsRunning = false;
             WasPaused = false;
             UpdateProgress();
-            if (status != JobExecutionStrategy.ExecutionStatus.Stopped)
-                JobCompletedHandler?.Invoke(this);
+            JobFinishedHandler?.Invoke(this, status);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
